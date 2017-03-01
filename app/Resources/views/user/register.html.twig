@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="container">
+	<div class="row">
+		<div class="col-sm-4 col-sm-offset-4">
+
+		{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+			{{ form_row(form.username) }}
+			{{ form_row(form.email) }}
+			{{ form_row(form.plainPassword.first) }}
+			{{ form_row(form.plainPassword.second) }}
+
+			<button type="submit">Registreer!</button>
+		{{ form_end(form) }}
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,8 @@
+{% for afdeling in afdelingen %}
+ <h5>{{ afdeling.name }}</h5>
+ <ul class="list-unstyled ingredient-list">
+ {% for ingredient in afdeling.ingredienten %}
+ 	<li>{{ ingredient.hoeveelheid}} {{ ingredient.eenheid}} {{ ingredient.ingredient}} </li>
+ {% endfor %}
+ </ul>
+{% endfor %}
