@@ -104,8 +104,19 @@ class RecipesController extends Controller
     			->setParameter('zoek', '%'.$zoek.'%');
     	}
     		
-    	$recepten = $qb->getQuery()->getResult();
-    	$total = count($recepten);
+//     	$recepten = $qb->getQuery()->getResult();
+//     	$total = count($recepten);
+    	
+    	$query = $qb->getQuery();
+    	$paginator = $this->get('knp_paginator');
+    	
+    	$recepten = $paginator->paginate(
+    		$query,
+    		$request->query->getInt('page',1),
+    		$request->query->getInt('limit',6)
+    	);
+    	$total = $recepten->getTotalItemCount();
+    	
     	
     	if ($zoek || $filters > 0) {			
 			$message = $total.' recepten gevonden met ';
@@ -120,18 +131,22 @@ class RecipesController extends Controller
 
 		$repository = $this->getDoctrine()->getRepository('AppBundle:Gerecht');
 // 		$gerechten = $repository->findAll();
-		$query = $repository->createQueryBuilder('g')
+		$query = $repository->createQueryBuilder('g')	
 				->select('count(g.id) as number, g.id, g.name')
 				->join('g.recepten', 'r')
+				->where('r.user = :user')
+				->setParameter('user', $user)	
 				->groupBy('g.name')
 				->getQuery();
 		$gerechten = $query->getResult();
 		
 		$repository = $this->getDoctrine()->getRepository('AppBundle:Keuken');
 // 		$keukens = $repository->findAll();
-		$query = $repository->createQueryBuilder('k')
+		$query = $repository->createQueryBuilder('k')				
 				->select('count(k.id) as number, k.id, k.name')
 				->join('k.recepten', 'r')
+				->where('r.user = :user')
+				->setParameter('user', $user)				
 				->groupBy('k.name')
 				->getQuery();
 		$keukens = $query->getResult();
@@ -141,15 +156,17 @@ class RecipesController extends Controller
 		$query = $repository->createQueryBuilder('h')
 				->select('count(h.id) as number, h.id, h.name')
 				->join('h.recepten', 'r')
+				->where('r.user = :user')
+				->setParameter('user', $user)					
 				->groupBy('h.name')
 				->getQuery();
 		$hoofdingredienten = $query->getResult();		
     	
         return $this->render('recipes/recepten.html.twig', array(
-        'recepten' => $recepten, 
-        'gerechten' => $gerechten,
-        'keukens' => $keukens,
-        'hoofdingredienten' => $hoofdingredienten,
+			'recepten' => $recepten, 
+			'gerechten' => $gerechten,
+			'keukens' => $keukens,
+			'hoofdingredienten' => $hoofdingredienten,
         ));
     }
     
@@ -215,6 +232,10 @@ class RecipesController extends Controller
 			if($recept->getGerecht() == null){
 				$gerecht = $this->getDoctrine()->getRepository('AppBundle:Gerecht')->findOneByName('Hoofdgerecht');
 				$recept->setGerecht($gerecht);
+			}
+			// set default value for personen
+			if($recept->getPersonen() == null){
+				$recept->setPersonen(4);
 			}
 			foreach ($originalIngredients as $ingredient) {
 				if (false === $recept->getIngredienten()->contains($ingredient)) {

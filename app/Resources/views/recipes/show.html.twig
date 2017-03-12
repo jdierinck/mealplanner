@@ -48,11 +48,14 @@
 		<div class="row">
 			<div class="col-sm-12">
 				<h4>Ingrediënten</h4>
+				Aantal personen: <input type="number" value="4" min="1" max="20" id="personen">
 				<ul class="small">
 				{% for ingredient in recept.ingredienten %}
-				<li>{{ ingredient.hoeveelheid|number_format(2,',','.') }}
-				{{ ingredient.eenheid }}
-				{{ ingredient.ingredient }}</li>
+				<li>
+					<span class="hoeveelheid" data-quantity="{{ (ingredient.hoeveelheid / 4) }}">{% if ingredient.hoeveelheid %} {{ ingredient.hoeveelheid + 0 }} {% endif %}</span>
+					<span class="eenheid">{{ ingredient.eenheid }}</span>
+					<span class="ingredient">{{ ingredient.ingredient }}</span>
+				</li>
 				{% endfor %}
 				</ul>
 			</div>
@@ -88,3 +91,21 @@
 <div class="modal-footer">
 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 </div>
+<script>
+$(document).ready(function(){
+	
+	$('#personen').on('change',function(){
+		var q = $(this).val();
+		$('span.hoeveelheid').each(function(){
+			if ($(this).text() !== ''){
+				singleVal = $(this).data("quantity");
+				newVal = singleVal * q;
+				newVal = newVal.toLocaleString('nl-BE', {maximumFractionDigits:2});
+				$(this).html(newVal);
+			}
+		}); 
+	});
+
+
+});
+</script>

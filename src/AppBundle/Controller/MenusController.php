@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Boodschappenlijst;
+use AppBundle\Entity\ReceptBLOrdered;
 
 class MenusController extends Controller
 {
@@ -282,28 +283,40 @@ class MenusController extends Controller
 		
 		$user = $this->getUser();
 		
-// 		$session = $this->get('session');
-		
 		$em = $this->getDoctrine()->getManager();
 		$repository = $em->getRepository('AppBundle:Menu');
 		$menu = $repository->find($id);
 
-// 		$boodschappenlijst = $em->getRepository('AppBundle:Boodschappenlijst')
-// 				->find($session->get('boodschappenlijst_id'));
-
 		$boodschappenlijst = $user->getBoodschappenlijst();
 		
-		$recepten = new ArrayCollection();
-		foreach($menu->getRecepten() as $recept){
-			foreach($recept->getIngredienten() as $ingredient){
-// 				$boodschappenlijst->addIngredienten($ingredient);
-				$ingredient->setBoodschappenlijst($boodschappenlijst);
-				$em->persist($ingredient);
-			}
-			$recepten[] = $recept;
-		}
-		$boodschappenlijst->setRecepten($recepten);
+// 		$recepten = new ArrayCollection();
+// 		$ingredienten = new ArrayCollection();
+// 		foreach($menu->getRecepten() as $recept){
+// 			foreach($recept->getIngredienten() as $ingredient){
+// 				$ingredienten[] = $ingredient;
+// 			}
+// 			$recepten[] = $recept;
+// 		}
+// 		$boodschappenlijst->setRecepten($recepten);
+// 		$boodschappenlijst->setIngredienten($ingredienten);
+// 		
+// 		$em->flush();
 		
+		foreach($menu->getRecepten() as $recept){
+			$ingredienten = array();
+			foreach($recept->getIngredienten() as $ingredient){
+				$ingredienten[] = $ingredient;
+			}
+		
+			$ro = new ReceptBLOrdered();
+			$ro->setBoodschappenlijst($boodschappenlijst);
+			$ro->setRecept($recept);
+			$ro->setServings(4);
+		
+			$ro->setIngrBL($ingredienten);
+		
+			$em->persist($ro);
+		}
 		$em->flush();
 		
 		return $this->render('menus/addedtoshoppinglist.html.twig', array('menu_naam' => $menu->getNaam()));

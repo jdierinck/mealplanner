@@ -17,21 +17,22 @@
 				<p>Je boodschappenlijst bevat {{ boodschappenlijst.ingredienten|length }} ingredienten.</p> 
 				{% if recepten|length > 0 %}
 				<h5>Geplande recepten:</h5>
+				<form name="pers" action="{{ path('boodschappen') }}" method="post">
 				<ul class="list-unstyled" id="sortable">
 				{% for recept in recepten %}
 					<li>
-						<span class="label label-primary">
-							<a href="{{ path('showrecept', {'id':recept.id}) }}" id="showrecipe" style="color:white" class="recept-lijst">
-							{{ recept.titel }}
-							</a>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<a href="{{ path('wisrecept', {'id':recept.id}) }}" style="color:white">
-							<span class="glyphicon glyphicon-remove"></span>
-							</a>
-						</span>
+						<a href="{{ path('showrecept', {'id':recept.recept.id}) }}" id="showrecipe" class="recept-lijst">
+						{{ recept.recept.titel }} {{recept.id}}
+						</a>
+						<a href="{{ path('wisrecept', {'id':recept.recept.id}) }}">
+						<span class="glyphicon glyphicon-remove"></span>
+						</a>
+						<p class="small">personen: <input type="number" min="1" max="20" value="{{ recept.servings|default(4) }}" class="personen" name="pers{{recept.id}}"></p>
 					</li>
 				{% endfor %}
 				</ul>
+				<button type="submit">Bewaar</button>
+				</form>
 <!-- 				<div id="calendar"></div> -->
 
 				<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myCalModal"><span class="glyphicon glyphicon-calendar"></span>&nbsp;Kalender weergeven</button>				
@@ -74,6 +75,7 @@
 						</div>
 					{% endfor %}
 					
+<!-- 
 					<form name="ingredients" method="post" action="boodschappen">
 						<div id="lijst-inhoud">
 
@@ -83,7 +85,17 @@
 						 {% for ingredient in afdeling.ingredienten %}
 							<li>
 							<input type="checkbox" name="ingr{{ ingredient.id }}" value="{{ ingredient.id }}">&nbsp;&nbsp;
-							<span class="hoeveelheid">{{ ingredient.hoeveelheid}}</span> <span class="eenheid">{{ ingredient.eenheid}}</span> <span class="ingredient">{{ ingredient.ingredient}}</span>
+							<span class="hoeveelheid">
+								{% if ingredient.hoeveelheid %}
+									{% if ingredient.recept %}
+										{{ (0+ingredient.hoeveelheid) }}
+									{% else %}
+										{{ 0+ingredient.hoeveelheid}}
+									{% endif %}
+								{% endif %}
+							</span> 
+							<span class="eenheid">{{ ingredient.eenheid}}</span> 
+							<span class="ingredient">{{ ingredient.ingredient}}</span>
 							<span class="afdelingselect hidden">
 								<select name="select{{ ingredient.id }}">
 									{% for afdeling in alleafdelingen %}
@@ -103,6 +115,50 @@
 						</div>
 						<input type="submit" class="btn btn-default btn-sm" value="Verwijder gemarkeerde items">
 					</form>
+ -->
+					
+					
+					<form name="ingredients" method="post" action="boodschappen">
+						<div id="lijst-inhoud">
+
+						{% for afdeling in afdelingen %}
+						 <h5>{{ afdeling.name }}</h5>
+						 <ul class="list-unstyled ingredient-list">
+						 {% for ingrbl in afdeling.ingrbl %}
+							<li>
+							<input type="checkbox" name="ingr{{ ingrbl.id }}" value="{{ ingrbl.id }}">&nbsp;&nbsp;
+							<span class="hoeveelheid">
+								{% if ingrbl.ingredient.hoeveelheid %}
+									{% if ingrbl.ingredient.recept %}
+										{% dump ingrbl.ingredient.recept.personen %}
+										{# to do: ingrbl.ingredient.recept.personen is null??? #}
+										{{ (0+ingrbl.ingredient.hoeveelheid) * (ingrbl.servings/4) }}
+									{% else %}
+										{{ 0+ingrbl.ingredient.hoeveelheid}}
+									{% endif %}
+								{% endif %}
+							</span> 
+							<span class="eenheid">{{ ingrbl.ingredient.eenheid}}</span> 
+							<span class="ingredient">{{ ingrbl.ingredient.ingredient}}</span>
+							<span class="afdelingselect hidden">
+								<select name="select{{ ingrbl.id }}">
+									{% for afdeling in alleafdelingen %}
+									<option value="{{ afdeling.id }}" {% if afdeling.name == ingrbl.ingredient.afdeling.name %} selected="selected" {%endif%}>{{ afdeling.name }}</option>
+									{% endfor %}
+								</select>
+							</span>
+							{% if ingrbl.ingredient.recept %}
+							<span class="recept-titel" style="display: none;">
+								<em><small class="text-muted">&nbsp;&nbsp;{{ ingrbl.ingredient.recept.titel }} {{ ingrbl.receptblordered.id }}</small></em>
+							</span>
+							{% endif %}
+							</li>
+						 {% endfor %}
+						 </ul>
+						{% endfor %}
+						</div>
+						<input type="submit" class="btn btn-default btn-sm" value="Verwijder gemarkeerde items">
+					</form>					
 					
 <!-- 
 					<button type="button" class="btn btn-default btn-sm" id="remove-item">Verwijder gemarkeerde items</button>
@@ -147,6 +203,7 @@
       </div>
       <div class="modal-footer">
       	<button type="button" class="btn btn-default hidden-print" id="printCal">Print</button>
+      	<button type="button" class="btn btn-default hidden-print" id="saveCal">bewaar</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -161,355 +218,6 @@
 <script src="{{ asset('vendors/fullcalendar/lib/moment.min.js') }}"></script>
 <script src="{{ asset('vendors/fullcalendar/fullcalendar.js') }}"></script>
 <script src="{{ asset('vendors/fullcalendar/locale/nl-be.js') }}"></script>
-<script>
-$(document).ready(function(){
-	
-// 	$('#sortable').sortable();
-// 	$( "#sortable" ).disableSelection();
-	
-    $('#calendar').fullCalendar({
-        height: "auto",
-        // defaultView: "basicWeek",
-        header: {
-            left:   'prev,next today',
-    		center: 'title',
-    		right:  'basicWeek,month,listYear'
-        },
-        droppable: true,
-		editable: true,
-		displayEventTime: false,
-// 		allDayDefault: true
-// 		eventOverlap: false,
-		events: function(start, end, timezone, callback){
-			var titels = $('a.recept-lijst');
-			var events=[];
-			var today = moment();
-			titels.each(function(i){
-			 	events.push({title:$(this).text().trim(),start:moment(today).add(i,'day')});
-			});
-			callback(events);
-		}
-    });
-    
-    $('#myCalModal').on('shown.bs.modal', function () {
-   		$('#calendar').fullCalendar('render');
-//    		$('#calendar').fullCalendar('refetchEvents');
-	});
-    
-    $('#printCal').on('click', function (){
-		var element = document.getElementById('section-to-print');
-		printElement(element);
-		window.print();
-  	});
-  	
-  	$('#printlijst').click(function(){
-// 		var content = $('#lijst-inhoud').html();
-// 		printPage(content);
-		var element = document.getElementById('lijst-inhoud');
-		printElement(element);
-		window.print();
-	});
-
-	function printElement(elem, append, delimiter) {
-		var domClone = elem.cloneNode(true);
-
-		var $printSection = document.getElementById("printSection");
-
-		if (!$printSection) {
-			$printSection = document.createElement("div");
-			$printSection.id = "printSection";
-			document.body.appendChild($printSection);
-		}
-
-		if (append !== true) {
-			$printSection.innerHTML = "";
-		}
-
-		else if (append === true) {
-			if (typeof (delimiter) === "string") {
-				$printSection.innerHTML += delimiter;
-			}
-			else if (typeof (delimiter) === "object") {
-				$printSection.appendChlid(delimiter);
-			}
-		}
-
-		$printSection.appendChild(domClone);
-	}
-	
-    // Load content into modal
-	$('body').on('click', 'a#voegitemtoe, a#showrecipe, a#sendmail', function(e) {
-		e.preventDefault();
-		$('#myModal').modal();
-		$('#myModalContent').load($(this).attr('href'));
-    });
-    
-	// Reload page when modal is closed
-//     $('#myModal').on('hidden.bs.modal', function () {
-//  	location.reload();
-// 	});
-	
-    $('body').on('submit', "form[name='sendmail'], form[name='additem']", function (e) {
-        e.preventDefault();
-        $.ajax({
-            type: $(this).attr('method'),
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            context: this
-        })
-        .done(function (data) {
-            if (typeof data.message !== 'undefined') {
-                alert(data.message);
-                location.reload();
-            }
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-            if (typeof jqXHR.responseJSON !== 'undefined') {
-                if (jqXHR.responseJSON.hasOwnProperty('form')) {
-//                     $(this).replaceWith(jqXHR.responseJSON.form);
-					$('#myModalContent').html(jqXHR.responseJSON.form);
-                }
-				
-                $('.form_error').html(jqXHR.responseJSON.message);
-
-            } else {
-                alert(errorThrown);
-            }
-
-        });
-    });
-    
-    $('#showhideafdelingen').click(function(){
-    	$('.afdelingselect').toggleClass('hidden');
-    });
-
-    $('#showhiderecepten').click(function(){
-    	var titel = $('.recept-titel');
-    	titel.toggle();
-    	$(this).find('i').replaceWith(titel.is(':visible') ? '<i class="fa fa-toggle-on fa-lg" aria-hidden="true"></i>' : '<i class="fa fa-toggle-off fa-lg" aria-hidden="true"></i>');
-    });
-   
-//     $('select').each(function(){
-// // 			$(this).find('option[selected]').attr('selected', true);
-// 			var val = $(this).find('option[selected]').val();
-// 			$(this).val(val);
-// 	});
-	
-	$(document).on('change', 'select', function(){
-			$.ajax({
-			type: 'POST',
-			url: '/boodschappen',
-			data: $(this).serialize(),
-			success: function(html){
-				$('#lijst-inhoud').replaceWith(
-					$(html).find('#lijst-inhoud')
-				);
-				$('.afdelingselect').removeClass('hidden');
-				groupDuplicateItems();
-				if($('#showhiderecepten').find('i').hasClass('fa-toggle-on')){$('.recept-titel').show();}
-			}
-		});
-	});
-	
-	groupDuplicateItems();
-	
-	$(".new-ul").on("hide.bs.collapse", function(){
-		$(this).prev('div').find('span').replaceWith('<span class="glyphicon glyphicon-expand"></span>');
-	});
-	$(".new-ul").on("show.bs.collapse", function(){
-		$(this).prev('div').find('span').replaceWith('<span class="glyphicon glyphicon-collapse-down"></span>');
-	});
-
-
-// 	$('ul.ingredient-list').each(function(){
-// 		var duplicates = [];
-// 		
-// 		var text = $('li', this).map(function(){ 
-// 			return $(this).contents().eq(2).text().trim();
-// 		}).get();
-// 		
-// 		function getLastWord(someString){
-// 			someString = someString.split(' ');
-// 			return someString[someString.length-1];
-// 		}
-// 		
-// 		function findDuplicates(array){
-// 			var out = [], counts = {};
-// 			for(var i=0; i<array.length;i++){
-// 				var item = getLastWord(array[i]);
-// 				counts[item] = counts[item] >= 1 ? counts[item]+1 : 1;
-// 				if(counts[item] === 2){
-// 					out.push(item);
-// 				}
-// 			}
-// 			return out;
-// 		}
-// 		
-// 		duplicates = findDuplicates(text);
-// 		
-// 		var duplicates_pos = [];
-// 		for(i=0; i<duplicates.length; i++){
-// 			duplicates_pos[i]=[];
-// 			for(x=0;x<text.length;x++){
-// 				if(duplicates[i]==getLastWord(text[x])){
-// 				duplicates_pos[i].push(x);
-// 				}
-// 			}
-// 		}
-
-// 		for(i=0; i<duplicates_pos.length; i++){
-// 			var lis = $('li', this).filter(function(index){
-// 				return $.inArray(index, duplicates_pos[i]) > -1;		
-// 				});
-// 			var newLis = lis.wrapAll('<ul class="new-ul"></ul>');
-// 		}			
-// 	});
-// 	$('.new-ul').before('<li>Duplicate items</li>');
-			
-
-	
-// 	Add checkbox to each li
-// 	var checkbox = "<input type='checkbox'>&nbsp;&nbsp;";
-// 	$('ul.ingredient-list li').each(function(){
-// 		$(this).prepend(checkbox);
-// 	});
-// 	
-// 	$('#remove-item').click(function(){
-// 		$('input[type="checkbox"]:checked').each(function(){
-// 			$(this).parent().hide();
-// 			elements need to be removed from the dom completely in order for jsPDF to ignore them
-// 			$(this).parent().remove();
-// 		});
-// 	});
-// 	
-// 	$('#undo').click(function(){
-// 		if li's are hidden (instead of removed), get them back
-// 		$('li[style="display: none;"]').each(function(){
-// 			$(this).show();
-// 			$(this).children('input[type="checkbox"]').prop('checked', false);
-// 		});
-// 		location.reload();
-// 	});
-
-	
-// 	Export to PDF using jsPDF
-// 	var specialElementHandlers = { 
-//     '#divid': function (element, renderer) { 
-//         return true; 
-//     	} 
-// 	};
-// 	$('#exporttopdf').click(function(e) { 
-// 		e.preventDefault();
-// 		var doc = new jsPDF(); 
-// 		doc.fromHTML($('#lijst-inhoud').html(), 15, 15, { 
-// 			'width': 190, 
-// 			'elementHandlers': specialElementHandlers 
-// 		}); 
-// 		doc.save('sample-page.pdf');
-// 	});
-	
-});
-
-function printPage(content) {
-    var w = window.open();
-	
-	var header = $('head').html();
-
-    var html = "<!DOCTYPE HTML>";
-    html += '<html lang="nl">';
-//     html += '<head><style></style></head>';
-	html += header;
-    html += "<body>";
-    html += "<h2>Boodschappenlijst</h2>";
-	html += content;
-    html += "</body>";
-    
-    w.document.write(html);
-    w.document.close(); // necessary for IE >=10
-    w.focus(); // necessary for IE >=10
-    w.print();
-    w.close();
-};
-
-	function groupDuplicateItems(){
-		$('ul.ingredient-list').each(function(){
-	
-			var ingr = $('li', this).map(function(){
-				return $(this).find('span').filter('.hoeveelheid, .eenheid, .ingredient');
-			});
-		
-			function findDuplicates(array){
-			
-				var dupl = [], counts = {}, indexes = {}, sum = {};
-			
-				function count(item, index, quantity){
-					counts[item] = counts[item] >= 1 ? counts[item]+1 : 1;
-					if(counts[item] === 2){
-						dupl.push(item);
-					}
-					indexes[item] = counts[item] >= 2 ? indexes[item]+','+index : index;
-					sum[item] = counts[item] >= 2 ? sum[item]+quantity : quantity;
-				}
-			
-				for(var i=0; i<array.length;i++){
-					if(array[i][0].innerHTML === "" && array[i][1].innerHTML === ""){
-						var item = array[i][2].innerHTML;
-						count(item, i, 0);
-					}
-					if(array[i][0].innerHTML !== "" && array[i][1].innerHTML !== ""){
-						var item = array[i][1].innerHTML + " " + array[i][2].innerHTML;
-						var q = Number(array[i][0].innerHTML);
-						count(item, i, q);
-					}
-					if(array[i][0].innerHTML !== "" && array[i][1].innerHTML === ""){
-						var item = array[i][2].innerHTML;
-						var q = Number(array[i][0].innerHTML);
-						count(item, i, q);
-					}
-				}
-// 				console.log(dupl);
-// 				console.log(counts);
-// 				console.log(indexes);
-// 				console.log(sum);
-				
-				out = {};
-				for(var i=0;i<dupl.length;i++){
-					if(sum[dupl[i]]>0){
-					out[sum[dupl[i]]+' '+dupl[i]] = indexes[dupl[i]]; 
-					}
-					else{
-					out[dupl[i]] = indexes[dupl[i]];
-					}
-				}
-// 				console.log(out);
-			
-				for (x in out){
-					var temp;
-					temp = out[x].split(',');
-					for (a in temp){
-						temp[a] = parseInt(temp[a], 10);
-					}
-					out[x] = temp;
-				}
-			
-				return out;
-			}
-		
-			var duplicates = findDuplicates(ingr);
-// 			console.log(duplicates);
-
-			for(x in duplicates){
-				var lis = $('li', this).filter(function(index){
-					return $.inArray(index, duplicates[x]) > -1;		
-					});
-				newUl = $('<ul class="new-ul collapse" id="' + x.replace(/ /g,'') + '"></ul>');
-				lis.wrapAll(newUl);
-				$('li', this).eq(duplicates[x][0]).parent().before('<div data-toggle="collapse" data-target="#' + x.replace(/ /g,'') + '">' + '<span class="glyphicon glyphicon-expand"></span>&nbsp;&nbsp;' + x + '</div>');
-
-			}			
-		});
-	}
-
-</script>
+<script src="{{ asset('js/shopping.js') }}" type="text/javascript"></script>
     
 {% endblock %}

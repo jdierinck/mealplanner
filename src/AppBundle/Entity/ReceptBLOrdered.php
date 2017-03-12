@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * ReceptBLOrdered
@@ -47,6 +48,31 @@ class ReceptBLOrdered
      */
     private $positie;
 
+	/**
+	 * @ORM\Column(type="integer")
+	 * @Assert\Type("integer")
+	 */
+	private $servings;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="IngrBL", mappedBy="receptblordered", cascade={"persist"})
+	 */
+	private $ingrbl;
+
+	public function setIngrBL($ingredienten){
+		foreach($ingredienten as $i){
+			$ibl = new IngrBL();
+			
+			$ibl->setBoodschappenlijst($this->getBoodschappenlijst());
+            $ibl->setIngredient($i);
+            $ibl->setAfdeling($i->getAfdeling());
+            $ibl->setServings(4);
+            $ibl->setIngrIngr($i->getIngredient());
+			$ibl->setReceptblordered($this);
+			
+			$this->addIngrbl($ibl);
+		}
+	}
 
     /**
      * Get id
@@ -125,5 +151,70 @@ class ReceptBLOrdered
     public function getRecept()
     {
         return $this->recept;
+    }
+
+    /**
+     * Set servings
+     *
+     * @param integer $servings
+     *
+     * @return ReceptBLOrdered
+     */
+    public function setServings($servings)
+    {
+        $this->servings = $servings;
+
+        return $this;
+    }
+
+    /**
+     * Get servings
+     *
+     * @return integer
+     */
+    public function getServings()
+    {
+        return $this->servings;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->ingrbl = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add ingrbl
+     *
+     * @param \AppBundle\Entity\IngrBL $ingrbl
+     *
+     * @return ReceptBLOrdered
+     */
+    public function addIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
+    {
+        $this->ingrbl[] = $ingrbl;
+
+        return $this;
+    }
+
+    /**
+     * Remove ingrbl
+     *
+     * @param \AppBundle\Entity\IngrBL $ingrbl
+     */
+    public function removeIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
+    {
+        $this->ingrbl->removeElement($ingrbl);
+    }
+
+    /**
+     * Get ingrbl
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getIngrbl()
+    {
+        return $this->ingrbl;
     }
 }

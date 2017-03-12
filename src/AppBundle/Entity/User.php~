@@ -6,12 +6,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * User
  *
  * @ORM\Table(name="app_users")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
+ * @UniqueEntity(fields="email", message="E-mail is al in gebruik")
+ * @UniqueEntity(fields="username", message="Gebruikersnaam is al in gebruik")
  */
 class User implements UserInterface, \Serializable
 {
@@ -284,5 +287,15 @@ class User implements UserInterface, \Serializable
     public function getMenus()
     {
         return $this->menus;
+    }
+    
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword($password)
+    {
+        $this->plainPassword = $password;
     }
 }

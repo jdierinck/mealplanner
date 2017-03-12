@@ -130,6 +130,12 @@ class Recept
      */
     private $user;
 
+	/**
+	 * @ORM\Column(type="integer")
+	 * @Assert\Type("integer")
+	 */
+	private $personen;
+
     /**
      * Get id
      *
@@ -598,4 +604,29 @@ class Recept
     {
         return $this->user;
     }
+
+    /**
+     * Set personen
+     *
+     * @param integer $personen
+     *
+     * @return Recept
+     */
+    public function setPersonen($personen)
+    {
+        $this->personen = $personen;
+
+        return $this;
+    }
+
+    /**
+     * Get personen
+     *
+     * @return integer
+     */
+    public function getPersonen()
+    {
+        return $this->personen;
+    }  
+
 }

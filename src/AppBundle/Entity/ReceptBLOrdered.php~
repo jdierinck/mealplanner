@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * ReceptBLOrdered
@@ -47,6 +48,16 @@ class ReceptBLOrdered
      */
     private $positie;
 
+	/**
+	 * @ORM\Column(type="integer")
+	 * @Assert\Type("integer")
+	 */
+	private $servings;
+	
+	/**
+	 * @ORM\OneToMany(targetEntity="IngrBL", mappedBy="receptblordered")
+	 */
+	private $ingrbl;
 
     /**
      * Get id
@@ -125,5 +136,29 @@ class ReceptBLOrdered
     public function getRecept()
     {
         return $this->recept;
+    }
+
+    /**
+     * Set servings
+     *
+     * @param integer $servings
+     *
+     * @return ReceptBLOrdered
+     */
+    public function setServings($servings)
+    {
+        $this->servings = $servings;
+
+        return $this;
+    }
+
+    /**
+     * Get servings
+     *
+     * @return integer
+     */
+    public function getServings()
+    {
+        return $this->servings;
     }
 }

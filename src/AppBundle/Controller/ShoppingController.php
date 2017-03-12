@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Ingredient;
 use AppBundle\Entity\Boodschappenlijst;
+use AppBundle\Entity\ReceptBLOrdered;
 use AppBundle\Form\Type\IngredientType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -28,24 +29,12 @@ class ShoppingController extends Controller
      */
     public function boodschappenAction(Request $request)
     {
-    	$values = array();
-//     	$selects = array();
-    	foreach($request->request->all() as $key => $value){
-    		if (substr($key,0,4)==="ingr") {
-    			$values[] = $value;
-    		}
-//     		if (substr($key,0,6)==="select") {
-//     			$selects[substr($key,6)] = $value;
-// 			}
-    	}
-    	
-    	$em = $this->getDoctrine()->getManager();
-    	
-// 		$session = $request->getSession();
-		
-		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+		if(!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			throw $this->createAccessDeniedException();
-		}		
+		}
+		
+    	$em = $this->getDoctrine()->getManager();
+			
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
 		
@@ -56,18 +45,26 @@ class ShoppingController extends Controller
 			
 			$em->persist($boodschappenlijst);
 			$em->flush();
-// 			$session->set('boodschappenlijst_id', $boodschappenlijst->getId());
-		}
-
-// 		$boodschappenlijstid = $session->get('boodschappenlijst_id');
-		$repository = $em->getRepository('AppBundle:Boodschappenlijst');
-// 		$boodschappenlijst = $repository->find($boodschappenlijstid);
+		}	
+		
+		$repository = $em->getRepository('AppBundle:Boodschappenlijst');	
+		    
+    	$values = array();
+    	$persons = array();
+    	foreach($request->request->all() as $key => $value){
+    		if (substr($key,0,4)==="ingr") {
+    			$values[] = $value;
+    		}
+    		if (substr($key,0,4)==="pers") {
+    			$persons[substr($key,4)] = $value;
+			}
+    	}
 		
 		if ($values) {
 			foreach($values as $value){
-				foreach($boodschappenlijst->getIngredienten() as $ingredient){
-					if($ingredient->getId() == $value) {
-						$ingredient->setBoodschappenlijst(null);
+				foreach($boodschappenlijst->getIngrBL() as $ibl){
+					if($ibl->getId() == $value) {
+						$em->remove($ibl);
 					}
 				}
 			}
@@ -75,37 +72,92 @@ class ShoppingController extends Controller
 		$em->refresh($boodschappenlijst);
 		}
 		
+		if($persons){
+			foreach($persons as $key=>$value){
+				foreach($boodschappenlijst->getReceptenBLOrdered() as $ro){
+					if($ro->getId() == $key){
+						$ro->setServings($value);
+					}
+				}
+				foreach($boodschappenlijst->getIngrbl() as $ibl){
+					if($ibl->getReceptblordered()->getId() == $key){
+						$ibl->setServings($value);
+					}
+				}
+			}
+			$em->flush();
+		}
+		
 		if($request->isXmlHttpRequest()){
 			$selects = $request->request->all();
 			if($selects){
 				foreach($selects as $key=>$value){
-					$ingredient = $em->getRepository('AppBundle:Ingredient')->find(substr($key,6));
+					$ibl = $em->getRepository('AppBundle:IngrBL')->find(substr($key,6));
+					$ingredient = $ibl->getIngredient();
 					$afdeling = $em->getRepository('AppBundle:Afdeling')->find($value);
+					$ibl->setAfdeling($afdeling);
 					$ingredient->setAfdeling($afdeling);
 				}
 				$em->flush();
 				$em->refresh($boodschappenlijst);
 			}
 		}
-		
-		$afdelingen = $repository
-			->findIngredientenByBoodschappenlijst($boodschappenlijst);
-		
-// 		$recepten = $repository->findReceptenByBoodschappenlijst($boodschappenlijstid);
 
-		$recepten = $boodschappenlijst->getRecepten();
-		foreach($recepten as $recept){
-			if(!in_array($recept, $repository->findReceptenByBoodschappenlijst($boodschappenlijst->getId()))){
-				foreach($recept->getReceptenblordered() as $ro){
-					if($ro->getBoodschappenlijst()->getId() === $boodschappenlijst->getId()){
-						$em->remove($ro);
-					}
-				}
-			$em->flush();
-			}
-		}
-		$em->refresh($boodschappenlijst);
-		$recepten = $boodschappenlijst->getRecepten();
+// TO DO DOESNT WORK
+// 		$recepten = $boodschappenlijst->getRecepten();
+// 		foreach($recepten as $recept){
+// 			if(!in_array($recept, $repository->findReceptenByBoodschappenlijst($boodschappenlijst->getId()))){
+// 				foreach($recept->getReceptenblordered() as $ro){
+// 					if($ro->getBoodschappenlijst()->getId() === $boodschappenlijst->getId()){
+// 						$em->remove($ro);
+// 					}
+// 				}
+// 			$em->flush();
+// 			}
+// 		}
+// 		$em->refresh($boodschappenlijst);
+//
+	$qb = $em->createQueryBuilder();
+    $query = $qb->select('IDENTITY(ibl.receptblordered)')
+    		->from('AppBundle:IngrBL','ibl')
+    		->where('ibl.boodschappenlijst = :boodschappenlijst')
+    		->setParameter('boodschappenlijst', $boodschappenlijst)
+    		->groupBy('ibl.receptblordered')
+    		->getQuery();
+    $ro_ids=$query->getResult();
+    $ids=array();
+    foreach($ro_ids as $key=>$value){
+    	$ids[]=$value[1];
+    }
+    foreach($boodschappenlijst->getReceptenblordered() as $ro){
+    	if(!in_array($ro->getId(), $ids)){
+    		$em->remove($ro);
+    	}
+    }
+    $em->flush();
+
+
+    	$qb = $em->createQueryBuilder();
+    	$query = $qb->select('ro', 'partial r.{id,titel}')
+    			->from('AppBundle:ReceptBLOrdered','ro')
+    			->join('ro.recept', 'r')
+    			->where('ro.boodschappenlijst = :boodschappenlijst')
+    			->setParameter('boodschappenlijst', $boodschappenlijst)
+    			->getQuery();
+    	$recepten = $query->getResult();
+    	
+//     	$qb = $em->createQueryBuilder();
+//     	$query = $qb->select('a','ibl')
+//     			->from('AppBundle:Afdeling','a')
+//     			->join('a.ingrbl', 'ibl')
+//     			->join('ibl.ingredient','i')
+//     			->where('ibl.boodschappenlijst = :boodschappenlijst')
+//     			->setParameter('boodschappenlijst', $boodschappenlijst)
+//     			->orderBy('a.name')
+//     			->getQuery();
+//     	$afdelingen = $query->getResult();
+    	
+    	$afdelingen = $em->getRepository('AppBundle:Afdeling')->findIngredientenByAfdeling($boodschappenlijst);
 		
 		$alleafdelingen = $em->getRepository('AppBundle:Afdeling')->findAll();
 		
@@ -123,22 +175,12 @@ class ShoppingController extends Controller
     public function wisLijstAction(Request $request)
     {
     	$em = $this->getDoctrine()->getManager();
-    	
-//     	$session = $request->getSession();
-// 
-// 		$boodschappenlijst = $em->getRepository('AppBundle:Boodschappenlijst')
-// 				->find($session->get('boodschappenlijst_id'));
 		
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
 
-		foreach($boodschappenlijst->getIngredienten() as $ingredient){
-				// Cleanup: remove ingredients not attached to a recipe
-				if($ingredient->getRecept() == null){
-					$em->remove($ingredient);
-				} else {
-				$ingredient->setBoodschappenlijst(null);
-				}
+		foreach($boodschappenlijst->getIngrBL() as $ibl){
+			$em->remove($ibl);
 		}
 		
 		foreach($boodschappenlijst->getReceptenblordered() as $ro)
@@ -172,11 +214,6 @@ class ShoppingController extends Controller
 			);
 		}
 		
-// 		$session = $request->getSession();
-// 
-// 		$boodschappenlijst = $em->getRepository('AppBundle:Boodschappenlijst')
-// 				->find($session->get('boodschappenlijst_id'));
-		
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
 				
@@ -186,9 +223,12 @@ class ShoppingController extends Controller
 			}
 		}
 		
-		foreach($recept->getIngredienten() as $ingredient){
-			$ingredient->setBoodschappenlijst(null);
+		foreach($boodschappenlijst->getIngrBL() as $ibl){
+			if($ibl->getIngredient()->getRecept() === $recept){
+				$em->remove($ibl);
+			}
 		}
+		
     	$em->flush();
     	
     	$message = $recept->getTitel()." werd verwijderd uit je boodschappenlijst.";
@@ -205,11 +245,6 @@ class ShoppingController extends Controller
     public function addRecipetoShoppingListAction(Request $request, $id)
     {
     	$em = $this->getDoctrine()->getManager();
-    	
-//     	$session = $request->getSession();
-// 
-// 		$boodschappenlijst = $em->getRepository('AppBundle:Boodschappenlijst')
-// 				->find($session->get('boodschappenlijst_id'));
 		
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
@@ -221,15 +256,25 @@ class ShoppingController extends Controller
 				'No recipe found for id '.$id
 			);
 		}
-
+		
+		$ingredienten = array();
 		foreach($recept->getIngredienten() as $ingredient){
-			$ingredient->setBoodschappenlijst($boodschappenlijst);
+			$ingredienten[] = $ingredient;
 		}
+// 		$boodschappenlijst->setIngredienten($ingredienten);
+// 		
+// 		$recepten = array();
+// 		$recepten[] = $recept;
+// 		$boodschappenlijst->setRecepten($recepten);
 		
-		$recepten = array();
-		$recepten[] = $recept;
-		$boodschappenlijst->setRecepten($recepten);
+		$ro = new ReceptBLOrdered();
+		$ro->setBoodschappenlijst($boodschappenlijst);
+        $ro->setRecept($recept);
+        $ro->setServings(4);
 		
+		$ro->setIngrBL($ingredienten);
+		
+		$em->persist($ro);
     	$em->flush();
     	
     	$message = $recept->getTitel()." werd toegevoegd aan je boodschappenlijst.";
@@ -237,7 +282,7 @@ class ShoppingController extends Controller
 			'notice',
 			$message);
 
-    	return $this->redirectToRoute('homepage');
+    	return $this->redirectToRoute('recipes');
     }
     
     /**
@@ -246,12 +291,6 @@ class ShoppingController extends Controller
     public function addItemToShoppingListAction(Request $request){
     	
     	$em = $this->getDoctrine()->getManager();
-    	
-//     	$session = $request->getSession();
-//     	
-//     	$boodschappenlijstid = $session->get('boodschappenlijst_id');
-//     	$boodschappenlijst = $em->getRepository('AppBundle:Boodschappenlijst')
-//     		->find($boodschappenlijstid);
 
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
@@ -276,7 +315,8 @@ class ShoppingController extends Controller
     	
     	if($form->isSubmitted() && $form->isValid()){
     		$ingredient = $form->getData();
-    		$ingredient->setBoodschappenlijst($boodschappenlijst);
+			$ingredienten = array($ingredient);
+			$boodschappenlijst->setIngredienten($ingredienten);
     		$em->persist($ingredient);
     		$em->flush();
 
@@ -306,24 +346,25 @@ class ShoppingController extends Controller
      * @Route("pdf", name="topdf")
      */
     public function generatePDFAction(Request $request){
-//     	$session = $request->getSession();
     	$em = $this->getDoctrine()->getManager();
-    	
-//     	$boodschappenlijstid = $session->get('boodschappenlijst_id');
-// 		$repository = $em->getRepository('AppBundle:Boodschappenlijst');
 
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
 
-		$afdelingen = $em->getRepository('AppBundle:Boodschappenlijst')
-			->findIngredientenByBoodschappenlijst($boodschappenlijst->getId());
+		$afdelingen = $em->getRepository('AppBundle:Afdeling')->findIngredientenByAfdeling($boodschappenlijst);
 			
-		$html = $this->renderView('shopping/shoppinglisttopdf.html.twig', array(
+		$html = $this->render('shopping/shoppinglisttopdf.html.twig', array(
 			'afdelingen'  => $afdelingen
 		));
 
 		return new Response(
-			$this->get('knp_snappy.pdf')->getOutputFromHtml($html),
+			$this->get('knp_snappy.pdf')->getOutputFromHtml($html, array(
+				'enable-javascript' => true,
+				'javascript-delay' => 1000,
+				'no-stop-slow-scripts' => true,
+				'encoding' => 'utf-8',
+			)
+			),
 			200,
 			array(
 				'Content-Type'          => 'application/pdf',
@@ -341,26 +382,23 @@ class ShoppingController extends Controller
      * @Route("csv", name="tocsv")
      */
     public function generateCSVAction(Request $request){
-//     	$session = $request->getSession();
+
     	$em = $this->getDoctrine()->getManager();
     	
-//     	$boodschappenlijstid = $session->get('boodschappenlijst_id');
-// 		$repository = $em->getRepository('AppBundle:Boodschappenlijst');
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
 
-		$afdelingen = $em->getRepository('AppBundle:Boodschappenlijst')
-			->findIngredientenByBoodschappenlijst($boodschappenlijst->getId());
+		$afdelingen = $em->getRepository('AppBundle:Afdeling')->findIngredientenByAfdeling($boodschappenlijst);
 		
 		$rows = array();
 		foreach($afdelingen as $afdeling){
-			foreach($afdeling->getIngredienten() as $ingredient){
+			foreach($afdeling->getIngrBL() as $ibl){
 				$data = array(
 					$afdeling->getName(), 
-					$ingredient->getHoeveelheid(), 
-					$ingredient->getEenheid(), 
-					$ingredient->getIngredient(), 
-					$ingredient->getRecept()->getTitel()
+					$ibl->getIngredient()->getHoeveelheid(), 
+					$ibl->getIngredient()->getEenheid(), 
+					$ibl->getIngredient()->getIngredient(), 
+					$ibl->getIngredient()->getRecept()->getTitel()
 				);
 				$rows[] = implode(",", $data);
 			}

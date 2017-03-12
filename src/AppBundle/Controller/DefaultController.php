@@ -15,9 +15,9 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-    	if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-			return $this->redirectToRoute('recipes');
-		}
+//     	if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+// 			return $this->redirectToRoute('recipes');
+// 		}
     	return $this->render('default/index.html.twig');
 	}
 	

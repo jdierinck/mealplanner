@@ -10,9 +10,12 @@
 			  <a class="navbar-brand" href="{{ path('home') }}">MealPlanner</a>
 		  </div>
 		  <div class="collapse navbar-collapse" id="admin-navbar-collapse-1">
+			{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
 			  {{ knp_menu_render('AppBundle:Builder:mainMenu', {'currentClass': 'active', 'template': 'AppBundle:Menu:knp_menu.html.twig'}) }}
 			  {{ knp_menu_render('AppBundle:Builder:userMenu', {'currentClass': 'active', 'template': 'AppBundle:Menu:knp_menu.html.twig'}) }}
-			  
+			{% elseif is_granted('IS_AUTHENTICATED_ANONYMOUSLY') %}
+				{{ knp_menu_render('AppBundle:Builder:homepageMenu', {'currentClass': 'active', 'template': 'AppBundle:Menu:knp_menu.html.twig'}) }}
+			{% endif %}			  
 		  </div>
 	  </div>
 	</div>

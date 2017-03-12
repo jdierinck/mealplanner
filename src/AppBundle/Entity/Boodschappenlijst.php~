@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Entity\IngRBL;
 
 /**
  * Boodschappenlijst
@@ -21,6 +22,7 @@ class Boodschappenlijst
         $this->ingredienten = new ArrayCollection();
         $this->receptenblordered = new ArrayCollection();
 		$this->recepten = new ArrayCollection();
+		$this->ingrbl = new ArrayCollection();
     }
     
     /**
@@ -32,11 +34,11 @@ class Boodschappenlijst
      */
     private $id;
     
-    /**
-     * @ORM\OneToMany(targetEntity="Ingredient", mappedBy="boodschappenlijst")
-     * @ORM\OrderBy({"ingredient" = "ASC"})
-     */
-    private $ingredienten;
+//     /**
+//      * @ORM\OneToMany(targetEntity="Ingredient", mappedBy="boodschappenlijst")
+//      * @ORM\OrderBy({"ingredient" = "ASC"})
+//      */
+//     private $ingredienten;
 
     /**
      * @ORM\OneToMany(targetEntity="ReceptBLOrdered", mappedBy="boodschappenlijst", cascade={"all"})
@@ -65,11 +67,47 @@ class Boodschappenlijst
 
             $ro->setBoodschappenlijst($this);
             $ro->setRecept($r);
+            $ro->setServings(4);
             
             $this->addReceptenblordered($ro);
-
         }
     }
+
+    
+    /**
+     * @ORM\OneToMany(targetEntity="IngrBL", mappedBy="boodschappenlijst", cascade={"all"})
+     */    
+    private $ingrbl;
+    
+	private $ingredienten;
+	
+    public function getIngredienten()
+    {
+        $ingredienten = new ArrayCollection();
+        
+        foreach($this->ingrbl as $i)
+        {
+            $ingredienten[] = $i->getIngredient();
+        }
+
+        return $ingredienten;
+    }	
+    
+    public function setIngredienten($ingredienten)
+    {	
+        foreach($ingredienten as $i)
+        {
+            $ibl = new IngrBL();
+
+            $ibl->setBoodschappenlijst($this);
+            $ibl->setIngredient($i);
+            $ibl->setAfdeling($i->getAfdeling());
+            $ibl->setServings(4);
+            $ibl->setIngrIngr($i->getIngredient());
+            
+            $this->addIngrbl($ibl);
+        }
+    }    
     
     /**
      * @ORM\OneToOne(targetEntity="User", inversedBy="boodschappenlijst")
@@ -87,38 +125,38 @@ class Boodschappenlijst
         return $this->id;
     }
     
-    /**
-     * Add ingredienten
-     *
-     * @param \AppBundle\Entity\Ingredient $ingredienten
-     * @return Boodschappenlijst
-     */
-    public function addIngredienten(\AppBundle\Entity\Ingredient $ingredienten)
-    {
-        $this->ingredienten[] = $ingredienten;
-
-        return $this;
-    }
-
-    /**
-     * Remove ingredienten
-     *
-     * @param \AppBundle\Entity\Ingredient $ingredienten
-     */
-    public function removeIngredienten(\AppBundle\Entity\Ingredient $ingredienten)
-    {
-        $this->ingredienten->removeElement($ingredienten);
-    }
-
-    /**
-     * Get ingredienten
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getIngredienten()
-    {
-        return $this->ingredienten;
-    }
+//     /**
+//      * Add ingredienten
+//      *
+//      * @param \AppBundle\Entity\Ingredient $ingredienten
+//      * @return Boodschappenlijst
+//      */
+//     public function addIngredienten(\AppBundle\Entity\Ingredient $ingredienten)
+//     {
+//         $this->ingredienten[] = $ingredienten;
+// 
+//         return $this;
+//     }
+// 
+//     /**
+//      * Remove ingredienten
+//      *
+//      * @param \AppBundle\Entity\Ingredient $ingredienten
+//      */
+//     public function removeIngredienten(\AppBundle\Entity\Ingredient $ingredienten)
+//     {
+//         $this->ingredienten->removeElement($ingredienten);
+//     }
+// 
+//     /**
+//      * Get ingredienten
+//      *
+//      * @return \Doctrine\Common\Collections\Collection 
+//      */
+//     public function getIngredienten()
+//     {
+//         return $this->ingredienten;
+//     }
 
     /**
      * Add receptenblordered
@@ -174,5 +212,39 @@ class Boodschappenlijst
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Add ingrbl
+     *
+     * @param \AppBundle\Entity\IngrBL $ingrbl
+     *
+     * @return Boodschappenlijst
+     */
+    public function addIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
+    {
+        $this->ingrbl[] = $ingrbl;
+
+        return $this;
+    }
+
+    /**
+     * Remove ingrbl
+     *
+     * @param \AppBundle\Entity\IngrBL $ingrbl
+     */
+    public function removeIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
+    {
+        $this->ingrbl->removeElement($ingrbl);
+    }
+
+    /**
+     * Get ingrbl
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getIngrbl()
+    {
+        return $this->ingrbl;
     }
 }

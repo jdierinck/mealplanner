@@ -14,6 +14,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Ingredient
 {
+	/**
+     * Constructor
+     */
+    public function __construct()
+    {
+		$this->ingrbl = new ArrayCollection();
+    }
+    
     /**
      * @var int
      *
@@ -59,11 +67,16 @@ class Ingredient
      */    
     private $afdeling;
 
-	/**
-     * @ORM\ManyToOne(targetEntity="Boodschappenlijst", inversedBy="ingredienten")
-     * @ORM\JoinColumn(name="boodschappenlijst_id", referencedColumnName="id")
+// 	/**
+//      * @ORM\ManyToOne(targetEntity="Boodschappenlijst", inversedBy="ingredienten")
+//      * @ORM\JoinColumn(name="boodschappenlijst_id", referencedColumnName="id")
+//      */    
+//     private $boodschappenlijst;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="IngrBL", mappedBy="ingredient", cascade={"all"})
      */    
-    private $boodschappenlijst;    
+    private $ingrbl;  
 
     /**
      * Get id
@@ -211,5 +224,39 @@ class Ingredient
     public function getBoodschappenlijst()
     {
         return $this->boodschappenlijst;
+    }
+
+    /**
+     * Add ingrbl
+     *
+     * @param \AppBundle\Entity\IngrBL $ingrbl
+     *
+     * @return Ingredient
+     */
+    public function addIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
+    {
+        $this->ingrbl[] = $ingrbl;
+
+        return $this;
+    }
+
+    /**
+     * Remove ingrbl
+     *
+     * @param \AppBundle\Entity\IngrBL $ingrbl
+     */
+    public function removeIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
+    {
+        $this->ingrbl->removeElement($ingrbl);
+    }
+
+    /**
+     * Get ingrbl
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getIngrbl()
+    {
+        return $this->ingrbl;
     }
 }

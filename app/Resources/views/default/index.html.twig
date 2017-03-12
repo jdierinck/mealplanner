@@ -1,22 +1,236 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
+{%block stylesheets %}
 
-	<div class="navbar navbar-inverse navbar-fixed-top">
-	  <div class="container">
-		  <div class="navbar-header">
-			  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#admin-navbar-collapse-1">
-				  <span class="sr-only">Toggle navigation</span>
-				  <span class="icon-bar"></span>
-				  <span class="icon-bar"></span>
-				  <span class="icon-bar"></span>
-			  </button>
-			  <a class="navbar-brand" href="{{ path('home') }}">MealPlanner</a>
-		  </div>
-		  <div class="collapse navbar-collapse" id="admin-navbar-collapse-1">
-			  {{ knp_menu_render('AppBundle:Builder:homepageMenu', {'currentClass': 'active', 'template': 'AppBundle:Menu:knp_menu.html.twig'}) }}
-		  </div>
+<style>
+.jumbotron {
+    padding: 100px 25px;
+}
+
+.container-fluid {
+    padding: 60px 50px;
+}
+
+.bg-grey {
+    background-color: #f6f6f6;
+}
+
+.bg-black { 
+    background-color: #2f2f2f;
+    color: #ffffff;
+}
+
+</style>
+{% endblock %}
+
+
+{% block body %}
+{{ render(controller('AppBundle:Navigation:menu')) }}
+
+<div class="jumbotron text-center">
+  <h1>Mealplanner <small>Koken wordt weer fun</small></h1> 
+  <div class="row">
+  	<div class="col-sm-8 col-sm-offset-2">
+	  <p>Mealplanner is een online maaltijdplanner waarmee je makkelijk herbruikbare menu's kan maken op basis van de recepten in je online kookboek. Op basis van zo'n menu maak je vliegensvlug je boodschappenlijst aan, gerangschikt volgens afdeling. Zo hou je meer tijd over om te koken en samen met je familie van het eten te genieten.
+	  </p>
+	</div>
+  </div>
+</div>
+
+<div class="container-fluid">
+	<div class="row text-center">
+		<div class="col-sm-4 ">
+			<h1>1.</h1>
+			<h3>Van recept...</h3>
+			<img src="/images/screenshots/Kookboek.jpg" class="img-responsive" width="350" style="display:inline" alt="">
+			<div class="caption">
+			<p>Lorem ipsum</p>
+			</div>
+		</div>
+		<div class="col-sm-4">
+			<h1>2.</h1>
+			<h3>naar menu...</h3>
+			<img src="/images/screenshots/Kalender.jpg" class="img-responsive" width="350" style="display:inline" alt="">
+			<p>Lorem ipsum</p>
+		</div>
+		<div class="col-sm-4">
+			<h1>3.</h1>
+			<h3>naar boodschappenlijst</h3>
+			<img src="/images/screenshots/Boodschappenlijst.jpg" class="img-responsive" width="350" style="display:inline" alt="">
+			<p>Lorem ipsum</p>
+		</div>
+	</div>
+</div>
+
+<div class="container-fluid bg-grey">
+	<h2>Kookboek</h2>
+	
+	<div class="media">
+  		<div class="media-left">
+    	<img src="/images/screenshots/Kookboek.jpg" class="media-object" style="width:150px">
+  		</div>
+  		<div class="media-body">
+  		<h4 class="media-heading">Alles op één plaats</h4>
+		<p>Vaarwel aantekeningen in kookboeken, notitieboekjes en losse papiertjes; voortaan beheer je al je recepten op één plaats. Bekijk ze als tegels of in lijstview.</p>
+		</div>
+	</div>
+	
+	<div class="media">
+  		<div class="media-left">
+    	<img src="/images/screenshots/Kookboek.jpg" class="media-object" style="width:150px">
+  		</div>
+  		<div class="media-body">
+			<h4 class="media-heading">Wie zoekt...</h4>
+			<p>Vind de recepten die je zoekt op titel, soort gerecht, type keuken, hoofdingrediënt, bereidingstijd of allemaal samen.</p>
+		</div>
+	</div>
+
+	<div class="media">
+  		<div class="media-left">
+    	<img src="/images/screenshots/Kookboek.jpg" class="media-object" style="width:150px">
+  		</div>
+  		<div class="media-body">
+			<h4 class="media-heading">Bulkinvoer</h4>
+			<p>Heb je al een lijstje met ingrediënten? Kopieer en plak ze in het veld bulkinvoer, Mealplanner voegt ze één voor één toe.</p>
+		</div>
+	</div>
+	
+	<div class="media">
+  		<div class="media-left">
+    	<img src="/images/screenshots/Kookboek.jpg" class="media-object" style="width:150px">
+  		</div>
+  		<div class="media-body">
+			<h4 class="media-heading">Afdeling</h4>
+			<p>Mealplanner kent de ingrediënten automatisch toe aan een bepaalde afdeling: conserven, groenten, vlees, zuivel... Niet toegewezen ingrediënten kan je in je boodschappenlijst nog in de juiste afdeling plaatsen.</p>
+		</div>
+	</div>	
+
+	<div class="media">
+  		<div class="media-left">
+    	<img src="/images/screenshots/Kookboek.jpg" class="media-object" style="width:150px">
+  		</div>
+  		<div class="media-body">
+			<h4 class="media-heading">Schalen</h4>
+			<p>Schaal de ingrediënten volgens het aantal personen.</p>
+		</div>
+	</div>	
+
+	<div class="media">
+  		<div class="media-left">
+    	<img src="/images/screenshots/Kookboek.jpg" class="media-object" style="width:150px">
+  		</div>
+  		<div class="media-body">
+			<h4 class="media-heading">Toevoegen</h4>
+			<p>Recepten kan je rechtstreeks vanuit je kookboek toevoegen aan je boodschappenlijst.</p>
+		</div>
+	</div>
+	
+</div>
+
+<div class="container-fluid">
+  <h2>Menu's</h2>
+  
+	<div class="media">
+	  <div class="media-body">
+		<h4 class="media-heading">Recycleren is in</h4>
+		<p>Waarom zou je elke week opnieuw je hoofd breken over wat we zullen eten? Stel eenvoudig menu's samen met je recepten en hergebruik ze. (Je huisgenoten zullen het nooit te weten komen.)</p>
+	  </div>
+	  <div class="media-right">
+		<img src="/images/screenshots/Kalender.jpg" class="media-object" style="width:150px">
 	  </div>
 	</div>
+  
+	<div class="media">
+	  <div class="media-body">
+		<h4 class="media-heading">1, 2 ... klaar!</h4>
+		<p>Een menu voeg je met één klik toe aan je boodschappenlijst. Zo heb je letterlijk in enkele seconden je boodschappenlijst klaar.</p>
+	  </div>
+	  <div class="media-right">
+		<img src="/images/screenshots/Kalender.jpg" class="media-object" style="width:150px">
+	  </div>
+	</div>
+	
+	<div class="media">
+	  <div class="media-body">
+		<h4 class="media-heading">Kalender</h4>
+		<p>Mealplanner zet de gekozen recepten automatisch in een kalender. Je kan kiezen tussen week-, maand-, of agendaview. Verschuif de recepten als je last minute wijzigingen wil aanbrengen.</p>
+	  </div>
+	  <div class="media-right">
+		<img src="/images/screenshots/Kalender.jpg" class="media-object" style="width:150px">
+	  </div>
+	</div>	
+	
+</div>
+
+<div class="container-fluid bg-grey">
+  <h2>Jouw boodschappenlijst</h2>
+
+	<div class="media">
+  		<div class="media-left">
+    	<img src="/images/screenshots/Boodschappenlijst.jpg" class="media-object" style="width:150px">
+  		</div>
+  		<div class="media-body">
+			<h4 class="media-heading">Afdrukken en vertrekken</h4>
+			<p>Zodra je een recept of een menu hebt toegevoegd staat je boodschappenlijst klaar, gerangschikt volgens afdeling. Nu nog afdrukken en je kan je inkopen doen. Of, als je over mobiele data beschikt, neem je boodschappenlijst mee op je smartphone, want Mealplanner is helemaal responsive.</p>
+		</div>
+	</div>  
+
+	<div class="media">
+  		<div class="media-left">
+    	<img src="/images/screenshots/Boodschappenlijst.jpg" class="media-object" style="width:150px">
+  		</div>
+  		<div class="media-body">
+			<h4 class="media-heading">Volledig aanpasbaar</h4>
+			<p>Wijzig de afdeling van een ingrediënt en Mealplanner onthoud je keuze voor de volgende keer. Voeg items toe aan je boodschappenlijst. Vink ingrediënten die je nog in huis hebt af. Pas het aantal porties voor ieder gerecht aan.</p>
+		</div>
+	</div>
+	
+	<div class="media">
+  		<div class="media-left">
+    	<img src="/images/screenshots/Boodschappenlijst.jpg" class="media-object" style="width:150px">
+  		</div>
+  		<div class="media-body">
+			<h4 class="media-heading">Delen</h4>
+			<p>Stuur je boodschappenlijst per e-mail naar je huisgenoten zodat <em>zij</em> de boodschappen kunnen doen. Jij hebt het lijstje al gemaakt, toch?</p>
+		</div>
+	</div>
+
+	<div class="media">
+  		<div class="media-left">
+    	<img src="/images/screenshots/Boodschappenlijst.jpg" class="media-object" style="width:150px">
+  		</div>
+  		<div class="media-body">
+			<h4 class="media-heading"><em>Wat eten we vandaag?</em></h4>
+			<p>Die vraag hoeven je huisgenoten niet meer te stellen. Print de planning af en hang ze op op een zichtbare plaats. Zo is iedereen op de hoogte.</p>
+		</div>
+	</div>	
+
+	<div class="media">
+  		<div class="media-left">
+    	<img src="/images/screenshots/Boodschappenlijst.jpg" class="media-object" style="width:150px">
+  		</div>
+  		<div class="media-body">
+			<h4 class="media-heading">Exporteer</h4>
+			<p>Maak een PDF of een CSV van je boodschappenlijst.</p>
+		</div>
+	</div>
+
+</div>
+
+<div class="container-fluid">
+	<div class="row text-center">
+  		<h2>Probeer het uit!</h2>
+  		<p>Maak een gratis account aan</p>
+		<a href="{{ path('registreer') }}" class="btn btn-default">Registreer</a>
+	</div>
+</div>
+
+<footer class="container-fluid text-center bg-black">
+  <a href="#" title="To Top">
+    <span class="glyphicon glyphicon-chevron-up"></span>
+  </a>
+  	<p>&copy {{ "now"|date("Y") }} Johan Dierinck</p>
+	<p class="small">Powered by <img src="{{ asset('images/symfony_white_02.png') }}" alt="Symfony logo" height="15"></p> 
+</footer>
 	
 {% endblock %}

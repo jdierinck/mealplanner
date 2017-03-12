@@ -16,6 +16,7 @@ class Afdeling
 
 	public function __construct(){
 		$this->ingredienten = new ArrayCollection();
+		$this->ingrbl = new ArrayCollection();
 	}
 	
     /**
@@ -43,7 +44,13 @@ class Afdeling
     /**
      * @ORM\Column(type="text", nullable=true)
      */        
-    private $voedingswaren;      
+    private $voedingswaren;  
+    
+    /**
+     * @ORM\OneToMany(targetEntity="IngrBL", mappedBy="afdeling", cascade={"all"})
+     * @ORM\OrderBy({"ingr_ingr" = "ASC"})     
+     */    
+    private $ingrbl;    
 
     /**
      * Get id
@@ -132,5 +139,39 @@ class Afdeling
     public function getVoedingswaren()
     {
         return $this->voedingswaren;
+    }
+
+    /**
+     * Add ingrbl
+     *
+     * @param \AppBundle\Entity\IngrBL $ingrbl
+     *
+     * @return Afdeling
+     */
+    public function addIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
+    {
+        $this->ingrbl[] = $ingrbl;
+
+        return $this;
+    }
+
+    /**
+     * Remove ingrbl
+     *
+     * @param \AppBundle\Entity\IngrBL $ingrbl
+     */
+    public function removeIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
+    {
+        $this->ingrbl->removeElement($ingrbl);
+    }
+
+    /**
+     * Get ingrbl
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getIngrbl()
+    {
+        return $this->ingrbl;
     }
 }
