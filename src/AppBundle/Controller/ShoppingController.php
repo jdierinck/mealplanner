@@ -89,17 +89,17 @@ class ShoppingController extends Controller
 		}
 		
 		if($request->isXmlHttpRequest()){
-			$selects = $request->request->all();
-			if($selects){
-				foreach($selects as $key=>$value){
-					$ibl = $em->getRepository('AppBundle:IngrBL')->find(substr($key,6));
-					$ingredient = $ibl->getIngredient();
-					$afdeling = $em->getRepository('AppBundle:Afdeling')->find($value);
-					$ibl->setAfdeling($afdeling);
-					$ingredient->setAfdeling($afdeling);
+			foreach($request->request->all() as $key=>$value){
+				if(substr($key,0,6)==="select"){
+						$ibl = $em->getRepository('AppBundle:IngrBL')->find(substr($key,6));
+						$ingredient = $ibl->getIngredient();
+						$afdeling = $em->getRepository('AppBundle:Afdeling')->find($value);
+						$ibl->setAfdeling($afdeling);
+						$ingredient->setAfdeling($afdeling);
+					
+					$em->flush();
+					$em->refresh($boodschappenlijst);
 				}
-				$em->flush();
-				$em->refresh($boodschappenlijst);
 			}
 		}
 
@@ -188,6 +188,8 @@ class ShoppingController extends Controller
 			$em->remove($ro);
 		}
 		
+		$boodschappenlijst->setEvents(null);
+		
     	$em->flush();
     	
 //     	return $this->render('shopping/shoppinglistdeleted.html.twig');
@@ -227,6 +229,24 @@ class ShoppingController extends Controller
 			if($ibl->getIngredient()->getRecept() === $recept){
 				$em->remove($ibl);
 			}
+		}
+		
+		$events = $boodschappenlijst->getEvents();
+
+		if($events){
+			foreach($events as $key=>$event){
+
+				if($event["title"] === $recept->getTitel()){
+					unset($events[$key]);
+				}
+			}
+			if(count($events) > 0) { 
+				$events = array_values($events);
+			}
+			else { $events = null; }
+			
+			$boodschappenlijst->setEvents($events);
+			$em->flush();
 		}
 		
     	$em->flush();
@@ -506,11 +526,58 @@ class ShoppingController extends Controller
      }
 
     /**
-     * @Route("edit/ingr", name="editingredients")
+     * @Route("events", name="events")
      */     
-     public function editIngredientsAction(Request $request){
+     public function eventsAction(Request $request){
+// 		[{"title":"Marokkaanse groentenstoofpotje met bulgur 168","start":"2017-03-13T10:02:56.054Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc1","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-13T10:02:56.054Z","_end":null},{"title":"Rijst met scampi en chorizo 169","start":"2017-03-14T10:02:56.054Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc2","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-14T10:02:56.054Z","_end":null},{"title":"Koolsla met schnitzel 170","start":"2017-03-15T10:02:56.054Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc3","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-15T10:02:56.054Z","_end":null}]
+// 		$events = $request->request->get('events');
+// 		$events = '[{"title":"Marokkaanse groentenstoofpotje met bulgur 168","start":"2017-03-13T11:28:38.392Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc1","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-13T11:28:38.392Z","_end":null},{"title":"Rijst met scampi en chorizo 169","start":"2017-03-14T11:28:38.392Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc2","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-14T11:28:38.392Z","_end":null},{"title":"Koolsla met schnitzel 170","start":"2017-03-15T11:28:38.392Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc3","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-15T11:28:38.392Z","_end":null}]';
+// 		dump($events);
+// 		$events = json_decode($events);
+// 		dump($events);
+		
+// 		$events = [
+// 			array("title"=>"event1", "start"=>"2017-03-13"),
+// 			array("title"=>"event2", "start"=>"2017-03-14"),
+// 		];
+		
+		$em = $this->getDoctrine()->getManager();
+    	
+		$user = $this->getUser();
+		$boodschappenlijst = $user->getBoodschappenlijst();
+		$events = $boodschappenlijst->getEvents();
+		
+		if(null === $events){
+			$events = array();
+			$date = date("Y-m-d");
+			$i = 0;
+			foreach($boodschappenlijst->getReceptenblordered() as $recept){
+				$events[] = array("title" => $recept->getRecept()->getTitel(), "start" => date("Y-m-d", strtotime("+".$i." day", strtotime($date))));
+				$i++;
+			}
+		}
 
+		return new JsonResponse($events);
      
- 	}   
-    
+ 	}
+ 	
+ 	/**
+     * @Route("saveevents", name="saveevents")
+     */     
+     public function saveEventsAction(Request $request){ 
+     	$em = $this->getDoctrine()->getManager();
+    	
+		$user = $this->getUser();
+		$boodschappenlijst = $user->getBoodschappenlijst();
+		
+		$events = $request->request->get('events');
+		$events = json_decode($events, true);
+		
+		$boodschappenlijst->setEvents($events);
+		$em->flush();
+		
+		$message = "Planning bewaard";
+		return new JsonResponse($message);
+		
+    }
 }

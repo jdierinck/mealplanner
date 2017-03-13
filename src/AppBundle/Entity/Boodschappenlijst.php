@@ -113,7 +113,12 @@ class Boodschappenlijst
      * @ORM\OneToOne(targetEntity="User", inversedBy="boodschappenlijst")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-	private $user;     
+	private $user;
+	
+	/**
+	 * @ORM\Column(type="array", nullable=true)
+	 */ 
+	private $events;   
     
     /**
      * Get id
@@ -246,5 +251,29 @@ class Boodschappenlijst
     public function getIngrbl()
     {
         return $this->ingrbl;
+    }
+
+    /**
+     * Set events
+     *
+     * @param array $events
+     *
+     * @return Boodschappenlijst
+     */
+    public function setEvents($events)
+    {
+        $this->events = $events;
+
+        return $this;
+    }
+
+    /**
+     * Get events
+     *
+     * @return array
+     */
+    public function getEvents()
+    {
+        return $this->events;
     }
 }

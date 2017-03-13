@@ -113,7 +113,12 @@ class Boodschappenlijst
      * @ORM\OneToOne(targetEntity="User", inversedBy="boodschappenlijst")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-	private $user;     
+	private $user;
+	
+	/**
+	 * @ORM\Column(type="array", nullable=true)
+	 */ 
+	private $events;   
     
     /**
      * Get id

@@ -16,15 +16,16 @@ $(document).ready(function(){
 		displayEventTime: false,
 // 		allDayDefault: true
 // 		eventOverlap: false,
-		events: function(start, end, timezone, callback){
-			var titels = $('a.recept-lijst');
-			var events=[];
-			var today = moment();
-			titels.each(function(i){
-			 	events.push({title:$(this).text().trim(),start:moment(today).add(i,'day')});
-			});
-			callback(events);
-		},
+// 		events: function(start, end, timezone, callback){
+// 			var titels = $('a.recept-lijst');
+// 			var events=[];
+// 			var today = moment();
+// 			titels.each(function(i){
+// 			 	events.push({title:$(this).text().trim(),start:moment(today).add(i,'day')});
+// 			});
+// 			callback(events);
+// 		},
+		events: '/events'
     });
     
     $('#myCalModal').on('shown.bs.modal', function () {
@@ -75,9 +76,8 @@ $(document).ready(function(){
 	
 	$('#saveCal').on('click', function (){
     var events = $('#calendar').fullCalendar('clientEvents');
-    var url = '/boodschappen';
+    var url = '/saveevents';
     var data = {events: JSON.stringify(events)};
-	console.log(data);
 	
     $.ajax({
       type: "POST",
