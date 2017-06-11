@@ -19,16 +19,22 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Tetranz\Select2EntityBundle\Form\Type\Select2EntityType;
+use blackknight467\StarRatingBundle\Form\RatingType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 class ReceptType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        dump($options);
         $builder
         	->add('titel', TextType::class)
-        	->add('beschrijving', TextareaType::class, array(
+            ->add('rating', RatingType::class, array('label' => 'Rating'))
+        	->add('bron', TextType::class, array(
         		'required' => false,
-        		'attr' => array('rows' => 5, 'cols' => 60),
+                'attr' => array(
+                    'placeholder' => 'Bv. Goed koken p. 10 of http://www.goedkoken.be/recept',
+                    )
         		))
         	->add('bereidingstijd', TimeType::class, array(
         		'required' => false,
@@ -62,14 +68,25 @@ class ReceptType extends AbstractType
 				'multiple' => false,
 				'expanded' => false,
 				))
-        	->add('keuken', EntityType::class, array(
-        		'required' => false,
-				'class' => 'AppBundle:Keuken',
-				'choice_label' => 'name',
-				'multiple' => false,
-				'expanded' => false,
-				))
+    //     	->add('keuken', EntityType::class, array(
+    //     		'required' => false,
+				// 'class' => 'AppBundle:Keuken',
+				// 'choice_label' => 'name',
+				// 'multiple' => false,
+				// 'expanded' => false,
+				// ))
+            ->add('keuken', Select2EntityType::class, array(
+                    'multiple' => false,
+                    'required' => false,
+                    'class' => 'AppBundle:Keuken',
+                    'remote_route' => 'findkeuken',
+                    'text_property' => 'name',
+                    'minimum_input_length' => 0,
+                    'placeholder' => 'Selecteer een keuken',
+                    'allow_clear' => true,
+                ))
         	->add('hoofdingredient', EntityType::class, array(
+                'label' => 'Hoofdingrediënt',
         		'required' => false,
 				'class' => 'AppBundle:Hoofdingredient',
 				'choice_label' => 'name',
@@ -80,13 +97,11 @@ class ReceptType extends AbstractType
         		'multiple' => true,
         		'required' => false,
 				'class' => 'AppBundle:Tag',
-				'primary_key' => 'id',
 				'remote_route' => 'findtag',
 				'text_property' => 'name',
 				'allow_clear' => true,
 				'placeholder' => 'Selecteer een tag',
 				'minimum_input_length' => 0,
-				'language' => 'nl',
 				))
         	->add('kostprijs', MoneyType::class, array(
         		'required' => false,
@@ -95,6 +110,13 @@ class ReceptType extends AbstractType
         		'required' => false,
         		'mapped' => false,
         		))
+            ->add('personen', TextType::class, array(
+                    'label' => 'Aantal personen',
+                    'attr' => array('min' => 1, 'max' => 20),
+                    // Set default value for personen
+                    'data' => (isset($options['data']) && $options['data']->getPersonen() !== null) ? $options['data']->getPersonen() : 4,
+                    // 'empty_data' => 4
+                ))
         	->add('bewaar', SubmitType::class, array(
         		'label' => 'Bewaar recept'
         		))

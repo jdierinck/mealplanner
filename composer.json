@@ -26,7 +26,9 @@
         "stof/doctrine-extensions-bundle": "^1.2",
         "tetranz/select2entity-bundle": "2.*",
         "knplabs/knp-snappy-bundle": "^1.4",
-        "knplabs/knp-paginator-bundle": "^2.5"
+        "knplabs/knp-paginator-bundle": "^2.5",
+        "blackknight467/star-rating-bundle": "1.*",
+        "ninsuo/symfony-collection": "^2.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.0",

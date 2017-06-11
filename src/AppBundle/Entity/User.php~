@@ -32,8 +32,8 @@ class User implements UserInterface, \Serializable
     private $username;
 
     /**
-     * @Assert\NotBlank()
-     * @Assert\Length(max=4096)
+     * @Assert\NotBlank(groups={"Default"})
+     * @Assert\Length(max=4096, groups={"Default"})
      */
     private $plainPassword;    
 
@@ -59,6 +59,7 @@ class User implements UserInterface, \Serializable
         $this->isActive = true;
         $this->recepten = new ArrayCollection();
         $this->menus = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     public function getUsername()
@@ -99,6 +100,11 @@ class User implements UserInterface, \Serializable
 	 * @ORM\OneToMany(targetEntity="Menu", mappedBy="user")
 	 */
 	private $menus;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Tag", mappedBy="user", cascade={"all"})
+     */
+    private $tags;
 	
     public function serialize()
     {
@@ -297,5 +303,41 @@ class User implements UserInterface, \Serializable
     public function setPlainPassword($password)
     {
         $this->plainPassword = $password;
+    }
+
+    /**
+     * Add tag
+     *
+     * @param \AppBundle\Entity\Tag $tag
+     *
+     * @return User
+     */
+    public function addTag(\AppBundle\Entity\Tag $tag)
+    {
+        $tag->setUser($this);
+
+        $this->tags[] = $tag;
+
+        return $this;
+    }
+
+    /**
+     * Remove tag
+     *
+     * @param \AppBundle\Entity\Tag $tag
+     */
+    public function removeTag(\AppBundle\Entity\Tag $tag)
+    {
+        $this->tags->removeElement($tag);
+    }
+
+    /**
+     * Get tags
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTags()
+    {
+        return $this->tags;
     }
 }

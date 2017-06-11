@@ -1,5 +1,12 @@
 {% extends 'base.html.twig' %}
 
+{% form_theme form ':form:jquery.collection.html.twig' ':form:my-form-theme.html.twig'%}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('css/general.css') }}">
+<link rel="stylesheet" href="{{ asset('css/stickyfooter.css') }}">
+{% endblock %}
+
 {% block body %}
 
 	{{ render(controller('AppBundle:Navigation:menu')) }}
@@ -11,9 +18,13 @@
 		<div class="col-sm-10">
 		
 		<h4>Voeg menu toe</h4>
-		{# {{ render(controller('AppBundle:Menus:newMenu')) }} #}
-		{% include 'menus/newmenu.html.twig' %}
-		
+		<div class="form_error"></div>
+		{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+			{{ form_row(form.naam) }}
+			{{ form_row(form.dagen) }}
+			<button type="submit" value="Bewaar" class="btn btn-primary">Bewaar</button>
+		{{ form_end(form) }}
+		<br><br>
 		{% if menus %}
 			<div class="panel-group" id="accordion">
 			{% for menu in menus %}
@@ -34,14 +45,24 @@
 				</div>
 				<div id="collapse{{ loop.index }}" class="panel-collapse collapse">
 				  <div class="panel-body">
-				 	{{ render(controller('AppBundle:Menus:editMenu',{'id':menu.id})) }}
+				  <ul class="list-unstyled">
+				  {% for dag in menu.dagen %}
+				  	<li>
+				  	Dag {{loop.index}}:
+				  	{% for recept in dag.recepten %}
+				  		<span class="label label-default">{{ recept.titel }}</span>
+				  	{% endfor %}
+				  	</li>
+				  {% endfor %}
+				  </ul>
+				 	{# {{ render(controller('AppBundle:Menus:editMenu',{'id':menu.id})) }} #}
 				  </div>
 				</div>
 			  </div>
 			{% endfor %}  
 			</div> <!-- end div panel-group -->
 		{% else %}
-		Geen menus gevonden.
+		Geen menu's gevonden.
 		{% endif %}
 
 		</div> <!-- end div col-sm-10 -->	
@@ -58,22 +79,36 @@
 	</div>
 	<!-- end Modal -->
 
+<footer class="footer text-center bg-lightblue">
+<div class="container-fluid">
+  	<p>&copy {{ "now"|date("Y") }} Johan Dierinck</p>
+	<p class="small">Powered by <img src="{{ asset('images/symfony_white_02.png') }}" alt="Symfony logo" height="15"></p>
+</div>
+</footer>
+
 {% endblock %}
 
 {% block javascripts %}
+<!-- <script src="{{ asset('js/jquery-sfPrototypeMan-master/jquery.sfprototypeman.js') }}"></script> -->
+<script src="{{ asset('js/jquery.collection.js') }}"></script>
 <script src="{{ asset('bundles/tetranzselect2entity/js/select2entity.js') }}"></script>
-<script src="{{ asset('js/jquery-sfPrototypeMan-master/jquery.sfprototypeman.js') }}"></script>
 <script>
 $(document).ready(function(){
 
-	jQuery().sfPrototypeMan({
-	    addButtonText: "Voeg recept toe",
-    	rmButtonText: "Wis recept"
+    $('.daycollection').collection({
+        // up: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>',
+        // down: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>',
+        add: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>',
+        // remove: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></a>',
+        add_at_the_end: true,
+        // Activate select2entity after a new element has been added
+        after_add: function(collection, element) {
+        	var select2 = collection.find('.select2entity').last();
+			select2.select2entity(); 
+			return true;
+		},
     });
-	// If you choose to run jQuery UI sortable, sfPrototypeMan will interact with it
-	jQuery("#menu_recepten").sortable();
-// 	$('label.col-sm-2').before('<span class="glyphicon glyphicon-move"></span>');
-	
+
 	// initialize tooltips
 	$('[data-toggle="tooltip"]').tooltip();
 	
@@ -110,15 +145,16 @@ $(document).ready(function(){
     });
     
     // Load content into modal
-	$('body').on('click', 'a#deletemenu, a#showlist, a#addtocart, a#editmenu', function(e) {
+	$('body').on('click', 'a#deletemenu, a#showlist, a#addtocart', function(e) {
 		e.preventDefault();
 		$('#myModal').modal();
 		$('#myModalContent').load($(this).attr('href'));
     });
     
-    $('[id^="collapse"]').on("shown.bs.collapse",function(){
-  		$("#menu_recepten", this).sortable();
-	})
+ //    $('[id^="collapse"]').on("shown.bs.collapse",function(){
+ //  		$("#menu_recepten", this).sortable();
+	// });
+
 	
 });
 </script>

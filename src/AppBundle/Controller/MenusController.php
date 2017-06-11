@@ -121,11 +121,11 @@ class MenusController extends Controller
 				'No menu found for id '.$id
 			);			
 		}
-		
-		$previousRecepten = new ArrayCollection();
-		foreach($menu->getReceptenordered() as $ro){
-			
-			$previousRecepten[] = $ro;
+
+		// Create an ArrayCollection of the current Dag objects in the database
+		$previousDagen = new ArrayCollection();
+		foreach ($menu->getDagen() as $dag){
+			$previousDagen[] = $dag;
 		}
 		
 		$form = $this->createForm(MenuType::class, $menu, array(
@@ -137,10 +137,15 @@ class MenusController extends Controller
 
 		if ($form->isSubmitted() && $form->isValid()) {
 
-			foreach($previousRecepten as $p){
-				$menu->removeReceptenordered($p);
-				$em->remove($p);
-				$em->flush();
+			 // remove the relationship between the Dag and the Menu
+			foreach($previousDagen as $dag){
+				if (false === $menu->getDagen()->contains($dag)) {
+					$menu->removeDagen($dag);
+					// delete Dag entirely
+					// to just remove the relationship: $dag->setMenu(null);
+					$em->remove($dag);
+					// $em->flush();
+				}
 			}
 
 			$menu = $form->getData();
@@ -149,30 +154,12 @@ class MenusController extends Controller
 
 			$em->flush();
 			
-			if ($request->isXmlHttpRequest()) { 
-				return new JsonResponse(array('message' => 'Success!'), 200); 
-			} else {
 			return $this->redirectToRoute('menus');
-			}
 		}
 		
-		if ($request->isXmlHttpRequest()) {
-			$response = new JsonResponse(
-				array(
-					'message' => 'Error',
-					'form' => $this->renderView('menus/newmenu.html.twig', array(
-						'form' => $form->createView(),
-						'menu' => $menu,
-						)
-					)
-				), 400);
- 
-			return $response;
-		} else {
-			return $this->render('menus/newmenu.html.twig', array(
+		return $this->render('menus/editmenu.html.twig', array(
 				'form' => $form->createView(),
-			));	
-		}	
+		));	
 	
 	}
 
@@ -198,8 +185,8 @@ class MenusController extends Controller
 				'action' => $this->generateUrl('deletemenu', array('id'=>$id)),
 				'method' => 'POST',
 			))
-			->add('submit', SubmitType::class, array('label' => 'Wis'))
-			->add('cancel', SubmitType::class, array('label' => 'Annuleer'))
+			->add('submit', SubmitType::class, array('label' => 'Wis', 'attr' => array('class' => 'btn btn-default', 'style' => 'float:left;')))
+			->add('cancel', SubmitType::class, array('label' => 'Annuleer', 'attr' => array('class' => 'btn btn-default')))
 			->getForm();
 			
 		$form->handleRequest($request);		
@@ -227,6 +214,8 @@ class MenusController extends Controller
 	 * @Route("findrecept", name="findrecept")
 	 */	
 	public function findReceptAction(Request $request){
+
+		$user = $this->getUser();
 	
 		$querystring = $request->query->get('q');
 		
@@ -235,6 +224,8 @@ class MenusController extends Controller
 		$query = $repository->createQueryBuilder('p')
 			->where('p.titel LIKE :querystring')
 			->setParameter('querystring', '%'.$querystring.'%')
+			->andWhere('p.user = :user')
+            ->setParameter('user', $user)
 			->orderBy('p.titel', 'ASC')
 			->getQuery();		
 		
@@ -289,35 +280,33 @@ class MenusController extends Controller
 
 		$boodschappenlijst = $user->getBoodschappenlijst();
 		
-// 		$recepten = new ArrayCollection();
-// 		$ingredienten = new ArrayCollection();
-// 		foreach($menu->getRecepten() as $recept){
-// 			foreach($recept->getIngredienten() as $ingredient){
-// 				$ingredienten[] = $ingredient;
-// 			}
-// 			$recepten[] = $recept;
-// 		}
-// 		$boodschappenlijst->setRecepten($recepten);
-// 		$boodschappenlijst->setIngredienten($ingredienten);
-// 		
-// 		$em->flush();
-		
-		foreach($menu->getRecepten() as $recept){
-			$ingredienten = array();
-			foreach($recept->getIngredienten() as $ingredient){
-				$ingredienten[] = $ingredient;
+		$date = new \DateTime("now");
+		$date->format("Y-m-d");
+
+		foreach($menu->getDagen() as $dag){
+
+			foreach ($dag->getRecepten() as $recept) {
+
+				$ingredienten = array();
+				foreach($recept->getIngredienten() as $ingredient){
+					$ingredienten[] = $ingredient;
+				}
+			
+				$ro = new ReceptBLOrdered();
+				$ro->setBoodschappenlijst($boodschappenlijst);
+				$ro->setRecept($recept);
+				$ro->setServings(4);
+				$ro->setDatum($date);
+			
+				$ro->setIngrBL($ingredienten);
+			
+				$em->persist($ro);
+				$em->flush();
 			}
-		
-			$ro = new ReceptBLOrdered();
-			$ro->setBoodschappenlijst($boodschappenlijst);
-			$ro->setRecept($recept);
-			$ro->setServings(4);
-		
-			$ro->setIngrBL($ingredienten);
-		
-			$em->persist($ro);
+
+			$date = $date->modify("+1 day");
 		}
-		$em->flush();
+		// $em->flush();
 		
 		return $this->render('menus/addedtoshoppinglist.html.twig', array('menu_naam' => $menu->getNaam()));
 	}

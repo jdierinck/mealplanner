@@ -13,6 +13,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Form\CallbackTransformer;
 
 class IngredientType extends AbstractType
 {
@@ -83,6 +84,29 @@ class IngredientType extends AbstractType
     	
     	$builder->addEventListener(Formevents::PRE_SUBMIT, $listener);
     	$builder->addEventListener(Formevents::PRE_SUBMIT, $listener2);
+
+        // Allow comma in form field instead of dot
+        $builder->get('hoeveelheid')
+            ->addModelTransformer(new CallbackTransformer(
+                function($number){
+                    if (null === $number) {
+                        return;
+                    } else {
+                    // Get rid of trailing zeroes and decimal point in case of integers
+                    $number += 0;
+                    // Replace dots with commas
+                    return str_replace('.', ',', $number);
+                    }
+                },
+                function($input){
+                    if (null === $input) {
+                        return;
+                    } else {
+                    return str_replace(',', '.', $input);
+                    }
+                }
+            ))
+        ;
 
     }
 

@@ -48,6 +48,12 @@ class ReceptBLOrdered
      */
     private $positie;
 
+    /** 
+     * @ORM\Column(type="date", nullable=true)
+     * @var \DateTime 
+     */
+    private $datum;
+
 	/**
 	 * @ORM\Column(type="integer")
 	 * @Assert\Type("integer")
@@ -216,5 +222,29 @@ class ReceptBLOrdered
     public function getIngrbl()
     {
         return $this->ingrbl;
+    }
+
+    /**
+     * Set datum
+     *
+     * @param \DateTime $datum
+     *
+     * @return ReceptBLOrdered
+     */
+    public function setDatum($datum)
+    {
+        $this->datum = $datum;
+
+        return $this;
+    }
+
+    /**
+     * Get datum
+     *
+     * @return \DateTime
+     */
+    public function getDatum()
+    {
+        return $this->datum;
     }
 }

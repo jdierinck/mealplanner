@@ -48,6 +48,12 @@ class ReceptBLOrdered
      */
     private $positie;
 
+    /** 
+     * @ORM\Column(type="date", nullable=true)
+     * @var \DateTime 
+     */
+    private $datum;
+
 	/**
 	 * @ORM\Column(type="integer")
 	 * @Assert\Type("integer")
@@ -55,9 +61,24 @@ class ReceptBLOrdered
 	private $servings;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="IngrBL", mappedBy="receptblordered")
+	 * @ORM\OneToMany(targetEntity="IngrBL", mappedBy="receptblordered", cascade={"persist"})
 	 */
 	private $ingrbl;
+
+	public function setIngrBL($ingredienten){
+		foreach($ingredienten as $i){
+			$ibl = new IngrBL();
+			
+			$ibl->setBoodschappenlijst($this->getBoodschappenlijst());
+            $ibl->setIngredient($i);
+            $ibl->setAfdeling($i->getAfdeling());
+            $ibl->setServings(4);
+            $ibl->setIngrIngr($i->getIngredient());
+			$ibl->setReceptblordered($this);
+			
+			$this->addIngrbl($ibl);
+		}
+	}
 
     /**
      * Get id
@@ -160,5 +181,70 @@ class ReceptBLOrdered
     public function getServings()
     {
         return $this->servings;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->ingrbl = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add ingrbl
+     *
+     * @param \AppBundle\Entity\IngrBL $ingrbl
+     *
+     * @return ReceptBLOrdered
+     */
+    public function addIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
+    {
+        $this->ingrbl[] = $ingrbl;
+
+        return $this;
+    }
+
+    /**
+     * Remove ingrbl
+     *
+     * @param \AppBundle\Entity\IngrBL $ingrbl
+     */
+    public function removeIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
+    {
+        $this->ingrbl->removeElement($ingrbl);
+    }
+
+    /**
+     * Get ingrbl
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getIngrbl()
+    {
+        return $this->ingrbl;
+    }
+
+    /**
+     * Set datum
+     *
+     * @param \DateTime $datum
+     *
+     * @return ReceptBLOrdered
+     */
+    public function setDatum($datum)
+    {
+        $this->datum = $datum;
+
+        return $this;
+    }
+
+    /**
+     * Get datum
+     *
+     * @return \DateTime
+     */
+    public function getDatum()
+    {
+        return $this->datum;
     }
 }

@@ -1,78 +1,134 @@
 $(document).ready(function(){
+
 	$('.btn-group button').click(function(){
 		$(this).addClass('active').siblings().removeClass('active');
 	});
 	
-	$('#list').click(function(){$('#recepten .item').addClass('list-group-item');});
- 	$('#grid').click(function(){$('#recepten .item').removeClass('list-group-item');});
+	$('#list').click(function(){
+		// $('#recepten .item').addClass('list-group-item');
+		localStorage.setItem('view','list');
+		$('#gridview').hide();
+		$('#listview').show();
+	});
+ 	$('#grid').click(function(){
+ 		// $('#recepten .item').removeClass('list-group-item');
+ 		localStorage.removeItem('view');
+ 		$('#gridview').show();
+ 		$('#listview').hide();
+ 	});
+	
+	var view = localStorage.getItem('view');
+	if(view){
+		// $('#recepten .item').addClass('list-group-item');
+		$('#list').addClass('active').siblings().removeClass('active');
+		$('#gridview').hide();
+		$('#listview').show();
+	}
 	
 	// initialize tooltips
 	$('[data-toggle="tooltip"]').tooltip();
-	
-	// Load content into modal
-	$('body').on('click', 'a#addrecipe, a#showrecipe, a#editrecipe, a#deleterecipe', function(e) {
+	//Initialize popovers
+	$('[data-toggle="popover"]').popover();
+    
+	$('body').on('click','.showrecipe', function(){	
+		$('#myModal').modal();
+		$('#myModalContent').load($(this).data('url'));
+	});
+
+		// Load content into modal
+	$('body').on('click', 'a#addrecipe, a#editrecipe, a#deleterecipe', function(e) {
 		e.preventDefault();
 		$('#myModal').modal();
 		$('#myModalContent').load($(this).attr('href'));
+		e.stopPropagation();
     });
-    
-    $('body').on('submit', "form[name='recept']", function (e) {
-    	
-    	e.preventDefault();
-    	
-    	var options = {
-		target: '#myModalContent',
-		dataType: 'json',
-		success: function(jsondata, statusText, xhr, $form){
-//            $('#myModalContent').html(jsondata.message);
- 			$('#myModal').modal('hide');
-            location.reload(true);
-			},
-		error: function(jsondata, statusText, xhr, $form) {
-			if (jsondata.responseJSON.hasOwnProperty('form')) {
-				$('#myModalContent').html(jsondata.responseJSON.form);
-				}
-			$('.form_error').html(jsondata.responseJSON.message);
-			}
-		};
-		
-		$('form[name="recept"]').ajaxSubmit(options);
 
+	// Prevent modal from opening when clicking on add to shopping list in list view
+    $('body').on('click', 'div#listview a#addtoshoppinglist', function(e) {
+		e.stopPropagation();
+    });
+
+    $('body').on('submit', "form[name='recept']", function (e) {
+    	e.preventDefault();
+    	var options = {
+			target: '#myModalContent',
+			dataType: 'json',
+			success: function(jsondata, statusText, xhr, $form){
+	//            $('#myModalContent').html(jsondata.message);
+	 			$('#myModal').modal('hide');
+	            location.reload(true);
+				},
+			error: function(jsondata, statusText, xhr, $form) {
+				if (jsondata.responseJSON.hasOwnProperty('form')) {
+					$('#myModalContent').html(jsondata.responseJSON.form);
+					}
+				$('.form_error').html(jsondata.responseJSON.message);
+				}
+		};
+		$('form[name="recept"]').ajaxSubmit(options);
 	});
 	
-	
-	$('select.filter').change(function(){
-		var data = $(this).attr('id') + '=';
-		var value = $(this).val();
-		if (value){
-			data += value;
-		}
-		data = getFilterData($(this), data);
+	$('form[name="filters"]').on('keyup submit change', function(e){
+		e.preventDefault();
+		var data = $(this).serialize();
 		sendAjaxForm(data);
 	});
 
-// 	$('input#zoek').next().children('button').on('click', function(e){
-	$('form[name="filters"]').on('submit', function(e){
+	$('body').on('click', 'th>a, ul.pagination>li>a', function(e){
 		e.preventDefault();
-		var input = $('input#zoek');
-		var data;
-		var value = input.val();
-		data = 'zoek' + '=' + value;
-		data = getFilterData(input, data);
-		sendAjaxForm(data);		
-	});
-	
-	function getFilterData(element, data){
-// 		var selects = $(element).parent().siblings('div').children('select, input');
-		var selects = $(element).closest('form').find('select, input').not($(element));
-		var i;
-		for (i=0;i<selects.length;i++){
-			if ($(selects[i]).val()) {
-				data += '&' + $(selects[i]).attr('id') + '=' + $(selects[i]).val();
+		$.ajax({
+			type: 'GET',
+			url: $(this).attr('href'),
+			data: null,
+			success: function(html){
+				$('#content').replaceWith(
+					$(html).find('#content')
+				);
+				// if ($('#list').hasClass('active')) { $('#recepten .item').addClass('list-group-item'); }
+				if ($('#list').hasClass('active')) {
+					$('#gridview').hide();
+					$('#listview').show();
+				}
 			}
-		}
-		return data;	
-	}
+		});	
+	});
+
+	// Fix for Select2 input element not accepting any input
+	// See https://github.com/select2/select2/issues/1436
+	// and https://stackoverflow.com/questions/18487056/select2-doesnt-work-when-embedded-in-a-bootstrap-modal/19574076#19574076
+	$.fn.modal.Constructor.prototype.enforceFocus = function() {};
+
+	// $('select.filter').change(function(){
+	// 	var data = $(this).attr('id') + '=';
+	// 	var value = $(this).val();
+	// 	if (value){
+	// 		data += value;
+	// 	}
+	// 	data = getFilterData($(this), data);
+	// 	sendAjaxForm(data);
+	// });
+
+// 	$('form[name="filters"]').on('submit', function(e){
+// 		e.preventDefault();
+// 		var input = $('input#zoek');
+// 		var data;
+// 		var value = input.val();
+// 		data = 'zoek' + '=' + value;
+// 		data = getFilterData(input, data);
+// 		sendAjaxForm(data);		
+// 	});
+	
+// 	function getFilterData(element, data){
+// // 		var selects = $(element).parent().siblings('div').children('select, input');
+// 		var selects = $(element).closest('form').find('select, input').not($(element));
+// 		var i;
+// 		for (i=0;i<selects.length;i++){
+// 			if ($(selects[i]).val()) {
+// 				data += '&' + $(selects[i]).attr('id') + '=' + $(selects[i]).val();
+// 			}
+// 		}
+// 		return data;	
+// 	}
 	
 	function sendAjaxForm(data){
 		$.ajax({
@@ -83,7 +139,11 @@ $(document).ready(function(){
 				$('#content').replaceWith(
 					$(html).find('#content')
 				);
-				if ($('#list').hasClass('active')) { $('#recepten .item').addClass('list-group-item'); }
+				// if ($('#list').hasClass('active')) { $('#recepten .item').addClass('list-group-item'); }
+				if ($('#list').hasClass('active')) {
+					$('#gridview').hide();
+					$('#listview').show();
+				}
 			}
 		});	
 	}

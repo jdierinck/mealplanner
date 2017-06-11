@@ -30,6 +30,13 @@ class Keuken
     private $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="regio", type="string", length=255)
+     */
+    private $regio;
+
+    /**
      * @ORM\OneToMany(targetEntity="Recept", mappedBy="keuken")
      */
     private $recepten;
@@ -103,5 +110,29 @@ class Keuken
     public function getRecepten()
     {
         return $this->recepten;
+    }
+
+    /**
+     * Set regio
+     *
+     * @param string $regio
+     *
+     * @return Keuken
+     */
+    public function setRegio($regio)
+    {
+        $this->regio = $regio;
+
+        return $this;
+    }
+
+    /**
+     * Get regio
+     *
+     * @return string
+     */
+    public function getRegio()
+    {
+        return $this->regio;
     }
 }

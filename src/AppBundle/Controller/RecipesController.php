@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Ingredient;
 use AppBundle\Entity\Boodschappenlijst;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RecipesController extends Controller
 {
@@ -33,52 +34,60 @@ class RecipesController extends Controller
 		$boodschappenlijst = $user->getBoodschappenlijst();
 		
 		// Create Boodschappenlijst if none exists
-		if(!$boodschappenlijst){
+		if (!$boodschappenlijst) {
 			$boodschappenlijst = new Boodschappenlijst();
 			$boodschappenlijst->setUser($user);
 			
 			$em->persist($boodschappenlijst);
 			$em->flush();
-		}  
-    
+		}
+
     	$allowedsorts = array('titel', 'gerecht', 'keuken', 'hoofdingredient', 'bereidingstijd', 'toegevoegdOp', 'kostprijs');
     	$sort = $request->query->get('sortBy');
-    	if(null == $sort || !in_array($sort, $allowedsorts)) { $sort = 'toegevoegdOp'; }
+    	if (null == $sort || !in_array($sort, $allowedsorts)) { $sort = 'toegevoegdOp'; }
     	
     	$gerechtid = $request->query->get('gerecht');
     	$keukenid = $request->query->get('keuken');
     	$hoofdingredientid = $request->query->get('hoofdingredient');
     	$bereidingstijd = $request->query->get('bereidingstijd');
     	$zoek = $request->query->get('zoek');
-    	
+    	$metIngr = $request->query->get('met');
+    	$zonderIngr = $request->query->get('zonder');
+
     	$filters = 0;
     	
     	$repository = $this->getDoctrine()->getRepository('AppBundle:Recept');
-    	
+
     	$qb = $repository->createQueryBuilder('r')
+    		->addSelect('g')
+    		->leftJoin('r.gerecht', 'g')
+    		->addSelect('k')
+    		->leftJoin('r.keuken', 'k')
+    		->addSelect('h')
+    		->leftJoin('r.hoofdingredient', 'h')
     		->where('r.user = :user')
     		->setParameter('user', $user)
     		->orderBy('r.'.$sort, 'ASC');
     		
-    	if($gerechtid){
+    	if ($gerechtid) {
     		$filters += 1;
     		$qb->andWhere('r.gerecht = :gerechtid')
     			->setParameter('gerechtid', $gerechtid);
     	}
     	
-    	if($keukenid){
+    	if ($keukenid) {
     		$filters += 1;
     		$qb->andWhere('r.keuken = :keukenid')
     			->setParameter('keukenid', $keukenid);
     	}
     	
-    	if($hoofdingredientid){
+    	if ($hoofdingredientid) {
     		$filters += 1;
     		$qb->andWhere('r.hoofdingredient = :hoofdingredientid')
     			->setParameter('hoofdingredientid', $hoofdingredientid);
     	}
     	
-    	if($bereidingstijd){
+    	if ($bereidingstijd) {
     		$filters += 1;
     		switch ($bereidingstijd) {
     			case "030":
@@ -98,25 +107,62 @@ class RecipesController extends Controller
 				break;
     		}
     	}
+
+    	if ($metIngr) {
+    		$filters += 1;
+    		$qb->join('r.ingredienten','i')
+    			->andWhere('i.ingredient LIKE :met')
+    			->setParameter('met', '%'.$metIngr.'%');
+    	}
+
+    	if ($zonderIngr) {
+    		$filters += 1;
+
+    		$qb2 = $this->getDoctrine()->getManager()->createQueryBuilder();
+    		$ids = $qb2->select('r')
+    			->from('AppBundle:Recept', 'r', 'r.id')
+    			->where('r.user = :user')
+    			->setParameter('user', $user)
+    			->join('r.ingredienten','i')
+    			->andWhere('i.ingredient LIKE :zonder')
+    			->setParameter('zonder', '%'.$zonderIngr.'%')
+    			->getQuery()
+    			->getResult();
+    		$ids = array_keys($ids);
+
+    		if ($ids) {
+    			$qb
+    			->andWhere($qb->expr()->notIn('r.id', $ids));
+    		}
+    	}
     	
     	if($zoek){
     		$qb->andWhere('r.titel LIKE :zoek')
     			->setParameter('zoek', '%'.$zoek.'%');
     	}
-    		
-//     	$recepten = $qb->getQuery()->getResult();
+    	
+    	// Get unpaginated array of recipes	
+    	$results = $qb->getQuery()->getResult();
+
+    	// Store recipe ids is session
+    	$result_ids = array();
+    	foreach ($results as $result) {
+    		$result_ids[] = $result->getId();
+    	}
+    	$session->set('results', $result_ids);
+
 //     	$total = count($recepten);
     	
+    	// Paginate search results
     	$query = $qb->getQuery();
     	$paginator = $this->get('knp_paginator');
     	
     	$recepten = $paginator->paginate(
     		$query,
     		$request->query->getInt('page',1),
-    		$request->query->getInt('limit',6)
+    		$request->query->getInt('limit',9)
     	);
     	$total = $recepten->getTotalItemCount();
-    	
     	
     	if ($zoek || $filters > 0) {			
 			$message = $total.' recepten gevonden met ';
@@ -167,6 +213,7 @@ class RecipesController extends Controller
 			'gerechten' => $gerechten,
 			'keukens' => $keukens,
 			'hoofdingredienten' => $hoofdingredienten,
+			'filters' => $filters,
         ));
     }
     
@@ -192,7 +239,8 @@ class RecipesController extends Controller
 	 *
 	 * @Route("create", name="createrecept")
 	 */
-	public function createAction (Request $request) {
+	public function createAction (Request $request)
+	{
 		
 // 		Dump request to see POST values
 // 		return new JsonResponse(array('request'=>dump($request->request->all())),400);
@@ -207,7 +255,7 @@ class RecipesController extends Controller
 		if(!null == $id){
 			$recept = $this->getDoctrine()->getRepository('AppBundle:Recept')->find($id);
 		} else {
-		$recept = new Recept();
+			$recept = new Recept();
 		}
 		
 		$originalIngredients = new ArrayCollection();
@@ -234,9 +282,10 @@ class RecipesController extends Controller
 				$recept->setGerecht($gerecht);
 			}
 			// set default value for personen
-			if($recept->getPersonen() == null){
-				$recept->setPersonen(4);
-			}
+			// if($recept->getPersonen() == null){
+			// 	$recept->setPersonen(4);
+			// }
+
 			foreach ($originalIngredients as $ingredient) {
 				if (false === $recept->getIngredienten()->contains($ingredient)) {
 					$em->remove($ingredient);
@@ -258,7 +307,7 @@ class RecipesController extends Controller
 		$response = new JsonResponse(
             array(
         		'message' => 'Error',
-        		'form' => $this->renderView($id==null ? 'recipes/new.html.twig' : 'recipes/edit.html.twig', array(
+        		'form' => $this->renderView($id == null ? 'recipes/new.html.twig' : 'recipes/edit.html.twig', array(
         			'form' => $form->createView(),
         			'recept' => $recept,
         			)
@@ -275,7 +324,8 @@ class RecipesController extends Controller
 	 *
 	 * @Route("recept/{id}", name="showrecept")
 	 */
-	public function showAction($id) {
+	public function showAction($id) 
+	{
 		$recept = $this->getDoctrine()
 			->getRepository('AppBundle:Recept')
 			->find($id);
@@ -325,7 +375,8 @@ class RecipesController extends Controller
 	 *
 	 * @Route("delete/{id}", name="deleterecept")
 	 */
-	public function deleteAction($id, Request $request) {
+	public function deleteAction($id, Request $request) 
+	{
 	
 		$em = $this->getDoctrine()->getManager();
 		$recept = $em->getRepository('AppBundle:Recept')
@@ -383,15 +434,19 @@ class RecipesController extends Controller
 	 *
 	 * @Route("findtag", name="findtag")
 	 */	
-	public function findTagAction(Request $request){
-	
+	public function findTagAction(Request $request)
+	{
+		$user = $this->getUser();
+
 		$querystring = $request->query->get('q');
 		
 		$repository = $this->getDoctrine()->getRepository('AppBundle:Tag');
 
 		$query = $repository->createQueryBuilder('p')
 			->where('p.name LIKE :querystring')
+			->andWhere('p.user = :user')
 			->setParameter('querystring', '%'.$querystring.'%')
+			->setParameter('user', $user)
 			->orderBy('p.name', 'ASC')
 			->getQuery();		
 		
@@ -405,6 +460,137 @@ class RecipesController extends Controller
 		
 		return new JsonResponse($results);
 	}
-	
+
+	/**
+	 * Query database for keuken
+	 *
+	 * @Route("findkeuken", name="findkeuken")
+	 */	
+	public function findKeukenAction(Request $request)
+	{
+
+		$querystring = $request->query->get('q');
+		
+		$repository = $this->getDoctrine()->getRepository('AppBundle:Keuken');
+
+		$query = $repository->createQueryBuilder('p')
+			->where('p.name LIKE :querystring')
+			->setParameter('querystring', '%'.$querystring.'%')
+			->orderBy('p. regio', 'ASC')
+			->addOrderBy('p. name', 'ASC')
+			// ->groupBy('p.regio')
+			->getQuery();		
+		
+		$keukens = $query->getResult();
+		dump($keukens);
+		$results = array();
+		$regios = array();
+		
+		// foreach ($keukens as $keuken){
+		// 	$results[] = array('id' => $keuken->getId(), 'text' => $keuken->getName());
+		// }
+		foreach ($keukens as $keuken){
+			$regios[] = $keuken->getRegio();
+			// array('id' => $keuken->getId(), 'text' => $keuken->getName());
+		}
+		$regios = array_values(array_unique($regios));
+		
+		foreach ($regios as $regio) {
+			foreach ($keukens as $keuken) {
+				if ($keuken->getRegio() === $regio) {
+					$results[$regio][] = array('id' => $keuken->getId(), 'text'=> $keuken->getName());
+				}
+			}
+		}
+		dump($results);
+
+		$finalresult = array();
+
+		foreach($results as $key=>$values){
+			$finalresult[] = array('text' => $key, 'children' => $values);
+		}
+		dump($finalresult);
+		return new JsonResponse($finalresult);
+	}
+
+
+	/**
+	 * Export recipes as CSV
+	 *
+	 * @Route("/recepten/exportcsv", name="exportcsv")
+	 */	
+	public function generateCsvAction(Request $request)
+	{
+		$result_ids = $request->getSession()->get('results');
+
+	    $response = new StreamedResponse();
+	    $response->setCallback(function() use($result_ids){
+	        $handle = fopen('php://output', 'w+');
+
+	        // Add the header of the CSV file
+	        fputcsv($handle, array(
+	        	'Titel', 
+	        	'Bron', 
+	        	'Bereidingstijd', 
+	        	'Ingrediënten',
+	        	'Bereidingswijze',
+	        	'Gerecht',
+	        	'Keuken',
+	        	'Hoofdingredient',
+	        	// 'Tags',
+	        	'Kostprijs',
+	        	'Personen',
+	        	'Rating'
+	        	),
+	        	';'
+	        );
+	        
+	        // Query data from database
+		    $repository = $this->getDoctrine()
+	    		->getRepository('AppBundle:Recept');
+
+	    	$results = $repository->findBy(
+	    		array('id'=>$result_ids)
+	    	);
+
+	    	foreach ($results as $result) {
+
+            	$ingredienten = '';
+            	foreach ($result->getIngredienten() as $ingr) {
+            		$ingredienten .= $ingr->getHoeveelheid().' '.$ingr->getEenheid().' '.$ingr->getIngredient()."\n";
+            	}
+
+		        // Add the data queried from database
+		            fputcsv(
+		                $handle, // The file pointer
+		                array(
+		                	$result->getTitel(), 
+		                	$result->getBron(), 
+		                	$result->getBereidingstijd(),
+		                	$ingredienten,
+		                	$result->getBereidingswijze(),
+		                	null === $result->getGerecht() ? '' : $result->getGerecht()->getName(),
+		                	null === $result->getKeuken() ? '' : $result->getKeuken()->getName(),
+		                	null === $result->getHoofdingredient() ? '' : $result->getHoofdingredient()->getName(),
+		                	// $result->getTags(),
+		                	$result->getKostprijs(),
+		                	$result->getPersonen(),
+		                	$result->getRating()
+		                ),  // The fields
+		                ';' // The delimiter
+		            );
+	    	}
+
+	        fclose($handle);
+	    });
+
+	    $response->setStatusCode(200);
+	    $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+	    $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+
+	    return $response;
+	}
+
+
 	
 }

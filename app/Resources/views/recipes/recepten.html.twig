@@ -1,7 +1,15 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/mycustomcss.css') }}"> 
+	<link rel="stylesheet" href="{{ asset('css/general.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/stickyfooter.css') }}">
+	<style>
+/*		#myModal {
+			z-index: 1080 !important;
+		}*/
+	</style>
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/starrating/css/rating.css') }}" />
+	<link rel="stylesheet" href="{{ asset('css/recepten.css') }}"> 
 {% endblock %}
 
 {% block body %}
@@ -12,16 +20,14 @@
 		<div class="row">
 		
 			<div class="col-sm-2">
+
 				<form name="filters">
-					<div class="input-group">
-					<input type="search" class="form-control" placeholder="Zoeken..." name="zoek" id="zoek">
-					<div class="input-group-btn">
-					  <button class="btn btn-default" type="submit">
-						<i class="glyphicon glyphicon-search"></i>
-					  </button>
-					</div>					
-					</div>	
+					<div class="form-group">
+						<input type="search" class="form-control" placeholder="Zoek op titel..." name="zoek" id="zoek">				
+					</div>
+
 					<h3>Filters</h3>
+
 					<div class="form-group">
 					<select class="filter form-control input-sm" name="sortBy" id="sortBy">
 						<option value="" selected="selected">- Sorteer op...</option>
@@ -34,6 +40,7 @@
 						<option value="kostprijs">Kostprijs</option>
 					</select>
 					</div>
+
 					<div class="form-group">
 					<select class="filter form-control input-sm" name="gerecht" id="gerecht">
 						<option value="" selected="selected">- Gerecht...</option>
@@ -42,6 +49,7 @@
 						{% endfor %}
 					</select>
 					</div>
+
 					<div class="form-group">
 					<select class="filter form-control input-sm" name="keuken" id="keuken">
 						<option value="" selected="selected">- Keuken...</option>
@@ -50,6 +58,7 @@
 						{% endfor %}
 					</select>
 					</div>
+
 					<div class="form-group">
 					<select class="filter form-control input-sm" name="hoofdingredient" id="hoofdingredient">
 						<option value="" selected="selected">- Hoofdingredient...</option>
@@ -58,6 +67,7 @@
 						{% endfor %}
 					</select>
 					</div>
+
 					<div class="form-group">
 						<select class="filter form-control input-sm" name="bereidingstijd" id="bereidingstijd">
 							<option value="" selected="selected">- Bereidingstijd...</option>
@@ -65,12 +75,26 @@
 							<option value="3060">30 min - 1 u</option>
 							<option value="60">> 1 u</option>
 						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="met">Recepten <span style="font-variant:small-caps;">met</span>:</label>
+						<input type="text" class="form-control input-sm" name="met" id="met">
+					</div>
+					<div class="form-group">
+						<label for="zonder">Recepten <span style="font-variant:small-caps;">zonder</span>:</label>
+						<input type="text" class="form-control input-sm" name="zonder" id="zonder">
+					</div>
+					<div class="form-group">
+						<input type="reset" class="form-control input-sm" value="Wissen">
+					</div>
+					<div class="form-group">
+						<input type="submit" class="form-control btn btn-default" value="Toepassen">
 					</div>	
 				</form>							
 			</div> <!-- end div class= col-sm-2 -->
 			
 			<div class="col-sm-10">
-			
 				<div class="btn-group">
 					<a type="button" class="btn btn-primary" href="{{ path('newrecept') }}" id="addrecipe"><span class="glyphicon glyphicon-plus-sign"></span> Voeg recept toe</a>
 					<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -79,59 +103,138 @@
 					<ul class="dropdown-menu" role="menu">
 						<li><a>Voeg manueel toe</a></li>
 						<li class="disabled"><a href="#">Importeer van het web</a></li>
-						<li><a href="#">Importeer uit een bestand</a></li>
+						<li class="disabled"><a href="#">Importeer uit een bestand</a></li>
 					</ul>
 				</div>
 
 				<div class="btn-group btn-group-sm">
 					<button id="grid" type="button" class="btn btn-default active"><span class="glyphicon glyphicon-th"></span> Tegels</button>
 					<button id="list" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th-list"></span> Lijst</button>
-				</div><br><br>
+				</div>
+
+				<div class="pull-right">
+					<a type="button" class="btn btn-default btn-sm" href="{{ path('exportcsv') }}"><i class="fa fa-download"></i>&nbsp;Exporteer {{ filters > 0 ? 'selectie' : 'alle' }} als CSV</a>
+				</div>
+
+				<br><br>
 				
 				<div id="content">
-				
-			{% for flash_message in app.session.flashBag.get('notice') %}
-				<div class="alert alert-success alert-dismissible">
-					<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-					{{ flash_message|raw }}
-				</div>
-			{% endfor %}				
-				
-				{% if recepten %}			
-					<div id="recepten" class="row list-group">
-					{% for recept in recepten %}
-					  <div class="item col-sm-4" style="height:200px;">
-					  		<a href="{{ path('showrecept', {'id':recept.id}) }}" id="showrecipe">
-							{% if recept.fotonaam %}
-							<img class="group list-group-image" src="{{ vich_uploader_asset(recept, 'fotoBestand') }}" alt="{{ recept.titel }}" class="img-responsive" style="max-height: 100px;"/>
-							{% else %}
-							<img class="group list-group-image" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height: 100px;">
-							{% endif %}						  
-						  <h5 class="group inner list-group-item-heading">{{ recept.titel }}</h5>
-						  <p class="group inner list-group-item-text small hideOverflow">{{ recept.beschrijving|raw }}</p>
-							{% if recept.tags %}
-								<p class="small">
-								{% for tag in recept.tags %}
-									<span class="label label-primary">{{ tag.name }}</span>
-								{% endfor %}
-								</p>
-							{% endif %}	
-							</a>
-							<p id="edit-links">
-								<a href="{{ path('editform', {'id':recept.id}) }}" id="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
-								<a href="{{ path('deleterecept', {'id':recept.id}) }}" id="deleterecipe" data-toggle="tooltip" data-placement="auto bottom" title="Verwijder"><span class="glyphicon glyphicon-trash"></span></a>
-								<a href="{{ path('addrecipetoshoppinglist', {'id':recept.id}) }}" id="addtoshoppinglist" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
-							</p>												  
-					  </div>
-					  {% endfor %}
+					
+					{% for flash_message in app.session.flashBag.get('notice') %}
+						<div class="alert alert-success alert-dismissible">
+							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+							{{ flash_message|raw }}
+						</div>
+					{% endfor %}
+
+					<div id="gridview">
+						{% if recepten %}			
+							<div id="recepten" class="row list-group">
+							{% for recept in recepten %}
+							  <div class="item col-sm-4">
+							  		<div data-url="{{ path('showrecept', {'id':recept.id}) }}" class="showrecipe">
+									{% if recept.fotonaam %}
+									<img class="group list-group-image" src="{{ vich_uploader_asset(recept, 'fotoBestand') }}" alt="{{ recept.titel }}" class="img-responsive">
+									{% else %}
+									<img class="group list-group-image" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image">
+									{% endif %}						  
+								  <h5 class="group inner list-group-item-heading">{{ recept.titel }}</h5>
+								  
+									{% if recept.tags %}
+										<p class="small hideOverflow">
+										{% for tag in recept.tags %}
+											<span class="label label-primary">{{ tag.name }}</span>
+										{% endfor %}
+										</p>
+									{% endif %}	
+									</div>
+									<p id="edit-links">
+										<a href="{{ path('editform', {'id':recept.id}) }}" id="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
+										<a href="{{ path('deleterecept', {'id':recept.id}) }}" id="deleterecipe" data-toggle="tooltip" data-placement="auto bottom" title="Verwijder"><span class="glyphicon glyphicon-trash"></span></a>
+										<a href="{{ path('addrecipetoshoppinglist', {'id':recept.id}) }}" id="addtoshoppinglist" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
+									</p>												  
+							  </div>
+							  {% endfor %}
+							</div>
+						{% else %}
+						Geen recepten gevonden.
+						{% endif %}
+					</div>			
+
+					<div id="listview" style="display:none;">
+						{% if recepten %}
+							<div class="table-responsive"> 
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th></th>
+											<th{% if recepten.isSorted('r.titel') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(recepten, 'Titel', 'r.titel') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Gerecht', 'g.name') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Keuken', 'k.name') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Hoofdingrediënt', 'h.name') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Bereidingstijd', 'r.bereidingstijd') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Kostprijs', 'r.kostprijs') }}</th>
+											<th{% if recepten.isSorted('r.toegevoegdOp') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(recepten, 'Toegevoegd', 'r.toegevoegdOp') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Rating', 'r.rating') }}</th>									
+										</tr>
+									</thead>
+									<tbody>
+										{% for recept in recepten %}
+											<tr class="showrecipe" data-url="{{ path('showrecept', {'id':recept.id}) }}">
+												<td>
+													<div style="height:50px;">
+													{% if recept.fotonaam %}
+													<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') }}" alt="{{ recept.titel }}" class="img-responsive" style="max-height:100%;">
+													{% else %}
+													<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height:100%;">
+													{% endif %}
+													</div>
+												</td>
+												<td>
+													{{ recept.titel }}
+													<p id="edit-links">
+														<a href="{{ path('editform', {'id':recept.id}) }}" id="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
+														<a href="{{ path('deleterecept', {'id':recept.id}) }}" id="deleterecipe" data-toggle="tooltip" data-placement="auto bottom" title="Verwijder"><span class="glyphicon glyphicon-trash"></span></a>
+														<a href="{{ path('addrecipetoshoppinglist', {'id':recept.id}) }}" id="addtoshoppinglist" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
+													</p>													
+												</td>
+												<td>
+													{% if recept.gerecht %} {{ recept.gerecht.name }} {% endif %}
+												</td>
+												<td>
+													{% if recept.keuken %} {{ recept.keuken.name }} {% endif %}
+												</td>										
+												<td>
+													{% if recept.hoofdingredient %} {{ recept.hoofdingredient.name }} {% endif %}
+												</td>										
+												<td>
+													{% if recept.bereidingstijd %} {{ recept.bereidingstijd|date('H:i') }} {% endif %}
+												</td>
+												<td>
+													{{ recept.kostprijs }}
+												</td>										
+												<td>
+													{{ recept.toegevoegdOp|date('d/m/Y') }}
+												</td>
+												<td>
+													{{ recept.rating|rating }}
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						{% else %}
+						Geen recepten gevonden.
+						{% endif %}	
 					</div>
-				    <div class="navigation text-center">
+
+					<div class="navigation text-center">
        					 {{ knp_pagination_render(recepten) }}
     				</div>
-				{% else %}
-				Geen recepten gevonden.
-				{% endif %}					
-				</div>	<!-- end div content -->  				
+
+				</div>	<!-- end div content -->
+
 			</div> <!-- end div class=col-sm-10 -->
 			
 		</div> <!-- end div class=row -->
@@ -147,6 +250,23 @@
 	</div>
 	<!-- end Modal -->
 	
+	<!-- myOtherModal -->
+	<div id="myOtherModal" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+		<div class="modal-content" id="myOtherModalContent">
+		Inhoud wordt geladen...
+		</div>
+	  </div>
+	</div>
+	<!-- end Modal -->
+
+<footer class="footer bg-lightblue">
+<div class="container-fluid text-center">
+  	<p>&copy {{ "now"|date("Y") }} Johan Dierinck</p>
+	<p class="small">Powered by <img src="{{ asset('images/symfony_white_02.png') }}" alt="Symfony logo" height="15"></p> 
+</div>
+</footer>
+	
 {% endblock %}
 
 {% block javascripts %}
@@ -154,4 +274,7 @@
     <script src="//oss.maxcdn.com/jquery.form/3.50/jquery.form.min.js"></script>
 	<script src="{{ asset('js/mycustomjs.js') }}"></script>
 	<script src="{{ asset('bundles/tetranzselect2entity/js/select2entity.js') }}"></script>
+	<script src="{{ asset('bundles/starrating/js/rating.js') }}"></script>
+	<script src="https://cdn.ckeditor.com/4.6.2/basic/ckeditor.js"></script>
+
 {% endblock %}

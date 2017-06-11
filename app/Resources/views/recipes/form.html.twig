@@ -1,6 +1,7 @@
+
 {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 	{{ form_row(form.titel) }}
-	{{ form_row(form.beschrijving) }}
+	{{ form_row(form.bron) }}
 	{{ form_row(form.bereidingstijd) }}
 <h5><strong>Ingrediënten</strong></h5>	
 <ul class="nav nav-tabs">
@@ -34,13 +35,26 @@
 	{{ form_row(form.ingredienten_bulk) }}
 	<button type="button" class="btn btn-default btn-xs" id="import"><span class="glyphicon glyphicon-upload"></span>&nbsp;Importeer</button><br/><br/>
 	</div>
-</div>	
+</div>
+{% do form.ingredienten.setRendered %}	
 	{{ form_row(form.bereidingswijze) }}
 	{{ form_row(form.fotoBestand) }}
 	{{ form_row(form.gerecht) }}
 	{{ form_row(form.keuken) }}
 	{{ form_row(form.hoofdingredient) }}
 	{{ form_row(form.tags) }}
+	<p class="small"><a href="{{ path('edittags') }}">Pas tags aan...</a></p>
 	{{ form_row(form.kostprijs) }}
+	<div class="row">
+		<div class="col-sm-6">
+		{{ form_row(form.rating) }}
+		</div>
+		<div class="col-sm-6">
+		{{ form_row(form.personen) }}
+		</div>
+	</div>
 	{{ form_row(form.bewaar) }}
 {{ form_end(form) }}
+
+
+

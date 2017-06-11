@@ -1,0 +1,25 @@
+{% block _menu_recepten_entry_label %}{% endblock %}
+{% block _menu_recepten_entry_errors %}{% endblock %}
+
+{% block _menu_recepten_entry_widget %}
+
+    <div class="row">
+        <div class="col-md-6">
+        {{ form_widget(form) }}
+        </div>
+        <div class="col-md-2">
+            <a href="#" class="collection-up btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+            <a href="#" class="collection-down btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+        </div>
+        <div class="col-md-2">
+            <a href="#" class="collection-remove btn btn-default"><span class="glyphicon glyphicon-trash"></span> </a>
+            <a href="#" class="collection-add btn btn-default">Add</a>
+        </div>
+        <div class="col-md-2">
+            <a href="#" class="collection-duplicate btn btn-default">Duplicate</a>
+            <a href="#" id="guess" class="btn btn-default">Doe een gok</a>
+
+        </div>
+    </div>
+
+{% endblock %}

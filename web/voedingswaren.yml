@@ -1,4 +1,12 @@
 vlees & gevogelte:
+	biefstuk
+	boerenworst
+	boerenworsten
+	châteaubriand
+	gehakt
+	gemengd gehakt
+	kalkoen
+	kalkoensneden
 	kip
 	kipfilet
 	kipfilets
@@ -7,273 +15,265 @@ vlees & gevogelte:
 	kippendij
 	kippendijen
 	kippenpoten
-	stoofvlees
-	biefstuk
-	châteaubriand
-	varkensvlees
-	varkenssneden
-	spiering
-	kalkoen
-	kalkoensneden
-	gehakt
-	rundsgehakt
-	varkensgehakt
-	gemengd gehakt
-	runds- en varkensgehakt
 	merguez
-	merguezworstjes
 	merguezworsten
+	merguezworstjes
+	runds- en varkensgehakt
+	rundsgehakt
 	schnitzel
-	scnitzels
-	boerenworst
-	boerenworsten
+	schnitzels
+	spiering
+	stoofvlees
+	varkensgehakt
+	varkenssneden
+	varkensvlees
 vis:
-	zalm
-	zalmfilet
-	zalmfilets
+	garnalen
 	gerookte zalm
-	zalm, gerookt
-	tonijn
-	tonijnfilet
-	tonijnfilets
-	makreel
-	sardienen
+	griet
 	haring
 	haringfilets
+	inktvis
+	inktvisringen
+	kabeljauw
+	kabeljauwfilet
+	kabeljauwfilets
+	kreeft
+	kreeften
 	maatje
 	maatjes
+	makreel
+	mosselen
+	pladijs
+	pladijsfilet
+	pladijsfilets
 	rolmops
+	sardienen
+	scampi's
+	sint-jacobsvrucht
+	sint-jacobsvruchten
+	tilapia
+	tilapiafilet
+	tilapiafilets
 	tong
 	tongfilet
 	tongfilets
 	tongschar
-	inktvis
-	inktvisringen
-	sint-jacobsvrucht
-	sint-jacobsvruchten
-	griet
-	tilapia
-	tilapiafilet
-	tilapiafilets
-	kabeljauw
-	kabeljauwfilet
-	kabeljauwfilets
-	pladijs
-	pladijsfilet
-	pladijsfilets
-	mosselen
-	garnalen
-	scampi's
-	kreeft
-	kreeften
+	tonijn
+	tonijnfilet
+	tonijnfilets
+	zalm
+	zalm, gerookt
+	zalmfilet
+	zalmfilets
 groenten:
-    ui
-    uien
-    rode ui
-    rode uien
+    aardappel
+    aardappelen
     ajuin
-    broccoli
-    broccoli's
-    bloemkool
-    bloemkolen
+    appel
+    appelen
+    appels
+    appelsien
+    appelsien
     avocado
     avocado's
-    wortel
-    wortelen
+    bakaardappelen
+    bakaardappeltjes
+    banaan
+    bananen
+    bloemkolen
+    bloemkool
     boontjes
+    broccoli
+    broccoli's
+    champignons
+    chili's
+    Chinese kool
+    citroen
+    citroenen
+    clementine
+    clementines
+    courgette
+    gele paprika
+    gele paprika's
+    gember
+    granaatappel
+    granaatappels
+    groene paprika
+    groene paprika's
+    ijsbergsla
+    kale
+    kiwi
+    kiwi's
+    knoflook
+    kropsla
+    lenteui
+    limoen
+    limoenen
+    mandarijn
+    mandarijnen
+    mandarijntjes
+    paprika
+    paprika's
+    pijpajuin
+    rode kool
+    rode paprika
+    rode paprika's
+    rode ui
+    rode uien
+    romainesla
+    selder
+    selderij
+    sinaaspappel
+    sinaaspappelen
+    sla
     snijbonen
     sperziebonen
-    sla
-    kropsla
-    ijsbergsla
-    romainesla
+    spitskool
     tomaat
     tomaten
     trostomaat
     trostomaten
-    pijpajuin
-    lenteui
-    selder
-    selderij
-    witte kool
-    rode kool
-    spitskool
-    kale
-    champignons
-    chili's
-    paprika
-    paprika's
-    groene paprika
-    rode paprika
-    groene paprika's
-    rode paprika's
-    gele paprika
-    gele paprika's
-    citroen
-    citroenen
-    limoen
-    limoenen
-    witloof
-    witlof
-    appel
-    appels
-    appelen
-    appelsien
-    appelsien
-    sinaaspappel
-    sinaaspappelen
-    kiwi
-    kiwi's
-    granaatappel
-    granaatappels
-    banaan
-    bananen
-    mandarijn
-    mandarijnen
-    mandarijntjes
-    clementine
-    clementines
+    ui
+    uien
     vijg
     vijgen
-    knoflook
-    gember
-    Chinese kool
-    zwarte olijven
+    witlof
+    witloof
+    witte kool
+    wortel
+    wortelen
     zoete aardappel
     zoete aardappelen
-    courgette
-    bakaardappeltjes
-    bakaardappelen
-    aardappel
-    aardappelen
+    zwarte olijven
 diepvries:
+    doperwten
     erwten
     erwtjes
-    doperwten
     pekes & erwtjes
     scampi's
 charcuterie:
-    hesp
-    ham
-    gedroogde ham
-    beenham
-    bacon
-    spek
-    gerookt spek
-    gezouten spek
-    spekblokjes
-    gerookt paardenvlees
-    gerookte paardenfilet
-    hespenworst
-    strasbourg
-    ardense ham
     ardeense ham
+    ardense ham
+    bacon
+    bayonneham
+    beenham
+    chorizo
+    chorizoworst
+    gedroogde ham
+    gerookt paardenvlees
+    gerookt spek
+    gerookte paardenfilet
+    gerookte zalmsla
+    gezouten spek
+    ham
+    hesp
+    hespenworst
+    jambon de bayonne
+    kip curry
+    kip-curry
+    krabsla
+    martino
+    parijse worst
     parmaham
     prosciutto
     prosciutto di parma
-    bayonneham
-    jambon de bayonne
-    parijse worst
-    martino
-    zalmsla
-    gerookte zalmsla
-    krabsla
-    tonijnsla
-    kip curry
-    kip-curry
-    chorizo
-    chorizoworst
     salami
+    spek
+    spekblokjes
+    strasbourg
+    tonijnsla
+    zalmsla
 zuivel:
-    melk
-    magere melk
-    halfvolle melk
-    volle melk
-    lactosevrije melk
-    room
-    magere room
-    lactosevrije room
-    yoghurt
-    magere yoghurt
-    volle yoghurt
-    griekse yoghurt
-    magere griekse yoghurt
-    halfvolle griekse yoghurt
-    volle griekse yoghurt
-    gemalen kaas
-    smeerkaas
     belegen kaas
-    jongbelegen kaas
-    jonge kaas
-    gouda
-    cheddar
-    roquefort
     blue d'auvergne
+    cheddar
     damse mokke
     feta
     fetakaas
-    mozzarella
-    mozzarella di buffalo
     geitenkaas
     geitenkaasjes
+    gemalen kaas
+    gemalen kaas
+    geraspte kaas
+    gouda
+    grana padano
+    griekse yoghurt
+    halfvolle griekse yoghurt
+    halfvolle melk
+    jongbelegen kaas
+    jonge kaas
+    lactosevrije melk
+    lactosevrije room
+    magere griekse yoghurt
+    magere melk
+    magere room
+    magere yoghurt
+    melk
+    mozzarella
+    mozzarella di buffalo
     parmezaan
     parmezaanse kaas
     parmiggiano
-    grana padano
-    geraspte kaas
-    gemalen kaas
+    room
+    roquefort
+    smeerkaas
+    volle griekse yoghurt
+    volle melk
+    volle yoghurt
+    yoghurt
 pasta & rijst:
-    spaghetti
     basmati
     basmatirijst
     bulgur
+    spaghetti
 oosterse specialiteiten:
     bamboescheuten
     ingelegde gember
-    nori
-    sojasaus
     mirin
-    rijstazijn
+    nori
     oestersaus
+    rijstazijn
     sobanoedels
+    sojasaus
 dranken:
     bier
-    wijn
     rode wijn
-    witte wijn
-    sherry
     sake
+    sherry
+    wijn
+    witte wijn
 varia:
-    tomatenketchup
-    mayonnaise
-    mayonaise
-    kappertjes
     bloem
+    kappertjes
+    mayonaise
+    mayonnaise
+    tomatenketchup
 conserven:
     ansjovisfilet
     ansjovisfilets
+    kikkererwten
     makreelfilet
     makreelfilets
-    tomatenblokjes
     tomaten uit blik
+    tomatenblokjes
     tomatenpuree
-    kikkererwten
 kruiden:
     cayennepeper
-    oregano
-    kurkuma
-    provençaalse kruiden
+    groentenbouillon
+    harissa
     kaneelstokje
     kaneelstokjes
-    saffraan
     koriander
-    harissa
-    peterselie
+    kurkuma
     nootmuskaat
-    groentenbouillon
-    vleesbouillon
+    oregano
+    peterselie
+    provençaalse kruiden
     rundsbouillon
+    saffraan
     visbouillon
+    vleesbouillon
 noten:
     rozijnen
     

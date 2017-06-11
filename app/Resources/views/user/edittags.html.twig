@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% form_theme form '::jquery.collection.html.twig' %}
+
+{% block body %}
+
+{{ render(controller('AppBundle:Navigation:menu')) }}
+
+<div class="container" style="margin-top:75px;">
+	<div class="row">
+		<div class="col-sm-4 col-sm-offset-3">
+			{{ form_start(form) }}
+			{{ form_widget(form) }}
+
+			{{ form_end(form) }}
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/jquery.collection.js') }}"></script>
+
+    <script type="text/javascript">
+        $('.tagcollection').collection({
+            up: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>',
+            down: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>',
+            add: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>',
+            remove: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></a>',
+            add_at_the_end: true,
+        });
+    </script>
+{% endblock %}

@@ -252,4 +252,28 @@ class Boodschappenlijst
     {
         return $this->ingrbl;
     }
+
+    /**
+     * Set events
+     *
+     * @param array $events
+     *
+     * @return Boodschappenlijst
+     */
+    public function setEvents($events)
+    {
+        $this->events = $events;
+
+        return $this;
+    }
+
+    /**
+     * Get events
+     *
+     * @return array
+     */
+    public function getEvents()
+    {
+        return $this->events;
+    }
 }

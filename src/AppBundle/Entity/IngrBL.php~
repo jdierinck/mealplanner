@@ -197,4 +197,28 @@ class IngrBL
     {
         return $this->ingr_ingr;
     }
+
+    /**
+     * Set receptblordered
+     *
+     * @param \AppBundle\Entity\ReceptBLOrdered $receptblordered
+     *
+     * @return IngrBL
+     */
+    public function setReceptblordered(\AppBundle\Entity\ReceptBLOrdered $receptblordered = null)
+    {
+        $this->receptblordered = $receptblordered;
+
+        return $this;
+    }
+
+    /**
+     * Get receptblordered
+     *
+     * @return \AppBundle\Entity\ReceptBLOrdered
+     */
+    public function getReceptblordered()
+    {
+        return $this->receptblordered;
+    }
 }

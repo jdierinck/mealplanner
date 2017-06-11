@@ -20,6 +20,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ShoppingController extends Controller
 {
@@ -138,7 +139,7 @@ class ShoppingController extends Controller
 
 
     	$qb = $em->createQueryBuilder();
-    	$query = $qb->select('ro', 'partial r.{id,titel}')
+    	$query = $qb->select('ro', 'partial r.{id,titel,personen}')
     			->from('AppBundle:ReceptBLOrdered','ro')
     			->join('ro.recept', 'r')
     			->where('ro.boodschappenlijst = :boodschappenlijst')
@@ -160,12 +161,26 @@ class ShoppingController extends Controller
     	$afdelingen = $em->getRepository('AppBundle:Afdeling')->findIngredientenByAfdeling($boodschappenlijst);
 		
 		$alleafdelingen = $em->getRepository('AppBundle:Afdeling')->findAll();
+
+		// Get start date
+		$startDate = null;
+		if (count($boodschappenlijst->getRecepten()) > 0) {
+			$repo = $em->getRepository('AppBundle:ReceptBLOrdered');
+			$query = $repo->createQueryBuilder('ro')
+					->where('ro.boodschappenlijst = :bl')
+					->setParameter(':bl', $boodschappenlijst)
+					->orderBy('ro.datum', 'ASC')
+					->getQuery();
+			$result = $query->setMaxResults(1)->getOneOrNullResult();
+			$startDate = $result->getDatum()->format('d/m/Y');
+		}
 		
         return $this->render('shopping/shopping.html.twig', array(
 			'afdelingen' => $afdelingen, 
 			'boodschappenlijst' => $boodschappenlijst,
 			'recepten' => $recepten,
-			'alleafdelingen' => $alleafdelingen
+			'alleafdelingen' => $alleafdelingen,
+			'startdatum' => $startDate,
         ));
     }
     
@@ -188,11 +203,8 @@ class ShoppingController extends Controller
 			$em->remove($ro);
 		}
 		
-		$boodschappenlijst->setEvents(null);
-		
     	$em->flush();
     	
-//     	return $this->render('shopping/shoppinglistdeleted.html.twig');
     	$message = "Je boodschappenlijst werd gewist.";
     	$this->addFlash(
 			'notice',
@@ -208,9 +220,9 @@ class ShoppingController extends Controller
     {
     	$em = $this->getDoctrine()->getManager();
     	
-    	$recept = $em->getRepository('AppBundle:Recept')
+    	$ro = $em->getRepository('AppBundle:ReceptBLOrdered')
 				->find($id);
-		if (!$recept) {
+		if (!$ro) {
 			throw $this->createNotFoundException(
 				'No recipe found for id '.$id
 			);
@@ -218,40 +230,18 @@ class ShoppingController extends Controller
 		
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
-				
-		foreach($recept->getReceptenblordered() as $ro){ 
-			if($ro->getBoodschappenlijst()->getId() === $boodschappenlijst->getId()){
-				$em->remove($ro);
-			}
-		}
-		
+
 		foreach($boodschappenlijst->getIngrBL() as $ibl){
-			if($ibl->getIngredient()->getRecept() === $recept){
+			if($ibl->getReceptblordered() === $ro){
 				$em->remove($ibl);
 			}
 		}
-		
-		$events = $boodschappenlijst->getEvents();
 
-		if($events){
-			foreach($events as $key=>$event){
-
-				if($event["title"] === $recept->getTitel()){
-					unset($events[$key]);
-				}
-			}
-			if(count($events) > 0) { 
-				$events = array_values($events);
-			}
-			else { $events = null; }
-			
-			$boodschappenlijst->setEvents($events);
-			$em->flush();
-		}
+		$em->remove($ro);
 		
     	$em->flush();
     	
-    	$message = $recept->getTitel()." werd verwijderd uit je boodschappenlijst.";
+    	$message = $ro->getRecept()->getTitel()." werd verwijderd uit je boodschappenlijst.";
     	$this->addFlash(
 			'notice',
 			$message);
@@ -281,16 +271,28 @@ class ShoppingController extends Controller
 		foreach($recept->getIngredienten() as $ingredient){
 			$ingredienten[] = $ingredient;
 		}
-// 		$boodschappenlijst->setIngredienten($ingredienten);
-// 		
-// 		$recepten = array();
-// 		$recepten[] = $recept;
-// 		$boodschappenlijst->setRecepten($recepten);
-		
+
+		// Find last date in BL, and if it exists increment it and set it on new object
+		$repo = $em->getRepository('AppBundle:ReceptBLOrdered');
+		$query = $repo->createQueryBuilder('r')
+			->where('r.boodschappenlijst = :bl')
+			->setParameter(':bl', $boodschappenlijst)
+			->orderBy('r.datum', 'DESC')
+			->getQuery();
+		$lastRecept = $query->setMaxResults(1)->getOneOrNullResult();
+
+		if ($lastRecept) {
+			$date = $lastRecept->getDatum();
+			$date->modify('+1 day');
+		} else {
+			$date = new \DateTime("now");
+		}
+
 		$ro = new ReceptBLOrdered();
 		$ro->setBoodschappenlijst($boodschappenlijst);
         $ro->setRecept($recept);
         $ro->setServings(4);
+        $ro->setDatum($date);
 		
 		$ro->setIngrBL($ingredienten);
 		
@@ -308,7 +310,8 @@ class ShoppingController extends Controller
     /**
      * @Route("add/item", name="additemtoshoppinglist")
      */
-    public function addItemToShoppingListAction(Request $request){
+    public function addItemToShoppingListAction(Request $request)
+    {
     	
     	$em = $this->getDoctrine()->getManager();
 
@@ -365,7 +368,8 @@ class ShoppingController extends Controller
      /**
      * @Route("pdf", name="topdf")
      */
-    public function generatePDFAction(Request $request){
+    public function generatePDFAction(Request $request)
+    {
     	$em = $this->getDoctrine()->getManager();
 
 		$user = $this->getUser();
@@ -391,17 +395,16 @@ class ShoppingController extends Controller
 				'Content-Disposition'   => 'attachment; filename="Mealplanner.pdf"'
 			)
 		);
-
 // 		return $this->render('shopping/shoppinglisttopdf.html.twig', array(
 // 			'afdelingen'  => $afdelingen
 // 		));
-
     }
     
     /**
      * @Route("csv", name="tocsv")
      */
-    public function generateCSVAction(Request $request){
+    public function generateCSVAction(Request $request)
+    {
 
     	$em = $this->getDoctrine()->getManager();
     	
@@ -435,7 +438,8 @@ class ShoppingController extends Controller
     /**
      * @Route("sendmail", name="sendmail")
      */
-     public function sendEmailAction(Request $request){
+     public function sendEmailAction(Request $request)
+     {
 		$user = $this->getUser();
 		     
      	$defaultData = array();
@@ -520,64 +524,111 @@ class ShoppingController extends Controller
 			return $response;
 		}
 		
-		return $this->render('shopping/sendmailform.html.twig', array('form' => $form->createView()));
-				
-					     		
+		return $this->render('shopping/sendmailform.html.twig', array('form' => $form->createView()));			     		
      }
 
     /**
      * @Route("events", name="events")
      */     
-     public function eventsAction(Request $request){
-// 		[{"title":"Marokkaanse groentenstoofpotje met bulgur 168","start":"2017-03-13T10:02:56.054Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc1","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-13T10:02:56.054Z","_end":null},{"title":"Rijst met scampi en chorizo 169","start":"2017-03-14T10:02:56.054Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc2","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-14T10:02:56.054Z","_end":null},{"title":"Koolsla met schnitzel 170","start":"2017-03-15T10:02:56.054Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc3","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-15T10:02:56.054Z","_end":null}]
-// 		$events = $request->request->get('events');
-// 		$events = '[{"title":"Marokkaanse groentenstoofpotje met bulgur 168","start":"2017-03-13T11:28:38.392Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc1","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-13T11:28:38.392Z","_end":null},{"title":"Rijst met scampi en chorizo 169","start":"2017-03-14T11:28:38.392Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc2","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-14T11:28:38.392Z","_end":null},{"title":"Koolsla met schnitzel 170","start":"2017-03-15T11:28:38.392Z","source":{"className":[],"_fetchId":1,"_status":"resolved"},"_id":"_fc3","className":[],"end":null,"allDay":false,"_allDay":false,"_start":"2017-03-15T11:28:38.392Z","_end":null}]';
-// 		dump($events);
-// 		$events = json_decode($events);
-// 		dump($events);
-		
-// 		$events = [
-// 			array("title"=>"event1", "start"=>"2017-03-13"),
-// 			array("title"=>"event2", "start"=>"2017-03-14"),
-// 		];
-		
+     public function eventsAction(Request $request)
+     {
 		$em = $this->getDoctrine()->getManager();
     	
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
-		$events = $boodschappenlijst->getEvents();
-		
-		if(null === $events){
-			$events = array();
-			$date = date("Y-m-d");
-			$i = 0;
-			foreach($boodschappenlijst->getReceptenblordered() as $recept){
-				$events[] = array("title" => $recept->getRecept()->getTitel(), "start" => date("Y-m-d", strtotime("+".$i." day", strtotime($date))));
-				$i++;
-			}
-		}
 
-		return new JsonResponse($events);
-     
+		$events = array();
+		foreach($boodschappenlijst->getReceptenblordered() as $ro){
+			$events[] = array(
+					"title" => $ro->getRecept()->getTitel(), 
+					"id" => $ro->getId(), 
+					"start" => $ro->getDatum()->format('Y-m-d'),
+				);
+			}
+
+		return new JsonResponse($events); 
  	}
  	
  	/**
      * @Route("saveevents", name="saveevents")
      */     
-     public function saveEventsAction(Request $request){ 
+     public function saveEventsAction(Request $request)
+     { 
      	$em = $this->getDoctrine()->getManager();
-    	
-		$user = $this->getUser();
-		$boodschappenlijst = $user->getBoodschappenlijst();
+
+     	$repo = $em->getRepository('AppBundle:ReceptBLOrdered');
 		
 		$events = $request->request->get('events');
 		$events = json_decode($events, true);
-		
-		$boodschappenlijst->setEvents($events);
-		$em->flush();
+
+		foreach ($events as $event) {
+			$ro = $repo->find($event["id"]);
+			$newDate = $event["start"];
+			$ro->setDatum(new \DateTime($newDate));
+			$em->flush();
+		}
 		
 		$message = "Planning bewaard";
 		return new JsonResponse($message);
 		
     }
+
+    /**
+     * @Route("startdate", name="startdate")
+     */     
+     public function startDateAction(Request $request)
+     {
+     	$startdate = $request->request->get('startdate');
+
+     	$validator = $this->get('validator');
+
+     	// Check if date has valid format
+     	$dateConstraint = new Assert\Regex(array('pattern' => '/^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/'));
+     	$dateConstraint->message = 'Geen geldige datum. Probeer opnieuw.';
+
+     	$errorList = $validator->validate($startdate, $dateConstraint);
+
+     	if (0 === count($errorList)) {
+			$newStartDate = \DateTime::createFromFormat('d/m/Y', $startdate);
+			$newStartDate->setTime(0,0); // Set time to 00:00:00 instead of current time for correct calculation of differences between dates
+
+			$em = $this->getDoctrine()->getManager();
+			$user = $this->getUser();
+			$bl = $user->getBoodschappenlijst();
+
+			// Get previous start date
+			$repo = $em->getRepository('AppBundle:ReceptBLOrdered');
+			$query = $repo->createQueryBuilder('ro')
+				->where('ro.boodschappenlijst = :bl')
+				->setParameter(':bl', $bl)
+				->orderBy('ro.datum', 'ASC')
+				->getQuery();
+			$result = $query->setMaxResults(1)->getOneOrNullResult();
+			$previousStartDate = $result->getDatum();
+
+			// Calculate difference
+			$diff = $previousStartDate->diff($newStartDate);
+			$diff = $diff->format('%R%a days'); // Format DateInterval to string
+
+			foreach ($bl->getReceptenblordered() as $ro) {
+				$previousDate = $ro->getDatum();
+				$newDate = $previousDate->modify($diff);
+
+				// Note: $ro->setDatum($newDate); doesn't work, you have to pass a new DateTime object
+				// See https://stackoverflow.com/questions/15486402/doctrine2-orm-does-not-save-changes-to-a-datetime-field/15488230#15488230
+				$ro->setDatum(new \DateTime($newDate->format('Y-m-d')));
+
+				$em->flush();
+			}
+
+			$message = "De startdatum werd aangepast.";
+			return new JsonResponse($message, 200);
+     	} else {
+     		$message = $errorList[0]->getMessage();
+     		// Do something with the error
+     		return new JsonResponse($message, 400);
+     	}
+     	
+     	
+     }
 }

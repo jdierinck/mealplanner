@@ -37,9 +37,9 @@ class Recept
     private $titel;
     
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */    
-    private $beschrijving;
+    private $bron;
     
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -113,11 +113,6 @@ class Recept
      * @ORM\Column(type="decimal", scale=2, nullable=true)
      */    
     private $kostprijs;
-    
-    /**
-     * @ORM\OneToMany(targetEntity="ReceptOrdered", mappedBy="recept", cascade={"all"})
-     */
-	private $receptenordered;
 	
 	/**
      * @ORM\OneToMany(targetEntity="ReceptBLOrdered", mappedBy="recept", cascade={"all"})
@@ -131,11 +126,22 @@ class Recept
     private $user;
 
 	/**
-	 * @ORM\Column(type="integer")
-	 * @Assert\Type("integer")
+	 * @ORM\Column(type="integer", nullable=false)
+     * @Assert\NotBlank()
+     * @Assert\Range(min=1, max=20, minMessage="Deze waarde moet tussen 1 en 20 liggen", maxMessage="Deze waarde moet tussen 1 en 20 liggen")     
 	 */
 	private $personen;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $rating;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Dag", mappedBy="recepten")
+     */   
+    private $dagen;
+    
     /**
      * Get id
      *
@@ -167,29 +173,6 @@ class Recept
     public function getTitel()
     {
         return $this->titel;
-    }
-
-    /**
-     * Set beschrijving
-     *
-     * @param string $beschrijving
-     * @return Recept
-     */
-    public function setBeschrijving($beschrijving)
-    {
-        $this->beschrijving = $beschrijving;
-
-        return $this;
-    }
-
-    /**
-     * Get beschrijving
-     *
-     * @return string 
-     */
-    public function getBeschrijving()
-    {
-        return $this->beschrijving;
     }
 
     /**
@@ -514,41 +497,6 @@ class Recept
         return $this->ingredienten;
     }
 
-
-
-    /**
-     * Add receptenordered
-     *
-     * @param \AppBundle\Entity\ReceptOrdered $receptenordered
-     * @return Recept
-     */
-    public function addReceptenordered(\AppBundle\Entity\ReceptOrdered $receptenordered)
-    {
-        $this->receptenordered[] = $receptenordered;
-
-        return $this;
-    }
-
-    /**
-     * Remove receptenordered
-     *
-     * @param \AppBundle\Entity\ReceptOrdered $receptenordered
-     */
-    public function removeReceptenordered(\AppBundle\Entity\ReceptOrdered $receptenordered)
-    {
-        $this->receptenordered->removeElement($receptenordered);
-    }
-
-    /**
-     * Get receptenordered
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getReceptenordered()
-    {
-        return $this->receptenordered;
-    }
-
     /**
      * Add receptenblordered
      *
@@ -629,4 +577,52 @@ class Recept
         return $this->personen;
     }  
 
+
+    /**
+     * Set bron
+     *
+     * @param string $bron
+     *
+     * @return Recept
+     */
+    public function setBron($bron)
+    {
+        $this->bron = $bron;
+
+        return $this;
+    }
+
+    /**
+     * Get bron
+     *
+     * @return string
+     */
+    public function getBron()
+    {
+        return $this->bron;
+    }
+
+    /**
+     * Set rating
+     *
+     * @param integer $rating
+     *
+     * @return Recept
+     */
+    public function setRating($rating)
+    {
+        $this->rating = $rating;
+
+        return $this;
+    }
+
+    /**
+     * Get rating
+     *
+     * @return integer
+     */
+    public function getRating()
+    {
+        return $this->rating;
+    }
 }

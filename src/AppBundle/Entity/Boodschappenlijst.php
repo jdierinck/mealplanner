@@ -51,8 +51,7 @@ class Boodschappenlijst
     {
         $recepten = new ArrayCollection();
         
-        foreach($this->receptenblordered as $r)
-        {
+        foreach ($this->receptenblordered as $r) {
             $recepten[] = $r->getRecept();
         }
 
@@ -61,8 +60,7 @@ class Boodschappenlijst
     
     public function setRecepten($recepten)
     {	
-        foreach($recepten as $r)
-        {
+        foreach ($recepten as $r) {
             $ro = new ReceptBLOrdered();
 
             $ro->setBoodschappenlijst($this);
@@ -85,8 +83,7 @@ class Boodschappenlijst
     {
         $ingredienten = new ArrayCollection();
         
-        foreach($this->ingrbl as $i)
-        {
+        foreach ($this->ingrbl as $i) {
             $ingredienten[] = $i->getIngredient();
         }
 
@@ -95,8 +92,7 @@ class Boodschappenlijst
     
     public function setIngredienten($ingredienten)
     {	
-        foreach($ingredienten as $i)
-        {
+        foreach ($ingredienten as $i) {
             $ibl = new IngrBL();
 
             $ibl->setBoodschappenlijst($this);
@@ -114,11 +110,6 @@ class Boodschappenlijst
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
 	private $user;
-	
-	/**
-	 * @ORM\Column(type="array", nullable=true)
-	 */ 
-	private $events;   
     
     /**
      * Get id
@@ -253,27 +244,4 @@ class Boodschappenlijst
         return $this->ingrbl;
     }
 
-    /**
-     * Set events
-     *
-     * @param array $events
-     *
-     * @return Boodschappenlijst
-     */
-    public function setEvents($events)
-    {
-        $this->events = $events;
-
-        return $this;
-    }
-
-    /**
-     * Get events
-     *
-     * @return array
-     */
-    public function getEvents()
-    {
-        return $this->events;
-    }
 }

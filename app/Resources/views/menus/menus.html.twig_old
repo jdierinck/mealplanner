@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('css/general.css') }}">
+<link rel="stylesheet" href="{{ asset('css/stickyfooter.css') }}">
+{% endblock %}
+
+{% block body %}
+
+	{{ render(controller('AppBundle:Navigation:menu')) }}
+	
+<div class="container" style="margin-top:75px;">
+	<div class="row">
+		<div class="col-sm-2">
+		</div> <!-- end div col-sm-2 -->
+		<div class="col-sm-10">
+		
+		<h4>Voeg menu toe</h4>
+		{# {{ render(controller('AppBundle:Menus:newMenu')) }} #}
+		{% include 'menus/newmenu.html.twig' %}
+		
+		{% if menus %}
+			<div class="panel-group" id="accordion">
+			{% for menu in menus %}
+			  <div class="panel panel-default">
+				<div class="panel-heading">
+				  <div class="panel-title pull-left">
+					<h4><a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ loop.index }}">
+					{{ menu.naam }}</a></h4>
+				  </div>
+				  <div class="panel-title pull-right">
+				  <a href="{{ path('editmenu', {'id': menu.id}) }}" id="editmenu" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk menu"><span class="glyphicon glyphicon-pencil"></span></a>
+				  <a href="{{ path('deletemenu', {'id': menu.id}) }}" id="deletemenu" data-toggle="tooltip" data-placement="auto bottom" title="Wis menu"><span class="glyphicon glyphicon-remove-circle"></span></a>
+				  <a href="{{ path('showlist', {'id': menu.id}) }}" id="showlist" data-toggle="tooltip" data-placement="auto bottom" title="Ingrediënten"><span class="glyphicon glyphicon-list"></span></a>
+				  <!-- <a href="#" id="printlist" data-toggle="tooltip" data-placement="auto bottom" title="Druk af"><span class="glyphicon glyphicon-print"></span></a> -->
+				  <a href="{{ path('addmenutoshoppinglist', {'id': menu.id}) }}" id="addtocart" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
+				  </div>
+				  <div class="clearfix"></div>
+				</div>
+				<div id="collapse{{ loop.index }}" class="panel-collapse collapse">
+				  <div class="panel-body">
+				  <ul>
+				  {% for recept in menu.recepten %}
+				  	<li>{{ recept.titel }}</li>
+				  {% endfor %}
+				  </ul>
+				 	{# {{ render(controller('AppBundle:Menus:editMenu',{'id':menu.id})) }} #}
+				  </div>
+				</div>
+			  </div>
+			{% endfor %}  
+			</div> <!-- end div panel-group -->
+		{% else %}
+		Geen menu's gevonden.
+		{% endif %}
+
+		</div> <!-- end div col-sm-10 -->	
+	</div> <!-- end div row -->
+</div> <!-- end div container -->	
+
+	<!-- myModal -->
+	<div id="myModal" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+		<div class="modal-content" id="myModalContent">
+		Inhoud wordt geladen...
+		</div>
+	  </div>
+	</div>
+	<!-- end Modal -->
+
+<footer class="footer text-center bg-lightblue">
+<div class="container-fluid">
+  	<p>&copy {{ "now"|date("Y") }} Johan Dierinck</p>
+	<p class="small">Powered by <img src="{{ asset('images/symfony_white_02.png') }}" alt="Symfony logo" height="15"></p>
+</div>
+</footer>
+
+{% endblock %}
+
+{% block javascripts %}
+<script src="{{ asset('bundles/tetranzselect2entity/js/select2entity.js') }}"></script>
+<!-- <script src="{{ asset('js/jquery-sfPrototypeMan-master/jquery.sfprototypeman.js') }}"></script> -->
+<script src="{{ asset('js/jquery.collection.js') }}"></script>
+<script>
+$(document).ready(function(){
+
+    $('.recipecollection').collection({
+        // up: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>',
+        // down: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>',
+        add: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>',
+        // remove: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></a>',
+        add_at_the_end: true,
+    });
+
+	// initialize tooltips
+	$('[data-toggle="tooltip"]').tooltip();
+	
+    $('body').on('submit', ".panel form[name='menu']", function (e) {
+
+        e.preventDefault();
+        
+        $.ajax({
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            context: this
+        })
+        .done(function (data) {
+            if (typeof data.message !== 'undefined') {
+                alert(data.message);
+                location.reload();
+            }
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            if (typeof jqXHR.responseJSON !== 'undefined') {
+                if (jqXHR.responseJSON.hasOwnProperty('form')) {
+                    $(this).parent('div.panel-body').html(jqXHR.responseJSON.form);
+//                     $(this).replaceWith(jqXHR.responseJSON.form);
+                }
+				
+//                 $('.form_error').html(jqXHR.responseJSON.message);
+
+            } else {
+                alert(errorThrown);
+            }
+
+        });
+    });
+    
+    // Load content into modal
+	$('body').on('click', 'a#deletemenu, a#showlist, a#addtocart', function(e) {
+		e.preventDefault();
+		$('#myModal').modal();
+		$('#myModalContent').load($(this).attr('href'));
+    });
+    
+    $('[id^="collapse"]').on("shown.bs.collapse",function(){
+  		$("#menu_recepten", this).sortable();
+	});
+
+	$('body').on('click', '[data-prototype]', function(e) {
+	    $(this).parent().find('.select2entity').last().select2entity();
+	});	
+	
+});
+</script>
+
+{% endblock %}

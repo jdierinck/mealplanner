@@ -37,6 +37,12 @@ class Tag
      * @ORM\ManyToMany(targetEntity="Recept", mappedBy="tags")
      */
 	private $recepten;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="tags")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    private $user;  
 	
     /**
      * Get id
@@ -102,5 +108,34 @@ class Tag
     public function getRecepten()
     {
         return $this->recepten;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \AppBundle\Entity\User $user
+     *
+     * @return Tag
+     */
+    public function setUser(\AppBundle\Entity\User $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \AppBundle\Entity\User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
     }
 }

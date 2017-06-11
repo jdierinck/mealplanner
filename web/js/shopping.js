@@ -1,7 +1,40 @@
 $(document).ready(function(){
+
+	// Note: attach datepicker to col-sm-3 otherwise it will be displayed too high
+	var cont = $('.datepicker').parents('.col-sm-3');
+	// Datepicker
+	$('.datepicker').datepicker({
+		todayHighlight: true,
+		autoclose: true,
+		format: 'dd/mm/yyyy',
+		language: 'nl-BE',
+		orientation: 'auto',
+		container: cont
+	});
+
+	$('form[name="date"]').on('submit', function(e){
+		e.preventDefault();
+		var value = $(this).serialize();
+		var url = $(this).attr('action');
+		$.post(url, value, function(){
+			$('#startdate-error').empty();
+		})
+		.done(function(data, textStatus, jqXHR){
+			alert(data);
+		})
+		.fail(function(jqXHR, textStatus, errorThrown){
+			var msg = jqXHR.responseJSON;
+			$('#startdate-error').html(msg);
+		})
+		;
+	});
 	
-// 	$('#sortable').sortable();
-// 	$( "#sortable" ).disableSelection();
+	$('body').on('click','.del-event', function(){
+		var eventId = $(this).data('id');
+		$(this).parents('.modal-body').find('.pop').popover('hide');
+		$('#calendar').fullCalendar('removeEvents',eventId);
+		$.post('wis/recept/'+eventId, function(){ alert('Recept gewist'); });
+	});
 	
     $('#calendar').fullCalendar({
         height: "auto",
@@ -25,12 +58,49 @@ $(document).ready(function(){
 // 			});
 // 			callback(events);
 // 		},
-		events: '/events'
+		events: '/events',
+		eventRender: function(event, element) {
+			// Important: append the popover to a specific element within the modal otherwise it won't show up correctly!
+			element.find('.fc-content').wrap("<a href='#' class='pop' data-toggle='popover' data-trigger='click' title='"+event.title+"' data-content='<a href=\"#\" class=\"del-event\" data-id=\""+event.id+"\">Verwijder recept</a>' data-container='.modal-body' data-html='true' style='color:white;'></a>");
+        },
+        eventAfterRender: function(event, element){
+
+        },
+        eventAfterAllRender: function(){
+			// Initialize popovers
+			$('[data-toggle="popover"]').popover();
+
+        }
+		// eventMouseover: function(event, domEvent) {
+  //               var layer = '<div id="events-layer" class="fc-transparent" style="position:absolute;width:100%; height:100%; top:-1px; text-align:right; z-index:100"><a><img src="../../images/editbt.png" title="edit" width="14" id="edbut'+event.id+'" border="0" style="padding-right:5px;padding-top:2px;" /></a><a><img src="../../images/delete.png" title="delete" width="14" id="delbut'+event.id+'" border="0" style="padding-right:5px; padding-top:2px;" /></a></div>';
+		// 		$(this).append(layer);
+		// 		$("#delbut"+event.id).hide();
+  //               $("#delbut"+event.id).fadeIn(300);
+  //               $("#delbut"+event.id).click(function() {
+  //               	console.log(event.id);
+  //                   $.post("your.php", {eventId: event.id});
+  //                   calendar.fullCalendar('refetchEvents');
+  //               });
+  //               $("#edbut"+event.id).hide();
+  //               $("#edbut"+event.id).fadeIn(300);
+  //               $("#edbut"+event.id).click(function() {
+  //               	console.log(event.id);
+  //                   var title = prompt('Current Event Title: ' + event.title + '\n\nNew Event Title:');
+  //                   if(title){
+  //                       $.post("your.php", {eventId: event.id, eventTitle: title});
+  //                       calendar.fullCalendar('refetchEvents');
+  //                   }
+  //               });
+  //           },
     });
     
     $('#myCalModal').on('shown.bs.modal', function () {
    		$('#calendar').fullCalendar('render');
-//    		$('#calendar').fullCalendar('refetchEvents');
+//    		$('#calendar').fullCalendar('refetchEvents'); 
+	});
+
+	$('#myCalModal').on('hidden.bs.modal', function () {
+		location.reload();
 	});
     
     $('#printCal').on('click', function (){
@@ -75,22 +145,22 @@ $(document).ready(function(){
 	}
 	
 	$('#saveCal').on('click', function (){
-    var events = $('#calendar').fullCalendar('clientEvents');
-    var url = '/saveevents';
-    var data = {events: JSON.stringify(events)};
-	
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: data,
-      dataType: "json",
-      success: function(response){
-      	alert(response);
-      },
-      error: function(xhr){
-		alert(xhr);
-		}
-    });
+	    var events = $('#calendar').fullCalendar('clientEvents');
+	    var url = '/saveevents';
+	    var data = {events: JSON.stringify(events)};
+		
+	    $.ajax({
+	      type: "POST",
+	      url: url,
+	      data: data,
+	      dataType: "json",
+	      success: function(response){
+	      	alert(response);
+	      },
+	      error: function(xhr){
+			alert(xhr);
+			}
+	    });
   	
   	});
 	

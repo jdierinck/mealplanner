@@ -16,8 +16,7 @@ use AppBundle\Entity\User;
 class Menu
 {
 	public function __construct() {
-		$this->receptenordered = new ArrayCollection();
-		$this->recepten = new ArrayCollection();
+		$this->dagen = new ArrayCollection();
 	}
 	
     /**
@@ -38,37 +37,9 @@ class Menu
     private $naam;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReceptOrdered", mappedBy="menu", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Dag", mappedBy="menu", cascade={"persist","remove"})
      */
-	private $receptenordered;
-	
-	private $recepten;
-	
-    public function getRecepten()
-    {
-        $recepten = new ArrayCollection();
-        
-        foreach($this->receptenordered as $r)
-        {
-            $recepten[] = $r->getRecept();
-        }
-
-        return $recepten;
-    }	
-    
-    public function setRecepten($recepten)
-    {
-        foreach($recepten as $r)
-        {
-            $ro = new ReceptOrdered();
-
-            $ro->setMenu($this);
-            $ro->setRecept($r);
-            
-            $this->addReceptenOrdered($ro);
-
-        }
-    } 
+	private $dagen;
     
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="menus")
@@ -109,41 +80,6 @@ class Menu
         return $this->naam;
     }
 
-
-
-    /**
-     * Add receptenordered
-     *
-     * @param \AppBundle\Entity\ReceptOrdered $receptenordered
-     * @return Menu
-     */
-    public function addReceptenordered(\AppBundle\Entity\ReceptOrdered $receptenordered)
-    {
-        $this->receptenordered[] = $receptenordered;
-
-        return $this;
-    }
-
-    /**
-     * Remove receptenordered
-     *
-     * @param \AppBundle\Entity\ReceptOrdered $receptenordered
-     */
-    public function removeReceptenordered(\AppBundle\Entity\ReceptOrdered $receptenordered)
-    {
-        $this->receptenordered->removeElement($receptenordered);
-    }
-
-    /**
-     * Get receptenordered
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getReceptenordered()
-    {
-        return $this->receptenordered;
-    }
-
     /**
      * Set user
      *
@@ -165,5 +101,42 @@ class Menu
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Add dagen
+     *
+     * @param \AppBundle\Entity\Dag $dagen
+     *
+     * @return Menu
+     */
+    public function addDagen(\AppBundle\Entity\Dag $dagen)
+    {
+        // set Menu on each Dag instance
+        $dagen->setMenu($this);
+
+        $this->dagen[] = $dagen;
+
+        return $this;
+    }
+
+    /**
+     * Remove dagen
+     *
+     * @param \AppBundle\Entity\Dag $dagen
+     */
+    public function removeDagen(\AppBundle\Entity\Dag $dagen)
+    {
+        $this->dagen->removeElement($dagen);
+    }
+
+    /**
+     * Get dagen
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDagen()
+    {
+        return $this->dagen;
     }
 }

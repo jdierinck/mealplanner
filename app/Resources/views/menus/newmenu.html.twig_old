@@ -1,0 +1,16 @@
+{# {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %} #}
+{% form_theme form ':form:jquery.collection.html.twig' ':form:my-form-theme.html.twig'%}
+
+
+<div class="form_error"></div>
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+	{{ form_row(form.naam) }}
+	{{ form_row(form.dagen) }}
+	
+	{# {{ form_row(form.bewaar) }} #}
+{{ form_end(form) }}
+
+
+
+
+

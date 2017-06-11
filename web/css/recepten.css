@@ -1,0 +1,89 @@
+.vich-image img {
+	max-width: 20%;
+}
+
+/*.showrecipe-image {
+	height: 250px;
+}*/
+
+.item.list-group-item
+{
+    /*reset the grid float and width and add a background for fun */
+    float: none;
+    width: 100%;
+    background-color:#f5f5f5;
+    height: 70px;
+}
+/* give the image a left float in the list view */
+.item.list-group-item img {
+	float:left;
+	margin-right: 20px;
+	max-height: 50px;
+}
+/* and clearfix the left float of the image */
+.item.list-group-item:before,
+.item.list-group-item:after {
+  display: table;
+  content: " ";
+}
+.item.list-group-item:after
+{
+    clear:both;
+}
+
+.item:not(.list-group-item){
+	height: 190px;
+}
+
+.item:not(.list-group-item) img{
+	margin-bottom: 10px;
+	max-height: 100px;
+}
+
+.hideOverflow
+{
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+
+/*FontAwesome icons */
+/*th a {
+    position: relative;
+}*/
+a.asc:after {
+    content: "\f0dd"; /*fa-sort-desc*/
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+/*--adjust as necessary--*/
+/*    color: #000;
+    font-size: 18px;*/
+    padding-left: 0.5em;
+    /*position: absolute;*/
+/*    top: 10px;
+    left: 0;*/
+}
+a.desc:after {
+    content: "\f0de"; /*fa-sort-asc*/
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+/*--adjust as necessary--*/
+/*    color: #000;
+    font-size: 18px;*/
+    padding-left: 0.5em;
+    /*position: absolute;*/
+/*    top: 10px;
+    left: 0;*/
+}
+
+table .rating div.star-full, table .rating div.star-empty {
+    font-size: 5px;
+}
+
+table .rating div.star-empty:before, table .rating div.star-full:before {
+    padding-right:0;
+}
