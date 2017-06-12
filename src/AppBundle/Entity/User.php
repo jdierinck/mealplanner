@@ -125,6 +125,11 @@ class User implements UserInterface, \Serializable
     }
 
     /**
+     * @ORM\Column(type="string", length=64, nullable=true)
+     */
+    private $confirmationToken;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -339,5 +344,29 @@ class User implements UserInterface, \Serializable
     public function getTags()
     {
         return $this->tags;
+    }
+
+    /**
+     * Set confirmationToken
+     *
+     * @param string $confirmationToken
+     *
+     * @return User
+     */
+    public function setConfirmationToken($confirmationToken)
+    {
+        $this->confirmationToken = $confirmationToken;
+
+        return $this;
+    }
+
+    /**
+     * Get confirmationToken
+     *
+     * @return string
+     */
+    public function getConfirmationToken()
+    {
+        return $this->confirmationToken;
     }
 }

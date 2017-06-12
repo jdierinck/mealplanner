@@ -15,6 +15,9 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use AppBundle\Form\Type\TagType;
 use AppBundle\Form\Type\UserEditType;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserController extends Controller
 {
@@ -123,5 +126,95 @@ class UserController extends Controller
         return $this->render('user/edittags.html.twig', array(
             'form' => $form->createView(),
         ));
-    }    
+    }
+
+    /**
+     * Request a password reset
+     *
+     * @Route("requestpwd", name="requestpwd")
+     */
+    public function requestPwdReset(Request $request)
+    {
+
+        $username = $request->request->get('username');
+
+        if ($username) {
+            $em = $this->getDoctrine()->getManager();
+            $user = $em->getRepository('AppBundle:User')->findOneByUsername($username);
+
+            if (!$user) {
+                throw $this->createNotFoundException(
+                    'Geen gebruiker gevonden met naam '.$username
+                );
+            }
+            // Generate token
+            $bytes = openssl_random_pseudo_bytes(16); // Generate secure random string
+            $token = substr(base64_encode($bytes), 0, 16); // Encode value and trim it
+            $token = str_replace(array('+','/','='), '', $token); // Make it url safe
+
+            $user->setConfirmationToken($token);
+            $em->flush();
+
+            // Send e-mail
+            $message = \Swift_Message::newInstance()
+                ->setSubject('Mealplanner: Password reset')
+                ->setFrom('johan.dierinck@telenet.be')
+                ->setTo($user->getEmail())
+                ->setBody(
+                    $this->renderView(
+                        // appBundle/views/emails/contact.html.twig
+                        'user/pwdresetmail.html.twig',
+                        array('token' => $token)
+                        ),
+                        'text/html'
+                    )                
+            ;
+            
+            $this->get('mailer')->send($message);           
+            
+            // add flash message
+            $this->addFlash(
+                'notice',
+                'Er werd een e-mail verstuurd naar '.$user->getEmail().'. Klik op de link in de mail om een nieuw wachtwoord in te stellen.');
+        }
+
+        return $this->render('user/request.html.twig');
+    }
+
+    /**
+     * Reset user password
+     * 
+     * @Route("resetpwd/{token}", name="resetpwd")
+     */
+    public function resetPwdAction(Request $request, $token)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository('AppBundle:User')->findOneByConfirmationToken($token);
+
+        if (null === $user) {
+            throw new NotFoundHttpException(sprintf('The user with "confirmation token" does not exist for value "%s"', $token));
+        }
+
+        $form = $this->createFormBuilder($user)
+            ->add('plainPassword', RepeatedType::class, array(
+                'type' => PasswordType::class,
+                'first_options'  => array('label' => 'Wachtwoord'),
+                'second_options' => array('label' => 'Herhaal wachtwoord'),
+            ))
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $password = $this->get('security.password_encoder')
+                ->encodePassword($user, $user->getPlainPassword());
+            $user->setPassword($password);
+            $em->flush();
+            return $this->redirectToRoute('recipes');
+        }
+
+        return $this->render('user/resetpwd.html.twig', array('form' => $form->createView()));
+    }
+
+
 }
