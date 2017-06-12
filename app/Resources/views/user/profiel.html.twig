@@ -12,6 +12,7 @@
 		<p>E-mail: {{ user.email }}</p>
 		<p>Aantal recepten: {{ user.getrecepten|length }}</p>
 		<p>Aantal menu's: {{ user.getmenus|length }}</p>
+		<p>Lid sinds: {{ user.getRegistratiedatum|date('d/m/Y') }}</p>
 		</div>
 	</div>
 </div>

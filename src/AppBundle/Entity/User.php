@@ -7,6 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * User
@@ -128,6 +129,21 @@ class User implements UserInterface, \Serializable
      * @ORM\Column(type="string", length=64, nullable=true)
      */
     private $confirmationToken;
+
+    /**
+     * @var \DateTime $registratiedatum
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="create")
+     * @var \DateTime
+     */   
+    private $registratiedatum;
+
+    /**
+     * @var \DateTime $passwordRequestedAt
+     * @ORM\Column(type="datetime", nullable=true)
+     * @var \DateTime
+     */  
+    private $passwordRequestedAt;
 
     /**
      * Get id
@@ -369,4 +385,58 @@ class User implements UserInterface, \Serializable
     {
         return $this->confirmationToken;
     }
+
+    /**
+     * Set registratiedatum
+     *
+     * @param \DateTime $registratiedatum
+     *
+     * @return User
+     */
+    public function setRegistratiedatum($registratiedatum)
+    {
+        $this->registratiedatum = $registratiedatum;
+
+        return $this;
+    }
+
+    /**
+     * Get registratiedatum
+     *
+     * @return \DateTime
+     */
+    public function getRegistratiedatum()
+    {
+        return $this->registratiedatum;
+    }
+
+    /**
+     * Set passwordRequestedAt
+     *
+     * @param \DateTime $passwordRequestedAt
+     *
+     * @return User
+     */
+    public function setPasswordRequestedAt(\DateTime $passwordRequestedAt=null)
+    {
+        $this->passwordRequestedAt = $passwordRequestedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get passwordRequestedAt
+     *
+     * @return null|\DateTime
+     */
+    public function getPasswordRequestedAt()
+    {
+        return $this->passwordRequestedAt;
+    }
+
+    public function isPasswordRequestNonExpired($ttl)
+    {
+        return $this->getPasswordRequestedAt() instanceof \DateTime &&
+               $this->getPasswordRequestedAt()->getTimestamp() + $ttl > time();
+    }    
 }

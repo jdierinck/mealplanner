@@ -18,6 +18,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
@@ -153,6 +154,9 @@ class UserController extends Controller
             $token = str_replace(array('+','/','='), '', $token); // Make it url safe
 
             $user->setConfirmationToken($token);
+
+            $user->setpasswordRequestedAt(new \DateTime());
+
             $em->flush();
 
             // Send e-mail
@@ -195,25 +199,34 @@ class UserController extends Controller
             throw new NotFoundHttpException(sprintf('The user with "confirmation token" does not exist for value "%s"', $token));
         }
 
-        $form = $this->createFormBuilder($user)
-            ->add('plainPassword', RepeatedType::class, array(
-                'type' => PasswordType::class,
-                'first_options'  => array('label' => 'Wachtwoord'),
-                'second_options' => array('label' => 'Herhaal wachtwoord'),
-            ))
-            ->getForm();
+        $ttl = 3600; // request is valid for 1 hour
 
-        $form->handleRequest($request);
+        if ($user->isPasswordRequestNonExpired($ttl)) {
+            $form = $this->createFormBuilder($user)
+                ->add('plainPassword', RepeatedType::class, array(
+                    'type' => PasswordType::class,
+                    'first_options'  => array('label' => 'Wachtwoord'),
+                    'second_options' => array('label' => 'Herhaal wachtwoord'),
+                ))
+                ->getForm();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $password = $this->get('security.password_encoder')
-                ->encodePassword($user, $user->getPlainPassword());
-            $user->setPassword($password);
-            $em->flush();
-            return $this->redirectToRoute('recipes');
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $password = $this->get('security.password_encoder')
+                    ->encodePassword($user, $user->getPlainPassword());
+                $user->setPassword($password);
+                $em->flush();
+                return $this->redirectToRoute('recipes');
+            }
+
+            return $this->render('user/resetpwd.html.twig', array('form' => $form->createView()));
+
+        } else {
+            return new Response('Deze aanvraag is verlopen.');
         }
 
-        return $this->render('user/resetpwd.html.twig', array('form' => $form->createView()));
+
     }
 
 
