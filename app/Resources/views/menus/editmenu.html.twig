@@ -1,6 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% form_theme form ':form:jquery.collection.html.twig' ':form:my-form-theme.html.twig'%}
+{% form_theme form ':form:jquery.collection.html.twig' ':form:my-form-theme.html.twig' %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('css/stickyfooter.css') }}">
+<link rel="stylesheet" href="{{ asset('css/general.css') }}">
+<style>
+.glyphicon-move {
+    position: absolute;
+    left: -15px;
+    top: 10px;
+}
+</style>
+{% endblock %}
 
 {% block body %}
 
@@ -20,6 +32,7 @@
 	</div>
 </div>
 
+{{ render(controller('AppBundle:Navigation:footer')) }}
 
 {% endblock %}
 

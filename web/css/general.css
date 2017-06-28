@@ -10,3 +10,46 @@
     background-color: #2f2f2f;
     color: #ffffff;
 }
+
+/*Hack for placeholder text being cut off in new version of Select2Entity*/
+.select2-container .select2-search, 
+.select2-container .select2-search__field {
+    width: 100% !important;
+}
+
+.footermenu {
+	list-style-type: none;
+    margin: 0;
+    padding: 0;
+    margin-top: 40px;
+    margin-bottom: 15px;
+}
+
+.footermenu li {
+	/*float: left;*/
+	display: inline;
+}
+
+.footermenu li a {
+    /*display: block;*/
+    /*width: 200px;*/
+    padding: 0 50px;
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px darkgrey;
+    font-weight: 500;
+    font-size: 12px;
+    position:relative;
+}
+
+.footermenu li a:hover {
+    color: #337ab7;
+}
+
+.footermenu li a .fa {
+	/*text-shadow: 1px 1px 2px black;*/
+	position: absolute;
+	top: -20px;
+	right: 50%;
+}

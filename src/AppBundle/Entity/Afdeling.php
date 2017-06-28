@@ -17,6 +17,7 @@ class Afdeling
 	public function __construct(){
 		$this->ingredienten = new ArrayCollection();
 		$this->ingrbl = new ArrayCollection();
+        $this->afdelingenordered = new ArrayCollection();
 	}
 	
     /**
@@ -50,7 +51,12 @@ class Afdeling
      * @ORM\OneToMany(targetEntity="IngrBL", mappedBy="afdeling", cascade={"all"})
      * @ORM\OrderBy({"ingr_ingr" = "ASC"})     
      */    
-    private $ingrbl;    
+    private $ingrbl;
+
+    /**
+     * @ORM\OneToMany(targetEntity="AfdelingOrdered", mappedBy="afdeling", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     */
+    protected $afdelingenordered;       
 
     /**
      * Get id
@@ -173,5 +179,52 @@ class Afdeling
     public function getIngrbl()
     {
         return $this->ingrbl;
+    }
+
+    /**
+     * Add afdelingenordered
+     *
+     * @param \AppBundle\Entity\AfdelingOrdered $afdelingenordered
+     *
+     * @return Afdeling
+     */
+    public function addAfdelingenordered(\AppBundle\Entity\AfdelingOrdered $afdelingordered)
+    {
+        if (!$this->afdelingenordered->contains($afdelingordered)) {
+            $this->afdelingenordered->add($afdelingordered);
+            $afdelingordered->setAfdeling($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove afdelingenordered
+     *
+     * @param \AppBundle\Entity\AfdelingOrdered $afdelingenordered
+     */
+    public function removeAfdelingenordered(\AppBundle\Entity\AfdelingOrdered $afdelingordered)
+    {
+        if ($this->afdelingenordered->contains($afdelingordered)) {
+            $this->afdelingenordered->removeElement($afdelingordered);
+            $afdelingordered->setAfdeling(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get afdelingenordered
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAfdelingenordered()
+    {
+        return $this->afdelingenordered;
+    }
+
+    public function __toString() 
+    {
+        return $this->getName();
     }
 }

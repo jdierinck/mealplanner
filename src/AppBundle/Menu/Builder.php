@@ -12,13 +12,19 @@ class Builder implements ContainerAwareInterface
 
     public function mainMenu(FactoryInterface $factory, array $options)
     {
+        $em = $this->container->get('doctrine.orm.entity_manager');
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $bl = $user->getBoodschappenlijst();
+        $itemcount = count($bl->getIngrbl());
+        $items = $itemcount > 0 ? $itemcount : '';
+
         $menu = $factory->createItem('root');
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
        //  $menu->setCurrent($this->container->get('request')->getRequestUri());
 
         $menu->addChild('<span class="glyphicon glyphicon-cutlery"></span>&nbsp;Kookboek', array('route' => 'recipes'));
         $menu->addChild('<span class="glyphicon glyphicon-list-alt"></span>&nbsp;Menu\'s', array('route' => 'menus'));
-        $menu->addChild('<span class="glyphicon glyphicon-shopping-cart"></span>&nbsp;Boodschappenlijst', array('route' => 'boodschappen'));
+        $menu->addChild('<span class="glyphicon glyphicon-shopping-cart"></span>&nbsp;Boodschappenlijst&nbsp;<span class="badge">'.$items.'</span>', array('route' => 'boodschappen'));
 
         return $menu;
     }
@@ -43,4 +49,20 @@ class Builder implements ContainerAwareInterface
         
         return $menu;
     }
+
+    public function footerMenu(FactoryInterface $factory, array $options)
+    {
+        $menu = $factory->createItem('root');
+        $menu->setChildrenAttribute('class', 'footermenu');
+        $menu->addChild('<i class="fa fa-user" aria-hidden="true"></i>&nbsp;Over Mealplanner', array('route' => 'about'))
+            ->setLinkAttribute('data-toggle','modal')
+            ->setLinkAttribute('data-target','#footerModal');
+        $menu->addChild('<i class="fa fa-envelope" aria-hidden="true"></i>&nbsp;Contact', array('route' => 'contact'))
+            ->setLinkAttribute('data-toggle','modal')
+            ->setLinkAttribute('data-target','#footerModal');
+        $menu->addChild('<i class="fa fa-life-ring" aria-hidden="true"></i>&nbsp;Support', array('route' => 'home'));
+        
+        return $menu;
+    }
+
 }

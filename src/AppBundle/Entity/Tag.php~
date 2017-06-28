@@ -42,7 +42,12 @@ class Tag
      * @ORM\ManyToOne(targetEntity="User", inversedBy="tags")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    private $user;  
+    private $user;
+    
+    /**
+     * @ORM\Column(name="position", type="integer")
+     */
+    private $position;    
 	
     /**
      * Get id
@@ -137,5 +142,29 @@ class Tag
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * Set position
+     *
+     * @param integer $position
+     *
+     * @return Tag
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
+
+        return $this;
+    }
+
+    /**
+     * Get position
+     *
+     * @return integer
+     */
+    public function getPosition()
+    {
+        return $this->position;
     }
 }

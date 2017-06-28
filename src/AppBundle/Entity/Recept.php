@@ -19,7 +19,6 @@ class Recept
     public function __construct() {
     	$this->ingredienten = new ArrayCollection();
         $this->tags = new ArrayCollection();
-        $this->receptenordered = new ArrayCollection();
         $this->receptenblordered = new ArrayCollection();
     }
 
@@ -57,7 +56,13 @@ class Recept
      */        
     private $bereidingswijze;
     
-    /** 
+    /**
+     * @Assert\File(
+     *     maxSize = "3M",
+     *     mimeTypes = {"image/jpeg", "image/gif", "image/png", "image/tiff"},
+     *     maxSizeMessage = "De maximaal toegestane bestandsgrootte is 3 MB.",
+     *     mimeTypesMessage = "Enkel afbeeldingen van het type jpeg, gif, png en tiff zijn toegelaten."
+     * ) 
      * @Vich\UploadableField(mapping="recept_foto", fileNameProperty="fotoNaam")
      * @var File
      */
@@ -97,7 +102,7 @@ class Recept
 	 * @var \DateTime $toegevoegdOp
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @var \DateTime      
+     * @var \DateTime
      */   
     private $toegevoegdOp;
     

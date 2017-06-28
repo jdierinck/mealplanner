@@ -109,3 +109,32 @@ knp_paginator:
     template:
         pagination: KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig     # sliding pagination controls template
         sortable: KnpPaginatorBundle:Pagination:sortable_link.html.twig                         # sort link template
+
+liip_imagine :
+    # configure resolvers
+    resolvers :
+        # setup the default resolver
+        default :
+            # use the default web path
+            web_path : ~
+    # your filter sets are defined here
+    filter_sets :
+        # use the default cache configuration
+        cache : ~
+        # the name of the "filter set"
+        thumb_lg :
+            # adjust the image quality
+            quality : 90
+            # list of transformations to apply (the "filters")
+            filters :
+                # create a thumbnail: set size to 120x90 and use the "outbound" mode
+                # to crop the image when the size ratio of the input differs
+                thumbnail  : { size: [375, 250], mode: outbound, allow_upscale: false }
+        thumb_sm :
+            quality : 90
+            filters :
+                thumbnail  : { size : [150, 100], mode : outbound }
+        thumb_xs :
+            quality : 90
+            filters :
+                thumbnail  : { size : [75, 50], mode : outbound }                        

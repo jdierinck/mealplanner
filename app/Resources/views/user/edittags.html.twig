@@ -1,6 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% form_theme form ':form:jquery.collection.html.twig' %}
+{% form_theme form ':form:jquery.collection.html.twig' ':form:my-form-theme.html.twig' %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('css/stickyfooter.css') }}">
+<link rel="stylesheet" href="{{ asset('css/general.css') }}"> 
+<style>
+.glyphicon-move {
+    position: absolute;
+    left: -15px;
+    top: 10px;
+}
+</style>
+{% endblock %}
 
 {% block body %}
 
@@ -8,26 +20,30 @@
 
 <div class="container" style="margin-top:75px;">
 	<div class="row">
-		<div class="col-sm-4 col-sm-offset-3">
+		<div class="col-sm-8 col-sm-offset-3">
 			{{ form_start(form) }}
 			{{ form_widget(form) }}
-
+            <button type="submit" value="save" class="btn btn-primary">Bewaar</button>
+            <a href="{{ path('recipes') }}" class="btn btn-default">Annuleer</a>
 			{{ form_end(form) }}
 		</div>
 	</div>
 </div>
+
+{{ render(controller('AppBundle:Navigation:footer')) }}
+
 {% endblock %}
 
 {% block javascripts %}
     <script src="{{ asset('js/jquery.collection.js') }}"></script>
-
     <script type="text/javascript">
         $('.tagcollection').collection({
-            up: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>',
-            down: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>',
+            // up: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>',
+            // down: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>',
             add: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>',
-            remove: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></a>',
+            // remove: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></a>',
             add_at_the_end: true,
+            position_field_selector: '.position-field'
         });
     </script>
 {% endblock %}

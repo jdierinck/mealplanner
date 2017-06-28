@@ -1,5 +1,10 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('css/stickyfooter.css') }}">
+<link rel="stylesheet" href="{{ asset('css/general.css') }}">
+{% endblock %}
+
 {% block body %}
 {{ render(controller('AppBundle:Navigation:menu')) }}
 
@@ -13,8 +18,17 @@
 		<p>Aantal recepten: {{ user.getrecepten|length }}</p>
 		<p>Aantal menu's: {{ user.getmenus|length }}</p>
 		<p>Lid sinds: {{ user.getRegistratiedatum|date('d/m/Y') }}</p>
+		<p>Tags:</p>
+		<ul class="list-unstyled">
+		{% for tag in user.tags %} 
+			<li style="margin-left: 40px;"><span class="label label-primary">{{ tag.name }}</span></li>
+		{% endfor %}
+		</ul>
+		<a href="{{ path('edittags') }}">Pas aan...</a>
 		</div>
 	</div>
 </div>
+
+{{ render(controller('AppBundle:Navigation:footer')) }}
 
 {% endblock %}

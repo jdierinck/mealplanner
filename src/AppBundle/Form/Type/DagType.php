@@ -20,8 +20,9 @@ class DagType extends AbstractType
             'remote_route' => 'findrecept',
             'text_property' => 'titel',
             'allow_clear' => true,
-            'placeholder' => 'Selecteer een recept',
+            'placeholder' => 'Selecteer één of meer recepten',
             'minimum_input_length' => 0,
+            'width' => '100%',
         ));
     }
 
@@ -30,5 +31,10 @@ class DagType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => Dag::class,
         ));
+    }
+
+    public function getBlockPrefix()
+    {
+        return 'DagType';
     }
 }

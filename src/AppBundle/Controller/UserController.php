@@ -13,12 +13,14 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use AppBundle\Form\Type\TagType;
-use AppBundle\Form\Type\UserEditType;
+use AppBundle\Form\Type\UserEditTagsType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Response;
+use AppBundle\Entity\AfdelingOrdered;
+use AppBundle\Form\Type\UserEditAfdelingenType;
 
 class UserController extends Controller
 {
@@ -27,6 +29,8 @@ class UserController extends Controller
      */
     public function registerAction(Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
 
@@ -40,12 +44,15 @@ class UserController extends Controller
             // Set default tags
             $defaultTags = array(
                 'goedkoop',
-                'glutenvrij',
-                'lactosevrij',
                 'makkelijk',
                 'snel',
                 'vegetarisch',
                 'kinderfavoriet',
+                'pikant',
+                'lente/zomer',
+                'herfst/winter',
+                'omega 3',
+                'feestgerecht',
             );
             foreach ($defaultTags as $tagName) {
                 $tag = new Tag();
@@ -54,7 +61,16 @@ class UserController extends Controller
                 $user->addTag($tag);
             }
 
-            $em = $this->getDoctrine()->getManager();
+            // Set default order of Afdelingen
+            // First get all afdelingen ordered alphabetically
+            $afdelingen = $em->getRepository('AppBundle:Afdeling')->findBy(array(),array('name' => 'ASC'));
+            foreach ($afdelingen as $afdeling) {
+                $ao = new AfdelingOrdered();
+                $afdeling->addAfdelingenordered($ao);
+                $user->addAfdelingenordered($ao);
+            }
+
+            // Note: no need to call $em->persist($ao) because of cascade={"persist"} on the associations
             $em->persist($user);
             $em->flush();
 
@@ -104,7 +120,7 @@ class UserController extends Controller
             $originalTags->add($tag);
         }
 
-        $form = $this->createForm(UserEditType::class, $user);
+        $form = $this->createForm(UserEditTagsType::class, $user);
 
         $form->handleRequest($request);
 
@@ -141,7 +157,8 @@ class UserController extends Controller
 
         if ($username) {
             $em = $this->getDoctrine()->getManager();
-            $user = $em->getRepository('AppBundle:User')->findOneByUsername($username);
+            // $user = $em->getRepository('AppBundle:User')->findOneByUsername($username);
+            $user = $em->getRepository('AppBundle:User')->loadUserByUserName($username); // query by username or e-mail address
 
             if (!$user) {
                 throw $this->createNotFoundException(
@@ -229,5 +246,73 @@ class UserController extends Controller
 
     }
 
+    /**
+     * Edit afdelingen
+     *
+     * @Route("/afdelingen/edit", name="editafdelingen")
+     */ 
+    public function editAfdelingenAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
 
+        $user = $this->getUser();
+
+        $form = $this->createForm(UserEditAfdelingenType::class, $user);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $user = $form->getData();
+
+            $em->persist($user);
+            $em->flush();
+
+            return $this->redirectToRoute('boodschappen');
+        }
+
+        return $this->render('user/editafdelingen.html.twig', array(
+            'form' => $form->createView(),
+        ));
+    }
+
+
+    /**
+     * Restore default order of Afdelingen for a User
+     * 
+     * @Route("setafdelingen", name="setafdelingen")
+     */
+    public function setAfdelingenAction(Request $request)
+    {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $em = $this->getDoctrine()->getManager();
+
+        $user = $this->getUser();
+
+        // Remove existing order if any
+        $previous_afdelingen = $user->getAfdelingenordered();
+        if (count($previous_afdelingen) > 0) {
+            foreach ($previous_afdelingen as $pa) {
+                $user->removeAfdelingenordered($pa);
+            }
+
+            $em->flush();
+        }
+
+        // Set default order of Afdelingen
+        // First get all afdelingen ordered alphabetically
+        $afdelingen = $em->getRepository('AppBundle:Afdeling')->findBy(array(),array('name' => 'ASC'));
+        foreach ($afdelingen as $afdeling) {
+            $ao = new AfdelingOrdered();
+            $afdeling->addAfdelingenordered($ao);
+            $user->addAfdelingenordered($ao);
+        }
+
+        $em->flush();
+
+        return new Response('De afdelingen werden opnieuw ingesteld!');
+    }
 }

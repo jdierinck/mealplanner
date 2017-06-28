@@ -1,0 +1,51 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
+/**
+ * AfdelingOrdered
+ *
+ * @ORM\Table(name="afdeling_ordered")
+ * @ORM\Entity(repositoryClass="Gedmo\Sortable\Entity\Repository\SortableRepository")
+ */
+class AfdelingOrdered
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+    
+    /**
+     *
+     * @Gedmo\SortableGroup
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="afdelingenordered")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     *
+     */    
+    private $user;
+
+    /**
+     *
+     * @ORM\ManyToOne(targetEntity="Afdeling", inversedBy="afdelingenordered")
+     * @ORM\JoinColumn(name="afdeling_id", referencedColumnName="id")
+     *
+     */    
+    private $afdeling;
+
+    /**
+     * @var int
+     *
+     * @Gedmo\SortablePosition
+     * @ORM\Column(name="positie", type="integer")
+     */
+    private $positie;
+
+
+}

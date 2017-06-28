@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% form_theme form ':form:jquery.collection.html.twig' ':form:my-form-theme.html.twig' %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('css/stickyfooter.css') }}">
+<link rel="stylesheet" href="{{ asset('css/general.css') }}">
+<style>
+.glyphicon-move {
+    position: absolute;
+    left: -15px;
+    top: 10px;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+
+{{ render(controller('AppBundle:Navigation:menu')) }}
+
+<div class="container" style="margin-top:75px;">
+	<div class="row">
+		<div class="col-sm-8 col-sm-offset-3">
+			{{ form_start(form) }}
+
+            {{ form_label(form.afdelingenordered) }}
+            <p>Gebruik de pijltjes of sleep de afdelingen in de juiste volgorde.</p>
+            {{ form_widget(form.afdelingenordered) }}
+            {{ form_widget(form.afdelingenordered) }}
+            <button type="submit" value="save" class="btn btn-primary">Bewaar</button>
+            <a href="{{ path('boodschappen') }}" class="btn btn-default btn-sm">Annuleer</a>
+            <a href="{{ path('setafdelingen') }}" id="reset" class="btn btn-default btn-sm">Stel opnieuw in</a>
+            
+			{{ form_end(form) }}
+		</div>
+	</div>
+</div>
+
+<!-- myModal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content" id="myModalContent">
+        <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Bevestiging</h4>
+        </div>
+        <div class="modal-body">
+
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Sluit</button>
+        </div>
+    </div>
+  </div>
+</div>
+<!-- end Modal -->
+
+{{ render(controller('AppBundle:Navigation:footer')) }}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/jquery.collection.js') }}"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function(){
+        $('.afdelingcollection').collection({
+            // up: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>',
+            // down: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>',
+            // add: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span></a>',
+            // remove: '<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></a>',
+            // add_at_the_end: true,
+        });
+
+        $('#reset').on('click', function(e){
+            e.preventDefault();
+            $('#myModal').modal();
+            $('#myModalContent .modal-body').load($(this).attr('href'));
+        });
+
+        $('#myModal').on('hidden.bs.modal', function(){
+            location.reload();
+        });
+    });
+    </script>
+{% endblock %}

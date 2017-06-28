@@ -6,33 +6,30 @@ use AppBundle\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use AppBundle\Form\Type\TagType;
+use AppBundle\Form\Type\AfdelingenType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-class UserEditType extends AbstractType
+class UserEditAfdelingenType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('tags', CollectionType::class, array(
-                'label' => 'Beheer tags',
+            ->add('afdelingenordered', CollectionType::class, array(
+                'label' => 'Stel volgorde afdelingen in',
                 'required' => false,
-                'entry_type' => TagType::class,
+                'entry_type' => AfdelingenType::class,
                 'entry_options' => array(
                    'label' => 'Naam',
-               ),
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
+                    ),
+                'allow_add' => false,
+                'allow_delete' => false,
+                // 'by_reference' => false,
                 'prototype' => true,
-                'attr' => array('class' => 'tagcollection'),
+                'attr' => array('class' => 'afdelingcollection'),
                 ))
-            ->add('submit', SubmitType::class, array('label' => 'Bewaar'))
+            // ->add('submit', SubmitType::class, array('label' => 'Bewaar'))
         ;
     }
 

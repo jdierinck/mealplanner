@@ -10,10 +10,12 @@ use AppBundle\Form\ReceptType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Ingredient;
 use AppBundle\Entity\Boodschappenlijst;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use RecipeParser\RecipeParser;
 
 class RecipesController extends Controller
 {
@@ -32,7 +34,7 @@ class RecipesController extends Controller
 // 		$user = $this->get('security.token_storage')->getToken()->getUser();
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
-		
+	
 		// Create Boodschappenlijst if none exists
 		if (!$boodschappenlijst) {
 			$boodschappenlijst = new Boodschappenlijst();
@@ -482,16 +484,12 @@ class RecipesController extends Controller
 			->getQuery();		
 		
 		$keukens = $query->getResult();
-		dump($keukens);
+
 		$results = array();
 		$regios = array();
 		
-		// foreach ($keukens as $keuken){
-		// 	$results[] = array('id' => $keuken->getId(), 'text' => $keuken->getName());
-		// }
 		foreach ($keukens as $keuken){
 			$regios[] = $keuken->getRegio();
-			// array('id' => $keuken->getId(), 'text' => $keuken->getName());
 		}
 		$regios = array_values(array_unique($regios));
 		
@@ -502,14 +500,13 @@ class RecipesController extends Controller
 				}
 			}
 		}
-		dump($results);
 
 		$finalresult = array();
 
 		foreach($results as $key=>$values){
 			$finalresult[] = array('text' => $key, 'children' => $values);
 		}
-		dump($finalresult);
+
 		return new JsonResponse($finalresult);
 	}
 
@@ -557,7 +554,19 @@ class RecipesController extends Controller
 
             	$ingredienten = '';
             	foreach ($result->getIngredienten() as $ingr) {
-            		$ingredienten .= $ingr->getHoeveelheid().' '.$ingr->getEenheid().' '.$ingr->getIngredient()."\n";
+            		$hoeveelheid = $ingr->getHoeveelheid();
+            		$eenheid = $ingr->getEenheid();
+            		$ingredient = $ingr->getIngredient();
+            		
+            		if (!null == $hoeveelheid && !null == $eenheid) {
+            			$ingredienten .= 0 + $hoeveelheid.' '.$eenheid.' '.$ingredient."\n";
+            		}
+            		elseif (!null == $hoeveelheid && null == $eenheid) {
+            			$ingredienten .= 0 + $hoeveelheid.' '.$ingredient."\n";
+            		}
+            		else {
+            			$ingredienten .= $ingredient."\n";
+            		}
             	}
 
 		        // Add the data queried from database

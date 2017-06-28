@@ -17,6 +17,7 @@ class Afdeling
 	public function __construct(){
 		$this->ingredienten = new ArrayCollection();
 		$this->ingrbl = new ArrayCollection();
+        $this->afdelingenordered = new ArrayCollection();
 	}
 	
     /**
@@ -50,7 +51,12 @@ class Afdeling
      * @ORM\OneToMany(targetEntity="IngrBL", mappedBy="afdeling", cascade={"all"})
      * @ORM\OrderBy({"ingr_ingr" = "ASC"})     
      */    
-    private $ingrbl;    
+    private $ingrbl;
+
+    /**
+     * @ORM\OneToMany(targetEntity="AfdelingOrdered", mappedBy="afdeling", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     */
+    protected $afdelingenordered;       
 
     /**
      * Get id

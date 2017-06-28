@@ -1,9 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{{ asset('css/general.css') }}"> 
 <link rel="stylesheet" href="{{ asset('css/shopping.css') }}" />
-<link rel="stylesheet" href="{{ asset('css/stickyfooter.css') }}">
 <link rel="stylesheet" href="{{ asset('vendors/fullcalendar/fullcalendar.css') }}" />
 <link rel="stylesheet" href="{{ asset('vendors/fullcalendar/fullcalendar.print.css') }}" type="text/css" media="print"/>
 <!-- Bootstrap Datepicker CSS -->
@@ -63,12 +61,25 @@
 					
 					<div class="pull-right">
 						<a href="{{ path('wislijst') }}" class="btn btn-default btn-xs" role="button" id="wislijst"><span class="glyphicon glyphicon-erase"></span> Wis boodschappenlijst</a>
-						<button class="btn btn-default btn-xs" type="button" id="showhideafdelingen" data-toggle="button" aria-pressed="false" autocomplete="off"><span class="glyphicon glyphicon-list"></span> Afdelingen</button>
+						<!-- 						
+						<button class="btn btn-default btn-xs" type="button" id="showhideafdelingen" data-toggle="button" aria-pressed="false" autocomplete="off"><span class="glyphicon glyphicon-list"></span> Afdelingen</button> 
+						-->
+						<div class="btn-group">
+							<button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-list"></span> Afdelingen</button>
+							<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<span class="caret"></span>
+								<span class="sr-only">Toggle Dropdown</span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><a href="#" id="showhideafdelingen">Toon afdelingen</a></li>
+								<li><a href="{{ path('editafdelingen') }}">Pas volgorde aan</a></li>
+							</ul>
+						</div>
 						<div class="btn-group">
 							<button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-share"></span> Exporteer</button>
 							<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<span class="caret"></span>
-							<span class="sr-only">Toggle Dropdown</span>
+								<span class="caret"></span>
+								<span class="sr-only">Toggle Dropdown</span>
 							</button>
 							<ul class="dropdown-menu">
 								<li><a href="{{ path('topdf') }}">Exporteer naar pdf</a></li>
@@ -79,11 +90,16 @@
 						</div>
 						<a href="#" class="btn btn-default btn-xs" role="button" id="printlijst"><span class="glyphicon glyphicon-print"></span> Print</a>
 						<br><br>
-						<p class="pull-right small">
+						<div class="pull-right small">
 							<a id="showhiderecepten">
-							<i class="fa fa-toggle-off fa-lg" aria-hidden="true"></i>&nbsp;Toon recepten
+								<i class="fa fa-toggle-off fa-lg" aria-hidden="true"></i>&nbsp;Toon recepten
 							</a>
-						</p>
+						</div>
+						<div class="pull-right small">
+							<a id="togglemerge">
+								<i class="fa fa-toggle-on fa-lg" aria-hidden="true"></i>&nbsp;Voeg ingrediënten samen&nbsp;&nbsp;
+							</a>
+						</div>
 					</div>
 
 
@@ -98,10 +114,10 @@
 					<form name="ingredients" method="post" action="boodschappen">
 						<div id="lijst-inhoud">
 
-						{% for afdeling in afdelingen %}
-						 <h5>{{ afdeling.name }}</h5>
+						{% for ao in afdelingenordered %}
+						 <h5>{{ ao.afdeling.name }}</h5>
 						 <ul class="list-unstyled ingredient-list">
-						 {% for ingredient in afdeling.ingredienten %}
+						 {% for ingredient in ao.afdeling.ingredienten %}
 							<li>
 							<input type="checkbox" name="ingr{{ ingredient.id }}" value="{{ ingredient.id }}">&nbsp;&nbsp;
 							<span class="hoeveelheid">
@@ -117,8 +133,8 @@
 							<span class="ingredient">{{ ingredient.ingredient}}</span>
 							<span class="afdelingselect hidden">
 								<select name="select{{ ingredient.id }}">
-									{% for afdeling in alleafdelingen %}
-									<option value="{{ afdeling.id }}" {% if afdeling.name == ingredient.afdeling.name %} selected="selected" {%endif%}>{{ afdeling.name }}</option>
+									{% for ao in alleafdelingen %}
+									<option value="{{ ao.afdeling.id }}" {% if ao.afdeling.name == ingredient.afdeling.name %} selected="selected" {%endif%}>{{ ao.afdeling.name }}</option>
 									{% endfor %}
 								</select>
 							</span>
@@ -140,10 +156,10 @@
 					<form name="ingredients" method="post" action="boodschappen">
 						<div id="lijst-inhoud">
 							<h3>Boodschappenlijst</h3>
-							{% for afdeling in afdelingen %}
-							 <h5>{{ afdeling.name }}</h5>
+							{% for ao in afdelingenordered %}
+							 <h5>{{ ao.afdeling.name }}</h5>
 							 <ul class="list-unstyled ingredient-list">
-							 {% for ingrbl in afdeling.ingrbl %}
+							 {% for ingrbl in ao.afdeling.ingrbl %}
 								<li>
 									<input type="checkbox" name="ingr{{ ingrbl.id }}" value="{{ ingrbl.id }}">&nbsp;&nbsp;
 									<span class="hoeveelheid">
@@ -159,8 +175,8 @@
 									<span class="ingredient">{{ ingrbl.ingredient.ingredient}}</span>
 									<span class="afdelingselect hidden">
 										<select name="select{{ ingrbl.id }}">
-											{% for afdeling in alleafdelingen %}
-											<option value="{{ afdeling.id }}" {% if afdeling.name == ingrbl.ingredient.afdeling.name %} selected="selected" {%endif%}>{{ afdeling.name }}</option>
+											{% for ao in alleafdelingen %}
+											<option value="{{ ao.afdeling.id }}" {% if ao.afdeling.name == ingrbl.ingredient.afdeling.name %} selected="selected" {%endif%}>{{ ao.afdeling.name }}</option>
 											{% endfor %}
 										</select>
 									</span>
@@ -221,19 +237,14 @@
       <div class="modal-footer">
       	<button type="button" class="btn btn-default hidden-print" id="printCal">Print</button>
       	<button type="button" class="btn btn-default hidden-print" id="saveCal">Bewaar</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Sluit</button>
       </div>
     </div>
 
   </div>
 </div>	
 
-<footer class="footer text-center bg-lightblue">
-<div class="container-fluid">
-  	<p>&copy {{ "now"|date("Y") }} Johan Dierinck</p>
-	<p class="small">Powered by <img src="{{ asset('images/symfony_white_02.png') }}" alt="Symfony logo" height="15"></p> 
-</div>
-</footer>
+{{ render(controller('AppBundle:Navigation:footer')) }}
 	
 {% endblock %}
 

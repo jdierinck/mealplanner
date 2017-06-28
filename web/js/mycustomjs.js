@@ -35,7 +35,7 @@ $(document).ready(function(){
 		$('#myModalContent').load($(this).data('url'));
 	});
 
-		// Load content into modal
+	// Load content into modal
 	$('body').on('click', 'a#addrecipe, a#editrecipe, a#deleterecipe', function(e) {
 		e.preventDefault();
 		$('#myModal').modal();
@@ -48,7 +48,7 @@ $(document).ready(function(){
 		e.stopPropagation();
     });
 
-    $('body').on('submit', "form[name='recept']", function (e) {
+    $('body').on('submit', "form[name='recept']", function(e) {
     	e.preventDefault();
     	var options = {
 			target: '#myModalContent',

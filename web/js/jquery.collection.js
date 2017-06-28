@@ -1,7 +1,7 @@
 /*
  * jquery.collection.js
  *
- * Copyright (c) 2015 alain tiemblo <alain at fuz dot org>
+ * Copyright (c) 2042 alain tiemblo <alain at fuz dot org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish,
@@ -87,9 +87,13 @@
             drag_drop_update: function (event, ui) {
                 return true;
             },
-            custom_add_location: false
+            custom_add_location: false,
+            fade_in: true,
+            fade_out: true,
+            position_field_selector: null
         };
 
+        // used to generate random id attributes when required and missing
         var randomNumber = function () {
             var rand = '' + Math.random() * 1000 * new Date().getTime();
             return rand.replace('.', '').split('').sort(function () {
@@ -97,6 +101,7 @@
             }).join('');
         };
 
+        // return an element's id, after generating one when missing
         var getOrCreateId = function (prefix, obj) {
             if (!obj.attr('id')) {
                 var generated_id;
@@ -108,6 +113,7 @@
             return obj.attr('id');
         };
 
+        // return a field value whatever the field type
         var getFieldValue = function (selector) {
             try {
                 var jqElem = $(selector);
@@ -127,6 +133,7 @@
             }
         };
 
+        // set a field value in accordance to the field type
         var putFieldValue = function (selector, value, physical) {
             try {
                 var jqElem = $(selector);
@@ -152,14 +159,20 @@
             }
         };
 
+        // a callback set in an event will be considered failed if it
+        // returns false, null, or 0.
         var trueOrUndefined = function (value) {
             return undefined === value || value;
         };
 
+        // used to change element indexes in arbitary id attributes
         var pregQuote = function (string) {
             return (string + '').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
         };
 
+        // if we need to change CollectionType_field_42_value to CollectionType_field_84_value, this method
+        // will change it in id="CollectionType_field_42_value", but also data-id="CollectionType_field_42_value"
+        // or anywhere else just in case it could be used otherwise.
         var replaceAttrData = function (elements, index, toReplace, replaceWith) {
 
             var replaceAttrDataNode = function (node) {
@@ -183,6 +196,9 @@
             });
         };
 
+        // replace element names and indexes in the collection, in Symfony, names are always in format
+        // CollectionType[field][42][value] and ids are in format CollectionType_field_42_value;
+        // so we need to change both.
         var changeElementIndex = function (collection, elements, settings, index, oldIndex, newIndex) {
             var toReplace = new RegExp(pregQuote(settings.name_prefix + '[' + oldIndex + ']'), 'g');
             var replaceWith = settings.name_prefix + '[' + newIndex + ']';
@@ -193,6 +209,8 @@
             replaceAttrData(elements, index, toReplace, replaceWith);
         };
 
+        // same as above, but will replace element names and indexes in an html string instead
+        // of in a dom element
         var changeHtmlIndex = function (collection, settings, html, oldIndex, newIndex) {
             var toReplace = new RegExp(pregQuote(settings.name_prefix + '[' + oldIndex + ']'), 'g');
             var replaceWith = settings.name_prefix + '[' + newIndex + ']';
@@ -205,19 +223,32 @@
             return html;
         };
 
+        // sometimes, setting a value will only be made in memory and not
+        // physically in the dom; and we need the full dom when we want
+        // to duplicate a field.
         var putFieldValuesInDom = function (element) {
             $(element).find(':input').each(function (index, inputObj) {
                 putFieldValue(inputObj, getFieldValue(inputObj), true);
             });
         };
 
+        // this method does the whole magic: in a collection, if we want to
+        // move elements and keep element positions in the backend, we should
+        // either move element names or element contents, but not both! thus,
+        // if you just move elements in the dom, you keep field names and data
+        // attached and nothing will change in the backend.
         var swapElements = function (collection, elements, oldIndex, newIndex) {
 
             var settings = collection.data('collection-settings');
 
-            changeElementIndex(collection, elements, settings, oldIndex, oldIndex, '__swap__');
-            changeElementIndex(collection, elements, settings, newIndex, newIndex, oldIndex);
-            changeElementIndex(collection, elements, settings, oldIndex, '__swap__', newIndex);
+            if (settings.position_field_selector) {
+                putFieldValue(elements.eq(newIndex).find(settings.position_field_selector), oldIndex);
+                putFieldValue(elements.eq(oldIndex).find(settings.position_field_selector), newIndex);
+            } else {
+                changeElementIndex(collection, elements, settings, oldIndex, oldIndex, '__swap__');
+                changeElementIndex(collection, elements, settings, newIndex, newIndex, oldIndex);
+                changeElementIndex(collection, elements, settings, oldIndex, '__swap__', newIndex);
+            }
 
             elements.eq(oldIndex).insertBefore(elements.eq(newIndex));
             if (newIndex > oldIndex) {
@@ -229,6 +260,9 @@
             return collection.find(settings.elements_selector);
         };
 
+        // moving an element down of 3 rows means increasing its index of 3, and
+        // decreasing the 2 ones between of 1. Example: 0-A 1-B 2-C 3-D:
+        // moving B to 3 becomes 0-A 1-C 2-D 3-B
         var swapElementsUp = function (collection, elements, settings, oldIndex, newIndex) {
             for (var i = oldIndex + 1; (i <= newIndex); i++) {
                 elements = swapElements(collection, elements, i, i - 1);
@@ -236,6 +270,9 @@
             return collection.find(settings.elements_selector);
         };
 
+        // moving an element up of 3 rows means decreasing its index of 3, and
+        // increasing the 2 ones between of 1. Example: 0-A 1-B 2-C 3-D:
+        // moving D to 1 becomes 0-A 1-D 2-B 3-C
         var swapElementsDown = function (collection, elements, settings, oldIndex, newIndex) {
             for (var i = oldIndex - 1; (i >= newIndex); i--) {
                 elements = swapElements(collection, elements, i, i + 1);
@@ -243,6 +280,9 @@
             return collection.find(settings.elements_selector);
         };
 
+        // if we create an element at position 2, all element indexes from 2 to N
+        // should be increased. for example, in 0-A 1-B 2-C 3-D, adding X at position
+        // 1 will create 0-A 1-X 2-B 3-C 4-D
         var shiftElementsUp = function (collection, elements, settings, index) {
             for (var i = index + 1; i < elements.length; i++) {
                 elements = swapElements(collection, elements, i - 1, i);
@@ -250,6 +290,9 @@
             return collection.find(settings.elements_selector);
         };
 
+        // if we remove an element at position 3, all element indexes from 3 to N
+        // should be decreased. for example, in 0-A 1-B 2-C 3-D, removing B will create
+        // 0-A 1-C 2-D
         var shiftElementsDown = function (collection, elements, settings, index) {
             for (var i = elements.length - 2; i > index; i--) {
                 elements = swapElements(collection, elements, i + 1, i);
@@ -257,10 +300,14 @@
             return collection.find(settings.elements_selector);
         };
 
-        var dumpCollectionActions = function (collection, settings, isInitialization) {
+        // this method creates buttons for each action, according to all options set
+        // (buttons enabled, minimum/maximum of elements not yet reached, rescue
+        // button creation when no more elements are remaining...)
+        var dumpCollectionActions = function (collection, settings, isInitialization, event) {
             var init = collection.find('.' + settings.prefix + '-tmp').length === 0;
             var elements = collection.find(settings.elements_selector);
 
+            // add a rescue button that will appear only if collection is emptied
             if (settings.allow_add) {
                 if (init) {
                     collection.append('<span class="' + settings.prefix + '-tmp"></span>');
@@ -274,16 +321,20 @@
                 }
             }
 
+            // initializes the collection with a minimal number of elements
             if (isInitialization) {
                 var container = $(settings.container);
                 var button = collection.find('.' + settings.prefix + '-add, .' + settings.prefix + '-rescue-add, .' + settings.prefix + '-duplicate').first();
                 while (elements.length < settings.init_with_n_elements) {
                     var element = elements.length > 0 ? elements.last() : undefined;
-                    var index = elements.length + 1;
+                    var index = elements.length - 1;
                     elements = doAdd(container, button, collection, settings, elements, element, index, false);
                 }
             }
 
+            // make buttons appear/disappear in each elements of the collection according to options
+            // (enabled, min/max...) and logic (for example, do not put a move up button on the first
+            // element of the collection)
             elements.each(function (index) {
                 var element = $(this);
 
@@ -293,32 +344,37 @@
                     element.append(actions);
                 }
 
+                var delta = 0;
+                if (event === 'remove' && settings.fade_out) {
+                    delta = 1;
+                }
+
                 var buttons = [
                     {
                         'enabled': settings.allow_remove,
                         'selector': settings.prefix + '-remove',
                         'html': settings.remove,
-                        'condition': elements.length > settings.min
+                        'condition': elements.length - delta > settings.min
                     }, {
                         'enabled': settings.allow_up,
                         'selector': settings.prefix + '-up',
                         'html': settings.up,
-                        'condition': elements.index(element) !== 0
+                        'condition': elements.length - delta > 1 && elements.index(element) !== 0
                     }, {
                         'enabled': settings.allow_down,
                         'selector': settings.prefix + '-down',
                         'html': settings.down,
-                        'condition': elements.index(element) !== elements.length - 1
+                        'condition': elements.length - delta > 1 && elements.index(element) !== elements.length - 1
                     }, {
                         'enabled': settings.allow_add && !settings.add_at_the_end && !settings.custom_add_location,
                         'selector': settings.prefix + '-add',
                         'html': settings.add,
-                        'condition': elements.length < settings.max
+                        'condition': elements.length - delta < settings.max
                     }, {
                         'enabled': settings.allow_duplicate,
                         'selector': settings.prefix + '-duplicate',
                         'html': settings.duplicate,
-                        'condition': elements.length < settings.max
+                        'condition': elements.length - delta < settings.max
                     }
                 ];
 
@@ -349,21 +405,39 @@
                         element.find('.' + button.selector).css('display', 'none');
                     }
                 });
-            });
 
+            }); // elements.each
+
+            // make the rescue button appear / disappear according to options (add_at_the_end) and
+            // logic (no more elements on the collection)
             if (settings.allow_add) {
-                var rescueAdd = collection.find('.' + settings.prefix + '-rescue-add').css('display', '');
-                var adds = collection.find('.' + settings.prefix + '-add');
-                if (!settings.add_at_the_end && adds.length > 0 || settings.custom_add_location) {
-                    rescueAdd.css('display', 'none');
+
+                var delta = 0;
+                if (event === 'remove' && settings.fade_out) {
+                    delta = 1;
                 }
-                if (elements.length >= settings.max && settings.hide_useless_buttons) {
-                    collection.find('.' + settings.prefix + '-add, .' + settings.prefix + '-rescue-add, .' + settings.prefix + '-duplicate').css('display', 'none');
+
+                var rescueAdd = collection.find('.' + settings.prefix + '-rescue-add').css('display', '').removeClass(settings.prefix + '-action-disabled');
+                var adds = collection.find('.' + settings.prefix + '-add');
+                if (!settings.add_at_the_end && adds.length > delta || settings.custom_add_location) {
+                    rescueAdd.css('display', 'none');
+                } else if (event === 'remove' && settings.fade_out) {
+                    rescueAdd.css('display', 'none');
+                    rescueAdd.fadeIn('fast');
+                }
+                if (elements.length - delta >= settings.max) {
+                    rescueAdd.addClass(settings.prefix + '-action-disabled');
+                    if (settings.hide_useless_buttons) {
+                        collection.find('.' + settings.prefix + '-add, .' + settings.prefix + '-rescue-add, .' + settings.prefix + '-duplicate').css('display', 'none');
+                    }
                 }
             }
 
-        };
+        }; // dumpCollectionActions
 
+        // this plugin supports nested collections, and this method enables them when the
+        // parent collection is initialized. see
+        // http://symfony-collection.fuz.org/symfony3/advanced/collectionOfCollections
         var enableChildrenCollections = function (collection, element, settings) {
             if (settings.children) {
                 $.each(settings.children, function (index, childrenSettings) {
@@ -380,10 +454,17 @@
             }
         };
 
+        // this method handles a click on "add" buttons, it increases all following element indexes of
+        // 1 position and insert a new one in the index that becomes free. if click has been made on a
+        // "duplicate" button, all element values are then inserted. finally, callbacks let user cancel
+        // those actions if needed.
         var doAdd = function (container, that, collection, settings, elements, element, index, isDuplicate) {
             if (elements.length < settings.max && (isDuplicate && trueOrUndefined(settings.before_duplicate(collection, element)) || trueOrUndefined(settings.before_add(collection, element)))) {
                 var prototype = collection.data('prototype');
                 var freeIndex = elements.length;
+                if (index === -1) {
+                    index = elements.length - 1;
+                }
                 var regexp = new RegExp(pregQuote(settings.prototype_name), 'g');
                 var code = $(prototype.replace(regexp, freeIndex));
                 var tmp = collection.find('> .' + settings.prefix + '-tmp');
@@ -394,9 +475,19 @@
                     var oldHtml = $("<div/>").append(elements.eq(index).clone()).html();
                     var newHtml = changeHtmlIndex(collection, settings, oldHtml, index, freeIndex);
                     code = $('<div/>').html(newHtml).contents();
+                    if (settings.fade_in) {
+                        code.hide();
+                    }
                     tmp.before(code).find(settings.prefix + '-actions').remove();
                 } else {
+                    if (settings.fade_in) {
+                        code.hide();
+                    }
                     tmp.before(code);
+                }
+
+                if (settings.position_field_selector) {
+                    putFieldValue(code.find(settings.position_field_selector), freeIndex);
                 }
 
                 elements = collection.find(settings.elements_selector);
@@ -405,11 +496,10 @@
                     action.addClass(settings.prefix + '-action').data('collection', collection.attr('id'));
                 }
 
-                if (that.data(settings.prefix + '-element') !== undefined) {
-                    var index = elements.index($('#' + that.data(settings.prefix + '-element')));
-                    if (index !== -1) {
-                        elements = shiftElementsDown(collection, elements, settings, index);
-                    }
+                if (index + 1 !== freeIndex) {
+                    elements = doMove(collection, settings, elements, code, freeIndex, index + 1);
+                } else {
+                    dumpCollectionActions(collection, settings, false);
                 }
 
                 enableChildrenCollections(collection, code, settings);
@@ -422,25 +512,42 @@
                 }
             }
 
+            if (code !== undefined && settings.fade_in) {
+                code.fadeIn('fast');
+            }
+
             return elements;
         };
 
+        // removes the current element when clicking on a "delete" button and decrease all following
+        // indexes from 1 position.
         var doDelete = function (collection, settings, elements, element, index) {
             if (elements.length > settings.min && trueOrUndefined(settings.before_remove(collection, element))) {
-                elements = shiftElementsUp(collection, elements, settings, index);
-                var toDelete = elements.last();
-                var backup = toDelete.clone({withDataAndEvents: true});
-                toDelete.remove();
-                if (!trueOrUndefined(settings.after_remove(collection, backup))) {
-                    collection.find('> .' + settings.prefix + '-tmp').before(backup);
-                    elements = collection.find(settings.elements_selector);
-                    elements = shiftElementsDown(collection, elements, settings, index - 1);
+                var deletion = function () {
+                    elements = shiftElementsUp(collection, elements, settings, index);
+                    var toDelete = elements.last();
+                    var backup = toDelete.clone({withDataAndEvents: true}).show();
+                    toDelete.remove();
+                    if (!trueOrUndefined(settings.after_remove(collection, backup))) {
+                        collection.find('> .' + settings.prefix + '-tmp').before(backup);
+                        elements = collection.find(settings.elements_selector);
+                        elements = shiftElementsDown(collection, elements, settings, index - 1);
+                    }
+                };
+                if (settings.fade_out) {
+                    element.fadeOut('fast', function () {
+                        deletion();
+                    });
+                } else {
+                    deletion();
                 }
             }
 
             return elements;
         };
 
+        // reverse current element and the previous one (so the current element
+        // appears one place higher)
         var doUp = function (collection, settings, elements, element, index) {
             if (index !== 0 && trueOrUndefined(settings.before_up(collection, element))) {
                 elements = swapElements(collection, elements, index, index - 1);
@@ -452,6 +559,8 @@
             return elements;
         };
 
+        // reverse the current element and the next one (so the current element
+        // appears one place lower)
         var doDown = function (collection, settings, elements, element, index) {
             if (index !== (elements.length - 1) && trueOrUndefined(settings.before_down(collection, element))) {
                 elements = swapElements(collection, elements, index, index + 1);
@@ -463,8 +572,35 @@
             return elements;
         };
 
+        // move an element from a position to an arbitrary new position
+        var doMove = function (collection, settings, elements, element, oldIndex, newIndex) {
+            if (1 === Math.abs(newIndex - oldIndex)) {
+                elements = swapElements(collection, elements, oldIndex, newIndex);
+                if (!(newIndex - oldIndex > 0 ? trueOrUndefined(settings.after_up(collection, element)) : trueOrUndefined(settings.after_down(collection, element)))) {
+                    elements = swapElements(collection, elements, newIndex, oldIndex);
+                }
+            } else {
+                if (oldIndex < newIndex) {
+                    elements = swapElementsUp(collection, elements, settings, oldIndex, newIndex);
+                    if (!(newIndex - oldIndex > 0 ? trueOrUndefined(settings.after_up(collection, element)) : trueOrUndefined(settings.after_down(collection, element)))) {
+                        elements = swapElementsDown(collection, elements, settings, newIndex, oldIndex);
+                    }
+                } else {
+                    elements = swapElementsDown(collection, elements, settings, oldIndex, newIndex);
+                    if (!(newIndex - oldIndex > 0 ? trueOrUndefined(settings.after_up(collection, element)) : trueOrUndefined(settings.after_down(collection, element)))) {
+                        elements = swapElementsUp(collection, elements, settings, newIndex, oldIndex);
+                    }
+                }
+            }
+            dumpCollectionActions(collection, settings, false);
+
+            return elements;
+        };
+
+        // we're in a $.fn., so in $('.collection').collection(), $(this) equals $('.collection')
         var elems = $(this);
 
+        // at least one, but why not several collections should be raised
         if (elems.length === 0) {
             console.log("jquery.collection.js: given collection selector does not exist.");
             return false;
@@ -474,11 +610,15 @@
 
             var settings = $.extend(true, {}, defaults, options);
 
+            // usage of $.fn.on events using a static container just in case there would be some
+            // ajax interactions inside the collection
             if ($(settings.container).length === 0) {
                 console.log("jquery.collection.js: a container should exist to handle events (basically, a <body> tag).");
                 return false;
             }
 
+            // it is possible to use this plugin with a selector that will contain the collection id
+            // in a data attribute
             var elem = $(this);
             if (elem.data('collection') !== undefined) {
                 var collection = $('#' + elem.data('collection'));
@@ -490,13 +630,29 @@
                 collection = elem;
             }
 
+            // enforcing logic between options
+            if (!settings.allow_add) {
+                settings.allow_duplicate = false;
+                settings.add_at_the_end = false;
+            }
+            if (settings.init_with_n_elements > settings.max) {
+                settings.init_with_n_elements = settings.max;
+            }
+            if (settings.min && (!settings.init_with_n_elements || settings.init_with_n_elements < settings.min)) {
+                settings.init_with_n_elements = settings.min;
+            }
+
+            // user callback
             settings.before_init(collection);
 
+            // prototype required to create new elements in the collection
             if (collection.data('prototype') === null) {
                 console.log("jquery.collection.js: given collection field has no prototype, check that your field has the prototype option set to true.");
                 return true;
             }
 
+            // all the following data attributes are automatically available thanks to
+            // jquery.collection.html.twig form theme
             if (collection.data('prototype-name') !== undefined) {
                 settings.prototype_name = collection.data('prototype-name');
             }
@@ -511,6 +667,8 @@
                 settings.name_prefix = collection.data('name-prefix');
             }
 
+            // prototype-name required for nested collections, where collection id prefix
+            // isn't guessable (see https://github.com/symfony/symfony/issues/13837)
             if (!settings.name_prefix) {
                 console.log("jquery.collection.js: the prefix used in descendant field names is mandatory, you can set it using 2 ways:");
                 console.log("jquery.collection.js: - use the form theme given with this plugin source");
@@ -518,10 +676,9 @@
                 return true;
             }
 
-            if (settings.init_with_n_elements < settings.min) {
-                settings.init_with_n_elements = settings.min;
-            }
-
+            // drag & drop support: this is a bit more complex than pressing "up" or
+            // "down" buttons because we can move elements more than one place ahead
+            // or below...
             if (settings.drag_drop && settings.allow_up && settings.allow_down) {
                 var oldPosition;
                 var newPosition;
@@ -551,25 +708,7 @@
                             }
                             newPosition = elements.index(element);
                             elements = collection.find(settings.elements_selector);
-                            if (1 === Math.abs(newPosition - oldPosition)) {
-                                elements = swapElements(collection, elements, oldPosition, newPosition);
-                                if (!(newPosition - oldPosition > 0 ? trueOrUndefined(settings.after_up(collection, element)) : trueOrUndefined(settings.after_down(collection, element)))) {
-                                    elements = swapElements(collection, elements, newPosition, oldPosition);
-                                }
-                            } else {
-                                if (oldPosition < newPosition) {
-                                    elements = swapElementsUp(collection, elements, settings, oldPosition, newPosition);
-                                    if (!(newPosition - oldPosition > 0 ? trueOrUndefined(settings.after_up(collection, element)) : trueOrUndefined(settings.after_down(collection, element)))) {
-                                        elements = swapElementsDown(collection, elements, settings, newPosition, oldPosition);
-                                    }
-                                } else {
-                                    elements = swapElementsDown(collection, elements, settings, oldPosition, newPosition);
-                                    if (!(newPosition - oldPosition > 0 ? trueOrUndefined(settings.after_up(collection, element)) : trueOrUndefined(settings.after_down(collection, element)))) {
-                                        elements = swapElementsUp(collection, elements, settings, newPosition, oldPosition);
-                                    }
-                                }
-                            }
-                            dumpCollectionActions(collection, settings, false);
+                            doMove(collection, settings, elements, element, oldPosition, newPosition);
                         }
                     }, settings.drag_drop_options));
                 }
@@ -577,8 +716,9 @@
 
             collection.data('collection-settings', settings);
 
+            // events on buttons using a "static" container so even newly
+            // created/ajax downloaded buttons doesn't need further initialization
             var container = $(settings.container);
-
             container
                 .off('click', '.' + settings.prefix + '-action')
                 .on('click', '.' + settings.prefix + '-action', function (e) {
@@ -599,35 +739,75 @@
                     var elements = collection.find(settings.elements_selector);
                     var element = that.data(settings.prefix + '-element') ? $('#' + that.data(settings.prefix + '-element')) : undefined;
                     var index = element && element.length ? elements.index(element) : -1;
+                    var event = null;
 
                     var isDuplicate = that.is('.' + settings.prefix + '-duplicate');
                     if ((that.is('.' + settings.prefix + '-add') || that.is('.' + settings.prefix + '-rescue-add') || isDuplicate) && settings.allow_add) {
+                        event = 'add';
                         elements = doAdd(container, that, collection, settings, elements, element, index, isDuplicate);
                     }
 
                     if (that.is('.' + settings.prefix + '-remove') && settings.allow_remove) {
+                        event = 'remove';
                         elements = doDelete(collection, settings, elements, element, index);
                     }
 
                     if (that.is('.' + settings.prefix + '-up') && settings.allow_up) {
+                        event = 'up';
                         elements = doUp(collection, settings, elements, element, index);
                     }
 
                     if (that.is('.' + settings.prefix + '-down') && settings.allow_down) {
+                        event = 'down';
                         elements = doDown(collection, settings, elements, element, index);
                     }
 
-                    dumpCollectionActions(collection, settings, false);
+                    dumpCollectionActions(collection, settings, false, event);
                     e.preventDefault();
-                });
+                }); // .on
 
             dumpCollectionActions(collection, settings, true);
             enableChildrenCollections(collection, null, settings);
 
+            // if collection elements are given in the wrong order, plugin
+            // must reorder them graphically
+            if (settings.position_field_selector) {
+                var array = [];
+                var elements = collection.find(settings.elements_selector);
+                elements.each(function (index) {
+                    var that = $(this);
+                    array.push({
+                        position: getFieldValue(that.find(settings.position_field_selector)),
+                        element: that
+                    });
+                });
+
+                var sorter = function (a, b) {
+                    return (a.position < b.position ? -1 : (a.position > b.position ? 1 : 0));
+                };
+                array.sort(sorter);
+
+                $.each(array, function(newIndex, object) {
+                    var ids = [];
+                    $(elements).each(function(index) {
+                        ids.push($(this).attr('id'));
+                    });
+
+                    var element = object.element;
+                    var oldIndex = $.inArray(element.attr('id'), ids);
+
+                    if (newIndex !== oldIndex) {
+                        elements = doMove(collection, settings, elements, element, oldIndex, newIndex);
+                        putFieldValue(element.find(settings.position_field_selector), newIndex);
+                    }
+                });
+            } // if (settings.position_field_selector) {
+
             settings.after_init(collection);
-        });
+
+        }); // elem.each
 
         return true;
-    };
+    }; // $.fn.collection
 
 })(jQuery);

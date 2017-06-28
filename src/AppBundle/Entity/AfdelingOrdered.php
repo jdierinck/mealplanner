@@ -6,12 +6,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * ReceptOrdered
+ * AfdelingOrdered
  *
- * @ORM\Table(name="recept_ordered")
+ * @ORM\Table(name="afdeling_ordered")
  * @ORM\Entity(repositoryClass="Gedmo\Sortable\Entity\Repository\SortableRepository")
  */
-class ReceptOrdered
+class AfdelingOrdered
 {
     /**
      * @var int
@@ -25,19 +25,19 @@ class ReceptOrdered
     /**
      *
      * @Gedmo\SortableGroup
-     * @ORM\ManyToOne(targetEntity="Menu", inversedBy="receptenordered")
-     * @ORM\JoinColumn(name="menu_id", referencedColumnName="id", onDelete="SET NULL")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="afdelingenordered")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      *
      */    
-    private $menu;
+    private $user;
 
     /**
      *
-     * @ORM\ManyToOne(targetEntity="Recept", inversedBy="receptenordered")
-     * @ORM\JoinColumn(name="recept_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Afdeling", inversedBy="afdelingenordered")
+     * @ORM\JoinColumn(name="afdeling_id", referencedColumnName="id")
      *
      */    
-    private $recept;
+    private $afdeling;
 
     /**
      * @var int
@@ -48,10 +48,11 @@ class ReceptOrdered
     private $positie;
 
 
+
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -62,7 +63,8 @@ class ReceptOrdered
      * Set positie
      *
      * @param integer $positie
-     * @return ReceptOrdered
+     *
+     * @return AfdelingOrdered
      */
     public function setPositie($positie)
     {
@@ -74,7 +76,7 @@ class ReceptOrdered
     /**
      * Get positie
      *
-     * @return integer 
+     * @return integer
      */
     public function getPositie()
     {
@@ -82,48 +84,50 @@ class ReceptOrdered
     }
 
     /**
-     * Set menu
+     * Set user
      *
-     * @param \AppBundle\Entity\Menu $menu
-     * @return ReceptOrdered
+     * @param \AppBundle\Entity\User $user
+     *
+     * @return AfdelingOrdered
      */
-    public function setMenu(\AppBundle\Entity\Menu $menu = null)
+    public function setUser(\AppBundle\Entity\User $user = null)
     {
-        $this->menu = $menu;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
-     * Get menu
+     * Get user
      *
-     * @return \AppBundle\Entity\Menu 
+     * @return \AppBundle\Entity\User
      */
-    public function getMenu()
+    public function getUser()
     {
-        return $this->menu;
+        return $this->user;
     }
 
     /**
-     * Set recept
+     * Set afdeling
      *
-     * @param \AppBundle\Entity\Recept $recept
-     * @return ReceptOrdered
+     * @param \AppBundle\Entity\Afdeling $afdeling
+     *
+     * @return AfdelingOrdered
      */
-    public function setRecept(\AppBundle\Entity\Recept $recept = null)
+    public function setAfdeling(\AppBundle\Entity\Afdeling $afdeling = null)
     {
-        $this->recept = $recept;
+        $this->afdeling = $afdeling;
 
         return $this;
     }
 
     /**
-     * Get recept
+     * Get afdeling
      *
-     * @return \AppBundle\Entity\Recept 
+     * @return \AppBundle\Entity\Afdeling
      */
-    public function getRecept()
+    public function getAfdeling()
     {
-        return $this->recept;
+        return $this->afdeling;
     }
 }

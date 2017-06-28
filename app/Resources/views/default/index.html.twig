@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {%block stylesheets %}
-<link rel="stylesheet" href="{{ asset('css/general.css') }}">
 <link rel="stylesheet" href="{{ asset('css/index.css') }}">
 <link rel="stylesheet" href="{{ asset('css/lightbox.css') }}">
 <style>
@@ -32,13 +31,18 @@
 {% block body %}
 {{ render(controller('AppBundle:Navigation:menu')) }}
 
-<div class="jumbotron text-center">
+<div class="jumbotron">
 <div class="jumbotext">
-  <h1>Mealplanner <small>Minder shoppen. Beter eten.</small></h1> 
   <div class="row">
   	<div class="col-sm-8 col-sm-offset-2">
-	  <p>Mealplanner is een online maaltijdplanner waarmee je makkelijk herbruikbare menu's kan maken op basis van de recepten in je online kookboek. Op basis van zo'n menu maak je vliegensvlug je boodschappenlijst aan, gerangschikt volgens afdeling. Zo spendeer je minder tijd aan de boodschappen, bespaar je geld, en hou je meer tijd over om te koken en samen met je familie van het eten te genieten.
-	  </p>
+  	  <h1>Mealplanner<br><small>Maak het je gemakkelijk</small></h1> 
+	  <p>Mealplanner is een online maaltijdplanner waarmee je:</p>
+	  <ul>
+	  <li>al je recepten kan bewaren in een online kookboek</li>
+	  <li>met die recepten menu's kan samenstellen die je later kan hergebruiken</li>
+	  <li>in een handomdraai je boodschappenlijst kan aanmaken, of het nu voor één dag is of voor een hele week</li>
+	  </ul>
+	  <p>Zo spendeer je minder tijd aan boodschappen doen, koop je geen overbodige zaken (en bespaar je dus geld), en hou je meer tijd over om te koken en samen met je familie van het eten te genieten.</p>
 	</div>
   </div>
 </div>
@@ -49,7 +53,7 @@
 		<div class="col-sm-4 ">
 			<h1>1.</h1>
 			<h3>Van recept...</h3>
-			<img src="/images/screenshots/Kookboek.jpg" class="img-responsive" width="350" style="display:inline" alt="">
+			<img src="/images/screenshots/Kookboek.png" class="img-responsive" width="350" style="display:inline; margin-bottom:20px;" alt="">
 			<div class="caption">
 			<p class="tekst-groot">Verzamel al je recepten in je online Kookboek</p>
 			</div>
@@ -57,7 +61,7 @@
 		<div class="col-sm-4">
 			<h1>2.</h1>
 			<h3>naar menu...</h3>
-			<img src="/images/screenshots/Kalender.jpg" class="img-responsive" width="350" style="display:inline" alt="">
+			<img src="/images/screenshots/Menu.png" class="img-responsive" width="350" style="display:inline; margin-bottom:20px;" alt="">
 			<div class="caption">
 			<p class="tekst-groot">Stel herbruikbare menu's samen met je recepten. Mealplanner zet ze voor jou op de planning.</p>
 			</div>
@@ -65,7 +69,7 @@
 		<div class="col-sm-4">
 			<h1>3.</h1>
 			<h3>naar boodschappenlijst</h3>
-			<img src="/images/screenshots/Boodschappenlijst.jpg" class="img-responsive" width="350" style="display:inline" alt="">
+			<img src="/images/screenshots/Boodschappenlijst.png" class="img-responsive" width="350" style="display:inline; margin-bottom:20px;" alt="">
 			<div class="caption">
 			<p class="tekst-groot">Genereer je boodschappenlijst met één klik</p>
 			</div>
@@ -78,47 +82,47 @@
 	
 	<div class="row">
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Kookboek.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Kookboek.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Kookboek01.png" data-lightbox="screenshots" data-title="Beheer al je recepten op één centrale plaats">
+				<img src="/images/screenshots/Kookboek01.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>Alles op één plaats</h4>
-				<p>Vaarwel aantekeningen in kookboeken, notitieboekjes en losse papiertjes; voortaan beheer je al je recepten op één plaats. Bekijk ze als tegels of in lijstview.</p>
+				<p>Vaarwel aantekeningen in kookboeken, kopietjes van recepten en links naar websites in je favorieten; voortaan beheer je al je recepten netjes op één plaats. Bekijk ze als tegels of in lijstview.</p>
 			</div>
 		</div>
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Kookboek.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Kookboek.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Kookboek02.png" data-lightbox="screenshots" data-title="Uitgebreide zoekmogelijkheden">
+				<img src="/images/screenshots/Kookboek02.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>Wie zoekt...</h4>
-				<p>Vind de recepten die je zoekt op titel, soort gerecht, type keuken, hoofdingrediënt, bereidingstijd of allemaal samen.</p>
+				<p>Vind de recepten die je zoekt op titel, soort gerecht, type keuken, hoofdingrediënt, bereidingstijd of allemaal samen. Ook handig als je nog iets over hebt: zoek wat je allemaal nog kan maken met een bepaald ingrediënt.</p>
 			</div>
 		</div>
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Kookboek.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Kookboek.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Kookboek03.png" data-lightbox="screenshots" data-title="Makkelijk ingrediënten toevoegen">
+				<img src="/images/screenshots/Kookboek03.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>Bulkinvoer</h4>
-				<p>Heb je al een lijstje met ingrediënten? Kopieer en plak ze in het veld bulkinvoer, Mealplanner voegt ze één voor één toe.</p>
+				<p>Ingrediënten toevoegen kon niet eenvoudiger zijn. Tik ze gewoon in in het veld bulkinvoer of kopieer en plak er bestaande lijstjes in. Mealplanner onderscheidt hoeveelheden en eenheden van ingrediënten en voegt ze één voor één toe.</p>
 			</div>
 		</div>
 	</div> <!-- end of row 1 -->
 	
 	<div class="row">
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Kookboek.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Kookboek.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Kookboek04.png" data-lightbox="screenshots" data-title="Ingrediënten komen vanzelf in de juiste afdeling terecht">
+				<img src="/images/screenshots/Kookboek04.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>Afdeling</h4>
-				<p>Mealplanner kent de ingrediënten automatisch toe aan een bepaalde afdeling: conserven, groenten, vlees, zuivel... Niet toegewezen ingrediënten kan je in je boodschappenlijst nog in de juiste afdeling plaatsen.</p>
+				<p>Wanneer je een recept toevoegt, zet Mealplanner de ingrediënten van een recept automatisch in de juiste afdeling: conserven, groenten en fruit, vlees, zuivel... Niet toegewezen ingrediënten kan je in je boodschappenlijst nog in de juiste afdeling plaatsen.</p>
 			</div>
 		</div>
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Kookboek.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Kookboek.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Kookboek05.png" data-lightbox="screenshots" data-title="Ingrediënten schalen">
+				<img src="/images/screenshots/Kookboek05.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4 >Schalen</h4>
@@ -126,8 +130,8 @@
 			</div>
 		</div>
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Kookboek.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Kookboek.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Kookboek06.png" data-lightbox="screenshots" data-title="Voeg individuele recepten toe aan je boodschappenlijst">
+				<img src="/images/screenshots/Kookboek06.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>Toevoegen</h4>
@@ -143,8 +147,8 @@
 
 	<div class="row">
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Kalender.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Kalender.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Menu.png" data-lightbox="screenshots" data-title="Stel menu's samen die je kan hergebruiken">
+				<img src="/images/screenshots/Menu.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>Recycleren is in</h4>
@@ -152,8 +156,8 @@
 			</div>
 		</div>
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Kalender.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Kalender.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Menu02.png" data-lightbox="screenshots" data-title="De boodschappenlijst voor een hele week is zo gemaakt">
+				<img src="/images/screenshots/Menu02.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>1, 2 ... klaar!</h4>
@@ -161,12 +165,12 @@
 			</div>
 		</div>
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Kalender.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Kalender.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Menu03.png" data-lightbox="screenshots" data-title="Bekijk en beheer de planning op de ingebouwde kalender">
+				<img src="/images/screenshots/Menu03.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>Kalender</h4>
-				<p>Mealplanner zet de gekozen recepten automatisch in een kalender. Je kan kiezen tussen week-, maand-, of agendaview. Verschuif de recepten als je last minute wijzigingen wil aanbrengen.</p>
+				<p>Mealplanner zet de gekozen recepten automatisch in een kalender. Je kan kiezen tussen week-, maand-, of agendaview. Verschuif de recepten als je wijzigingen wil aanbrengen. Pas eenvoudig de begindatum van de planning aan. Verwijder recepten die je dit keer niet wil maken en vervang ze door andere.</p>
 			</div>
 		</div>
 	</div> <!-- end of row 1 -->	
@@ -174,51 +178,51 @@
 </div> <!-- end of container Menu's -->
 
 <div class="container-fluid bg-grey text-center">
-  <h2 class="margin">Jouw boodschappenlijst</h2>
+  <h2 class="margin">Boodschappenlijst</h2>
 
 	<div class="row">
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Boodschappenlijst.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Boodschappenlijst.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Boodschappenlijst.png" data-lightbox="screenshots" data-title="Booschappenlijst">
+				<img src="/images/screenshots/Boodschappenlijst.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>Afdrukken en vertrekken</h4>
-				<p>Zodra je een recept of een menu hebt toegevoegd staat je boodschappenlijst klaar, gerangschikt volgens afdeling. Nu nog afdrukken en je kan je inkopen doen. Of, als je over mobiele data beschikt, neem je boodschappenlijst mee op je smartphone, want Mealplanner is helemaal responsive.</p>
+				<p>Zodra je een recept of een menu hebt toegevoegd staat je boodschappenlijst klaar, gerangschikt volgens afdeling. Gelijkaardige ingrediënten worden automatisch samengevoegd. Nu nog afdrukken en je kan je inkopen doen.</p>
 			</div>
 		</div>
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Boodschappenlijst.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Boodschappenlijst.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Boodschappenlijst02.png" data-lightbox="screenshots" data-title="De boodschappenlijst kan makkelijk aangepast worden">
+				<img src="/images/screenshots/Boodschappenlijst02.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>Volledig aanpasbaar</h4>
-				<p>Wijzig de afdeling van een ingrediënt en Mealplanner onthoud je keuze voor de volgende keer. Voeg items toe aan je boodschappenlijst. Vink ingrediënten die je nog in huis hebt af. Pas het aantal porties voor ieder gerecht aan.</p>
+				<p>Wijzig de afdeling van een ingrediënt (Mealplanner onthoudt je keuze voor de volgende keer). Voeg items toe aan je boodschappenlijst. Vink ingrediënten die je nog in huis hebt af. Pas het aantal porties voor ieder gerecht aan.</p>
 			</div>
 		</div>
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Boodschappenlijst.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Boodschappenlijst.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Boodschappenlijst03.png" data-lightbox="screenshots" data-title="Deel je boodschappenlijst met je huisgenoten">
+				<img src="/images/screenshots/Boodschappenlijst03.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>Delen</h4>
-				<p>Stuur je boodschappenlijst per e-mail naar je huisgenoten zodat <em>zij</em> de boodschappen kunnen doen. Jij hebt het lijstje al gemaakt, toch?</p>
+				<p>Stuur je boodschappenlijst per e-mail naar je huisgenoten zodat <em>zij</em> de boodschappen kunnen doen. Jij hebt het lijstje al gemaakt, toch? Of print de planning af en hang ze op op een zichtbare plaats. Zo is iedereen op de hoogte.</p>
 			</div>
 		</div>
 	</div> <!-- end of row 1 -->
 
 	<div class="row">
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Boodschappenlijst.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Boodschappenlijst.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Boodschappenlijst04.png" data-lightbox="screenshots" data-title="Stem je boodschappenlijst af op de supermarkt waar je winkelt">
+				<img src="/images/screenshots/Boodschappenlijst04.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
-				<h4><em>Wat eten we vandaag?</em></h4>
-				<p>Die vraag hoeven je huisgenoten niet meer te stellen. Print de planning af en hang ze op op een zichtbare plaats. Zo is iedereen op de hoogte.</p>
+				<h4>Boodschappen à la carte</h4>
+				<p>Afdelingen kan je in een bepaalde volgorde zetten, zodat je boodschappenlijst helemaal is afgestemd op de supermarkt waar je je boodschappen doet. Zo sta je sneller aan de kassa.</p>
 			</div>
 		</div>
 		<div class="col-sm-4">
-			<a href="/images/screenshots/Boodschappenlijst.jpg" data-lightbox="screenshots" data-title="Caption">
-				<img src="/images/screenshots/Boodschappenlijst.jpg" style="width:250px" class="img-thumbnail"/>
+			<a href="/images/screenshots/Boodschappenlijst05.png" data-lightbox="screenshots" data-title="Exporteer je boodschappenlijst als pdf of csv">
+				<img src="/images/screenshots/Boodschappenlijst05.png" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h4>Exporteer</h4>
@@ -240,13 +244,7 @@
 	</div>
 </div>
 
-<footer class="container-fluid text-center bg-lightblue">
-  <a href="#" title="To Top">
-    <span class="glyphicon glyphicon-chevron-up"></span>
-  </a>
-  	<p>&copy {{ "now"|date("Y") }} Johan Dierinck</p>
-	<p class="small">Powered by <img src="{{ asset('images/symfony_white_02.png') }}" alt="Symfony logo" height="15"></p> 
-</footer>
+{{ render(controller('AppBundle:Navigation:footer')) }}
 	
 {% endblock %}
 

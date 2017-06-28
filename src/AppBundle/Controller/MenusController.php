@@ -306,6 +306,7 @@ class MenusController extends Controller
 
 			$date = $date->modify("+1 day");
 		}
+		// Note: do not flush at the end or else the last date will be set on each object
 		// $em->flush();
 		
 		return $this->render('menus/addedtoshoppinglist.html.twig', array('menu_naam' => $menu->getNaam()));

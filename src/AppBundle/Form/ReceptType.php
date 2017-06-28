@@ -16,8 +16,6 @@ use AppBundle\Form\Type\IngredientType;
 use AppBundle\Entity\Recept;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Tetranz\Select2EntityBundle\Form\Type\Select2EntityType;
 use blackknight467\StarRatingBundle\Form\RatingType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;

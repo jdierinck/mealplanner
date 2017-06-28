@@ -1,8 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/general.css') }}">
-	<link rel="stylesheet" href="{{ asset('css/stickyfooter.css') }}">
 	<style>
 /*		#myModal {
 			z-index: 1080 !important;
@@ -113,7 +111,7 @@
 				</div>
 
 				<div class="pull-right">
-					<a type="button" class="btn btn-default btn-sm" href="{{ path('exportcsv') }}"><i class="fa fa-download"></i>&nbsp;Exporteer {{ filters > 0 ? 'selectie' : 'alle' }} als CSV</a>
+					<a type="button" class="btn btn-default btn-sm" href="{{ path('exportcsv') }}"><i class="fa fa-download"></i>&nbsp;Exporteer als CSV</a>
 				</div>
 
 				<br><br>
@@ -129,16 +127,18 @@
 
 					<div id="gridview">
 						{% if recepten %}			
-							<div id="recepten" class="row list-group">
+							<div id="recepten" class="row">
 							{% for recept in recepten %}
 							  <div class="item col-sm-4">
 							  		<div data-url="{{ path('showrecept', {'id':recept.id}) }}" class="showrecipe">
 									{% if recept.fotonaam %}
-									<img class="group list-group-image" src="{{ vich_uploader_asset(recept, 'fotoBestand') }}" alt="{{ recept.titel }}" class="img-responsive">
+									<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_sm') }}" alt="{{ recept.titel }}" class="img-responsive">
 									{% else %}
-									<img class="group list-group-image" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image">
-									{% endif %}						  
-								  <h5 class="group inner list-group-item-heading">{{ recept.titel }}</h5>
+									<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height: 100px;">
+									{% endif %}
+									<!-- <div class="rating-bg"></div> -->
+									{{ recept.rating|rating }}
+								  	<h5 class="hideOverflow">{{ recept.titel }}</h5>
 								  
 									{% if recept.tags %}
 										<p class="small hideOverflow">
@@ -159,7 +159,7 @@
 						{% else %}
 						Geen recepten gevonden.
 						{% endif %}
-					</div>			
+					</div>							
 
 					<div id="listview" style="display:none;">
 						{% if recepten %}
@@ -184,7 +184,7 @@
 												<td>
 													<div style="height:50px;">
 													{% if recept.fotonaam %}
-													<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') }}" alt="{{ recept.titel }}" class="img-responsive" style="max-height:100%;">
+													<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_xs') }}" alt="{{ recept.titel }}">
 													{% else %}
 													<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height:100%;">
 													{% endif %}
@@ -260,12 +260,7 @@
 	</div>
 	<!-- end Modal -->
 
-<footer class="footer bg-lightblue">
-<div class="container-fluid text-center">
-  	<p>&copy {{ "now"|date("Y") }} Johan Dierinck</p>
-	<p class="small">Powered by <img src="{{ asset('images/symfony_white_02.png') }}" alt="Symfony logo" height="15"></p> 
-</div>
-</footer>
+{{ render(controller('AppBundle:Navigation:footer')) }}
 	
 {% endblock %}
 

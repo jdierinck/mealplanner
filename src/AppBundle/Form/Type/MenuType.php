@@ -60,11 +60,11 @@ class MenuType extends AbstractType
             ->add('dagen', CollectionType::class, array(
             'required' => false,
             'entry_type' => DagType::class,
-             'allow_add' => true,
-             'allow_delete' => true,
-             'prototype' => true,
-             'attr' => array('class' => 'daycollection'),
-             'by_reference' => false,
+            'allow_add' => true,
+            'allow_delete' => true,
+            'prototype' => true,
+            'attr' => array('class' => 'daycollection'),
+            'by_reference' => false,
             ))            
     //     	->add('dagen', Select2EntityType::class, array(
     //     		'multiple' => true,

@@ -4,6 +4,17 @@ security:
     encoders:
         AppBundle\Entity\User:
             algorithm: bcrypt
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+    access_control:
+        - { path: ^/$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/registreer, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/requestpwd, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetpwd, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/contact, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, roles: IS_AUTHENTICATED_REMEMBERED }
 
     # http://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
@@ -38,4 +49,4 @@ security:
             logout:
                 path: /logout
                 target: /
-            # switch_user: true
+            switch_user: true

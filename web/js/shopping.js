@@ -186,7 +186,7 @@ $(document).ready(function(){
         })
         .done(function (data) {
             if (typeof data.message !== 'undefined') {
-                alert(data.message);
+                // alert(data.message);<
                 location.reload();
             }
         })
@@ -215,12 +215,6 @@ $(document).ready(function(){
     	titel.toggle();
     	$(this).find('i').replaceWith(titel.is(':visible') ? '<i class="fa fa-toggle-on fa-lg" aria-hidden="true"></i>' : '<i class="fa fa-toggle-off fa-lg" aria-hidden="true"></i>');
     });
-   
-//     $('select').each(function(){
-// // 			$(this).find('option[selected]').attr('selected', true);
-// 			var val = $(this).find('option[selected]').val();
-// 			$(this).val(val);
-// 	});
 	
 	$(document).on('change', 'select', function(){
 			$.ajax({
@@ -238,8 +232,28 @@ $(document).ready(function(){
 		});
 	});
 	
-	groupDuplicateItems();
-	
+	if ($('a#togglemerge').find('i').hasClass('fa-toggle-on')) {
+		groupDuplicateItems();
+	}
+
+	$('a#togglemerge').on('click', function(){
+		$(this).find('i').replaceWith($(this).find('i').hasClass('fa-toggle-on') ? '<i class="fa fa-toggle-off fa-lg" aria-hidden="true"></i>' : '<i class="fa fa-toggle-on fa-lg" aria-hidden="true"></i>');
+		$.ajax({
+			type: 'POST',
+			url: '/boodschappen',
+			data: null,
+			success: function(html){
+				$('#lijst-inhoud').replaceWith(
+					$(html).find('#lijst-inhoud')
+				);
+			if ($('a#togglemerge').find('i').hasClass('fa-toggle-on')) {
+				groupDuplicateItems();
+				};
+			if($('#showhiderecepten').find('i').hasClass('fa-toggle-on')){$('.recept-titel').show();}
+			}
+		});	
+	});
+
 	$(".new-ul").on("hide.bs.collapse", function(){
 		$(this).prev('div').find('span').replaceWith('<span class="glyphicon glyphicon-expand"></span>');
 	});
@@ -378,14 +392,17 @@ function groupDuplicateItems(){
 				sum[item] = counts[item] >= 2 ? sum[item]+quantity : quantity;
 			}
 		
-			for(var i=0; i<array.length;i++){
+			for(var i=0; i<array.length; i++){
 				if(array[i][0].innerHTML === "" && array[i][1].innerHTML === ""){
 					var item = array[i][2].innerHTML;
 					count(item, i, 0);
 				}
 				if(array[i][0].innerHTML !== "" && array[i][1].innerHTML !== ""){
 					var item = array[i][1].innerHTML + " " + array[i][2].innerHTML;
-					var q = Number(array[i][0].innerHTML);
+					// var q = Number(array[i][0].innerHTML);
+					var q = array[i][0].innerHTML;
+					q = q.replace(',', '.');
+					q = Number(q);
 					count(item, i, q);
 				}
 				if(array[i][0].innerHTML !== "" && array[i][1].innerHTML === ""){

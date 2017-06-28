@@ -95,16 +95,16 @@ $(document).ready(function(){
 			addIngredientForm(collectionHolder, newLink);
 			// $('input[id$="ingredient"]:last').val(items[i]);
 			var words = items[i].split(' ');
-			var rest="";
+			var rest='';
 			for (x=0; x<words.length; x++) {
 				if (words[x].search(/^\d+((.|,)\d+)?$/) > -1) {
 					$('input[id$="hoeveelheid"]:last').val(words[x]);
 				} else if (words[x].search(/^(gram|gr|g|kilo|kg|eetlepel|el|koffielepel|kl|liter|l|deciliter|dl|milliliter|mililiter|ml|stuk|stuks|cm|stengel|teen|teentje|teentjes|pot|potje|kop|kopje|blik|blikken|blikjes|blikje)$/) > -1) {
 					$('input[id$="eenheid"]:last').val(words[x]);
 				} else {
-					rest += " " + words[x];
-					$('input[id$="ingredient"]:last').val(rest);
+					rest += words[x] + ' ';
 				}
+				$('input[id$="ingredient"]:last').val(rest.trim());
 				
 			}
 

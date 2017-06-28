@@ -19,6 +19,9 @@ use Gedmo\Mapping\Annotation as Gedmo;
  */
 class User implements UserInterface, \Serializable
 {
+    const ROLE_DEFAULT = 'ROLE_USER';
+    const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+    
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -55,12 +58,20 @@ class User implements UserInterface, \Serializable
      */
     private $isActive;
 
+    /**
+     * @ORM\Column(name="roles", type="simple_array", nullable=true)
+     */
+    private $roles;
+
     public function __construct()
     {
         $this->isActive = true;
         $this->recepten = new ArrayCollection();
         $this->menus = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->roles = array();
+        $this->afdelingenordered = new ArrayCollection();
+        $this->afdelingen = new ArrayCollection();
     }
 
     public function getUsername()
@@ -70,7 +81,7 @@ class User implements UserInterface, \Serializable
 
     public function getSalt()
     {
-        return null;
+        return null; // No need to hash the password with a salt since we are using bcrypt
     }
 
     public function getPassword()
@@ -80,7 +91,82 @@ class User implements UserInterface, \Serializable
 
     public function getRoles()
     {
-        return array('ROLE_USER');
+        // return array('ROLE_USER');
+        $roles = $this->roles;
+
+        // we need to make sure to have at least one role
+        $roles[] = static::ROLE_DEFAULT;
+        return array_unique($roles);
+    }
+
+    /**
+     * Adds a role to the user.
+     *
+     * @param string $role
+     *
+     * @return self
+     */
+    public function addRole($role)
+    {
+        $role = strtoupper($role);
+        if ($role === static::ROLE_DEFAULT) {
+            return $this;
+        }
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
+        return $this;
+    }
+
+    /**
+     * Never use this to check if this user has access to anything!
+     *
+     * Use the AuthorizationChecker, or an implementation of AccessDecisionManager
+     * instead, e.g.
+     *
+     *         $authorizationChecker->isGranted('ROLE_USER');
+     *
+     * @param string $role
+     *
+     * @return bool
+     */
+    public function hasRole($role)
+    {
+        return in_array(strtoupper($role), $this->getRoles(), true);
+    }
+
+    /**
+     * Removes a role to the user.
+     *
+     * @param string $role
+     *
+     * @return self
+     */
+    public function removeRole($role)
+    {
+        if (false !== $key = array_search(strtoupper($role), $this->roles, true)) {
+            unset($this->roles[$key]);
+            $this->roles = array_values($this->roles);
+        }
+        return $this;
+    }
+
+    /**
+     * Sets the roles of the user.
+     *
+     * This overwrites any previous roles.
+     *
+     * @param array $roles
+     *
+     * @return self
+     */
+    public function setRoles(array $roles)
+    {
+        $this->roles = array();
+        foreach ($roles as $role) {
+            $this->addRole($role);
+        }
+        return $this;
     }
 
     public function eraseCredentials()
@@ -144,6 +230,49 @@ class User implements UserInterface, \Serializable
      * @var \DateTime
      */  
     private $passwordRequestedAt;
+
+    /**
+     * @ORM\OneToMany(targetEntity="AfdelingOrdered", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     */
+    protected $afdelingenordered;
+
+    private $afdelingen;
+    
+    public function getAfdelingen()
+    {
+        $afdelingen = new ArrayCollection();
+        
+        foreach ($this->afdelingenordered as $ao) {
+            $afdelingen[] = $ao->getAfdeling();
+        }
+
+        return $afdelingen;
+    }   
+    
+    // Alternatively:
+    // public function getAfdelingen()
+    // {
+    //     return array_map(
+    //         function ($afdelingordered) {
+    //             return $afdelingordered->getAfdeling();
+    //         },
+    //         $this->afdelingenordered->toArray()
+    //     );
+    // }
+
+    public function setAfdelingen($afdelingen)
+    {
+        foreach ($afdelingen as $afdeling) {
+                
+                $ao = new AfdelingOrdered();
+
+                $ao->setUser($this);
+                $ao->setAfdeling($afdeling);
+                
+                $this->addAfdelingenordered($ao);
+        }
+    }
+
 
     /**
      * Get id
@@ -439,4 +568,47 @@ class User implements UserInterface, \Serializable
         return $this->getPasswordRequestedAt() instanceof \DateTime &&
                $this->getPasswordRequestedAt()->getTimestamp() + $ttl > time();
     }    
+
+    /**
+     * Add afdelingenordered
+     *
+     * @param \AppBundle\Entity\AfdelingOrdered $afdelingenordered
+     *
+     * @return User
+     */
+    public function addAfdelingenordered(\AppBundle\Entity\AfdelingOrdered $afdelingordered)
+    {
+        if (!$this->afdelingenordered->contains($afdelingordered)) {
+            $this->afdelingenordered->add($afdelingordered);
+            $afdelingordered->setUser($this);
+        }
+
+        return $this;        
+    }
+
+    /**
+     * Remove afdelingenordered
+     *
+     * @param \AppBundle\Entity\AfdelingOrdered $afdelingenordered
+     */
+    public function removeAfdelingenordered(\AppBundle\Entity\AfdelingOrdered $afdelingordered)
+    {
+        if ($this->afdelingenordered->contains($afdelingordered)) {
+            $this->afdelingenordered->removeElement($afdelingordered);
+            $afdelingordered->setUser(null);
+        }
+
+        return $this;        
+    }
+
+    /**
+     * Get afdelingenordered
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAfdelingenordered()
+    {
+        return $this->afdelingenordered;
+    }
+
 }

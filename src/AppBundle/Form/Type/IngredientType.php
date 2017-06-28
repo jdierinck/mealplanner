@@ -43,7 +43,6 @@ class IngredientType extends AbstractType
             	
 			$repo = $this->em->getRepository('AppBundle:Afdeling');
 			$afdelingen = $repo->findAll();
-			$onbekend = $repo->findOneByName('niet toegewezen');
 		
 			foreach($afdelingen as $afdeling){
 				$voedingswaren = explode("\n",str_replace("\r", '', $afdeling->getVoedingswaren()));
@@ -59,6 +58,7 @@ class IngredientType extends AbstractType
     		$ingredient = $event->getData();
     		$repo = $this->em->getRepository('AppBundle:Afdeling');
 			$onbekend = $repo->findOneByName('niet toegewezen');
+            
     		if(!array_key_exists('afdeling', $ingredient)) {
     			$ingredient['afdeling'] = $onbekend;
     			$event->setData($ingredient);
@@ -92,17 +92,17 @@ class IngredientType extends AbstractType
                     if (null === $number) {
                         return;
                     } else {
-                    // Get rid of trailing zeroes and decimal point in case of integers
-                    $number += 0;
-                    // Replace dots with commas
-                    return str_replace('.', ',', $number);
+                        // Get rid of trailing zeroes and decimal point in case of integers
+                        $number += 0;
+                        // Replace dots with commas
+                        return str_replace('.', ',', $number);
                     }
                 },
                 function($input){
                     if (null === $input) {
                         return;
                     } else {
-                    return str_replace(',', '.', $input);
+                        return str_replace(',', '.', $input);
                     }
                 }
             ))

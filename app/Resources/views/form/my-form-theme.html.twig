@@ -1,10 +1,14 @@
-{% block _menu_dagen_entry_label %}{% endblock %}
+{#
+{% block _menu_dagen_entry_label %} Dag {{ name }}
+{% endblock %}
+
 {% block _menu_dagen_entry_errors %}{% endblock %}
 
 {% block _menu_dagen_entry_widget %}
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-8">
+        <span class="glyphicon glyphicon-move"></span>
         {{ form_widget(form) }}
         </div>
         <div class="col-md-2">
@@ -13,11 +17,73 @@
         </div>
         <div class="col-md-2">
             <a href="#" class="collection-remove btn btn-default"><span class="glyphicon glyphicon-trash"></span> </a>
-            <a href="#" class="collection-add btn btn-default">Add</a>
+        </div>
+    </div>
+
+{% endblock %}
+#}
+
+{% block DagType_label %} {# Dag {{ name }} #}
+{% endblock %}
+
+{% block DagType_errors %}{% endblock %}
+
+{% block DagType_widget %}
+
+    <div class="row">
+        <div class="col-md-8">
+        <span class="glyphicon glyphicon-move"></span>
+        {{ form_widget(form) }}
         </div>
         <div class="col-md-2">
-            <a href="#" class="collection-duplicate btn btn-default">Duplicate</a>
+            <a href="#" class="collection-up btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+            <a href="#" class="collection-down btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+        </div>
+        <div class="col-md-2">
+            <a href="#" class="collection-remove btn btn-default"><span class="glyphicon glyphicon-trash"></span> </a>
+        </div>
+    </div>
 
+{% endblock %}
+
+
+{% block TagType_label %}{% endblock %}
+{% block TagType_errors %}{% endblock %}
+
+{% block TagType_widget %}
+
+    <div class="row">
+        <div class="col-md-8">
+        <span class="glyphicon glyphicon-move"></span>
+        {{ form_widget(form) }}
+        </div>
+        <div class="col-md-2">
+            <a href="#" class="collection-up btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+            <a href="#" class="collection-down btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+        </div>
+        <div class="col-md-2">
+            <a href="#" class="collection-remove btn btn-default"><span class="glyphicon glyphicon-trash"></span> </a>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block _user_edit_afdelingen_afdelingenordered_entry_label %}{% endblock %}
+{% block _user_edit_afdelingen_afdelingenordered_entry_errors %}{% endblock %}
+
+{% block _user_edit_afdelingen_afdelingenordered_entry_widget %}
+
+    <div class="row">
+        <div class="col-md-8">
+        <span class="glyphicon glyphicon-move"></span>
+        {{ form_widget(form) }}
+        </div>
+        <div class="col-md-2">
+            <a href="#" class="collection-up btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+            <a href="#" class="collection-down btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+        </div>
+        <div class="col-md-2">
+            <a href="#" class="collection-remove btn btn-default"><span class="glyphicon glyphicon-trash"></span> </a>
         </div>
     </div>
 

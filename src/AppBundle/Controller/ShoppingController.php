@@ -23,8 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class ShoppingController extends Controller
-{
-    
+{  
     /**
      * @Route("boodschappen", name="boodschappen")
      */
@@ -52,19 +51,26 @@ class ShoppingController extends Controller
 		    
     	$values = array();
     	$persons = array();
-    	foreach($request->request->all() as $key => $value){
-    		if (substr($key,0,4)==="ingr") {
+    	foreach ($request->request->all() as $key => $value) {
+    		if (substr($key,0,4) === "ingr") {
     			$values[] = $value;
     		}
-    		if (substr($key,0,4)==="pers") {
+    		if (substr($key,0,4) === "pers") {
     			$persons[substr($key,4)] = $value;
 			}
     	}
 		
 		if ($values) {
-			foreach($values as $value){
-				foreach($boodschappenlijst->getIngrBL() as $ibl){
-					if($ibl->getId() == $value) {
+			foreach ($values as $value) {
+				foreach ($boodschappenlijst->getIngrBL() as $ibl) {
+					if ($ibl->getId() == $value) {
+						// remove original ingredient if it is not associated with a recipe
+						$ingredient = $ibl->getIngredient();
+						$recept = $ingredient->getRecept();
+						if ($recept === null) {
+							$em->remove($ingredient);
+						}
+
 						$em->remove($ibl);
 					}
 				}
@@ -74,21 +80,22 @@ class ShoppingController extends Controller
 		}
 		
 		if($persons){
-			foreach($persons as $key=>$value){
+			foreach ($persons as $key=>$value) {
 				foreach($boodschappenlijst->getReceptenBLOrdered() as $ro){
 					if($ro->getId() == $key){
 						$ro->setServings($value);
 					}
 				}
-				foreach($boodschappenlijst->getIngrbl() as $ibl){
-					if($ibl->getReceptblordered()->getId() == $key){
+				foreach ($boodschappenlijst->getIngrbl() as $ibl) {
+					if ($ibl->getReceptblordered()->getId() == $key) {
 						$ibl->setServings($value);
 					}
 				}
 			}
 			$em->flush();
 		}
-		
+
+		// Modify an ingredient's afdeling		
 		if($request->isXmlHttpRequest()){
 			foreach($request->request->all() as $key=>$value){
 				if(substr($key,0,6)==="select"){
@@ -96,6 +103,7 @@ class ShoppingController extends Controller
 						$ingredient = $ibl->getIngredient();
 						$afdeling = $em->getRepository('AppBundle:Afdeling')->find($value);
 						$ibl->setAfdeling($afdeling);
+						// Set the new afdeling on original ingredient also
 						$ingredient->setAfdeling($afdeling);
 					
 					$em->flush();
@@ -104,38 +112,24 @@ class ShoppingController extends Controller
 			}
 		}
 
-// TO DO DOESNT WORK
-// 		$recepten = $boodschappenlijst->getRecepten();
-// 		foreach($recepten as $recept){
-// 			if(!in_array($recept, $repository->findReceptenByBoodschappenlijst($boodschappenlijst->getId()))){
-// 				foreach($recept->getReceptenblordered() as $ro){
-// 					if($ro->getBoodschappenlijst()->getId() === $boodschappenlijst->getId()){
-// 						$em->remove($ro);
-// 					}
-// 				}
-// 			$em->flush();
-// 			}
-// 		}
-// 		$em->refresh($boodschappenlijst);
-//
-	$qb = $em->createQueryBuilder();
-    $query = $qb->select('IDENTITY(ibl.receptblordered)')
-    		->from('AppBundle:IngrBL','ibl')
-    		->where('ibl.boodschappenlijst = :boodschappenlijst')
-    		->setParameter('boodschappenlijst', $boodschappenlijst)
-    		->groupBy('ibl.receptblordered')
-    		->getQuery();
-    $ro_ids=$query->getResult();
-    $ids=array();
-    foreach($ro_ids as $key=>$value){
-    	$ids[]=$value[1];
-    }
-    foreach($boodschappenlijst->getReceptenblordered() as $ro){
-    	if(!in_array($ro->getId(), $ids)){
-    		$em->remove($ro);
-    	}
-    }
-    $em->flush();
+		$qb = $em->createQueryBuilder();
+	    $query = $qb->select('IDENTITY(ibl.receptblordered)')
+	    		->from('AppBundle:IngrBL','ibl')
+	    		->where('ibl.boodschappenlijst = :boodschappenlijst')
+	    		->setParameter('boodschappenlijst', $boodschappenlijst)
+	    		->groupBy('ibl.receptblordered')
+	    		->getQuery();
+	    $ro_ids=$query->getResult();
+	    $ids = array();
+	    foreach($ro_ids as $key=>$value){
+	    	$ids[]=$value[1];
+	    }
+	    foreach($boodschappenlijst->getReceptenblordered() as $ro){
+	    	if(!in_array($ro->getId(), $ids)){
+	    		$em->remove($ro);
+	    	}
+	    }
+	    $em->flush();
 
 
     	$qb = $em->createQueryBuilder();
@@ -157,10 +151,33 @@ class ShoppingController extends Controller
 //     			->orderBy('a.name')
 //     			->getQuery();
 //     	$afdelingen = $query->getResult();
-    	
-    	$afdelingen = $em->getRepository('AppBundle:Afdeling')->findIngredientenByAfdeling($boodschappenlijst);
+    
+    	// $afdelingen = $em->getRepository('AppBundle:AfdelingOrdered')->findIngredientenByAfdeling($boodschappenlijst, $user);
+
+		$qb = $em->createQueryBuilder();
+		$query = $qb->select('ao','a','ibl')
+	        ->from('AppBundle:AfdelingOrdered','ao')           
+	        ->where('ao.user = :user')
+	        ->orderBy('ao.positie')             
+	        ->setParameter('user', $user)
+	        ->join('ao.afdeling', 'a')
+	        ->join('a.ingrbl', 'ibl')
+	        ->andWhere('ibl.boodschappenlijst = :boodschappenlijst')
+	        // ->setParameters(['boodschappenlijst'=>$boodschappenlijst, 'user'=>$user])
+	        ->setParameter('boodschappenlijst', $boodschappenlijst)
+	        ->getQuery();
+        $afdelingenordered = $query->getResult();
 		
-		$alleafdelingen = $em->getRepository('AppBundle:Afdeling')->findAll();
+		// $alleafdelingen = $em->getRepository('AppBundle:Afdeling')->findAll();
+		$qb = $em->createQueryBuilder();
+		$query = $qb->select('ao','a')
+	        ->from('AppBundle:AfdelingOrdered','ao')           
+	        ->where('ao.user = :user')
+	        ->orderBy('ao.positie')             
+	        ->setParameter('user', $user)
+	        ->join('ao.afdeling', 'a')
+	        ->getQuery();
+        $alleafdelingen = $query->getResult();		
 
 		// Get start date
 		$startDate = null;
@@ -176,7 +193,7 @@ class ShoppingController extends Controller
 		}
 		
         return $this->render('shopping/shopping.html.twig', array(
-			'afdelingen' => $afdelingen, 
+			'afdelingenordered' => $afdelingenordered, 
 			'boodschappenlijst' => $boodschappenlijst,
 			'recepten' => $recepten,
 			'alleafdelingen' => $alleafdelingen,
@@ -195,6 +212,13 @@ class ShoppingController extends Controller
 		$boodschappenlijst = $user->getBoodschappenlijst();
 
 		foreach($boodschappenlijst->getIngrBL() as $ibl){
+			// remove original ingredient if it is not associated with a recipe
+			$ingredient = $ibl->getIngredient();
+			$recept = $ingredient->getRecept();
+			if ($recept === null) {
+				$em->remove($ingredient);
+			}
+			// remove IngrBL
 			$em->remove($ibl);
 		}
 		
@@ -320,19 +344,26 @@ class ShoppingController extends Controller
 		    	
     	$ingredient = new Ingredient();
     	
+    	// $form = $this->get('form.factory')
+     // 		->createNamedBuilder('additem', FormType::class, $ingredient)
+    	// 	->setAction($this->generateUrl('additemtoshoppinglist'))
+    	// 	->add('hoeveelheid', TextType::class)
+    	// 	->add('eenheid', TextType::class)
+    	// 	->add('ingredient', TextType::class)
+    	// 	->add('afdeling', EntityType::class, array(
+    	// 		'class' => 'AppBundle:Afdeling',
+    	// 		'choice_label' => 'name'
+    	// 	))
+    	// 	->add('submit', SubmitType::class, array(
+    	// 	'label' => 'Voeg toe'))
+    	// 	->getForm();
+
     	$form = $this->get('form.factory')
-     		->createNamedBuilder('additem', FormType::class, $ingredient)
+     		->createNamedBuilder('additem', IngredientType::class, $ingredient)
     		->setAction($this->generateUrl('additemtoshoppinglist'))
-    		->add('hoeveelheid', TextType::class)
-    		->add('eenheid', TextType::class)
-    		->add('ingredient', TextType::class)
-    		->add('afdeling', EntityType::class, array(
-    			'class' => 'AppBundle:Afdeling',
-    			'choice_label' => 'name'
-    		))
     		->add('submit', SubmitType::class, array(
     		'label' => 'Voeg toe'))
-    		->getForm();
+    		->getForm();    		
     	
     	$form->handleRequest($request);
     	

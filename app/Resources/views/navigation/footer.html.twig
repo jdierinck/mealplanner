@@ -1,0 +1,28 @@
+<footer class="footer text-center bg-lightblue">
+<div class="container">
+	{{ knp_menu_render('AppBundle:Builder:footerMenu', {'currentClass': 'active', 'template': 'AppBundle:Menu:knp_menu.html.twig'}) }}
+  	<p>&copy {{ "now"|date("Y") }} Johan Dierinck</p>
+	<p class="small">Created with <a href="http://www.symfony.com" target="_blank"><img src="{{ asset('images/symfony_white_02.png') }}" alt="Symfony logo" height="15"></a></p>
+</div>
+</footer>
+
+<!-- Modal -->
+<div id="footerModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content" id="footerModalContent">
+<!--       <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Modal Header</h4>
+      </div>
+      <div class="modal-body">
+        <p>Some text in the modal.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div> -->
+    </div>
+
+  </div>
+</div>
