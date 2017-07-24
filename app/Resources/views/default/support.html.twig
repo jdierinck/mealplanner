@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+{{ render(controller('AppBundle:Navigation:menu')) }}
+
+<div class="container" style="margin-top:70px;">
+	<div class="alert alert-info">
+		<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>&nbsp;Deze pagina is nog in opbouw.
+	</div>
+	<h4>Recepten toevoegen en verzamelen</h4>
+	<div>
+	<a href="#support01" data-toggle="collapse">Hoe kan ik recepten toevoegen?</a>
+	{% include('support/support01.html.twig') %}
+	</div>
+	<div>
+	<a href="#support02" data-toggle="collapse">Van welke sites kan ik recepten importeren?</a>
+	{% include('support/support02.html.twig') %}
+	</div>
+</div>
+
+{{ render(controller('AppBundle:Navigation:footer')) }}
+
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+$(document).ready(function(){
+	//Initialize popovers
+	$('[data-toggle="popover"]').popover();
+});
+</script>
+{% endblock %}

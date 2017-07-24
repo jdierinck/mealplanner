@@ -22,3 +22,6 @@ services:
         arguments: ["@doctrine.orm.entity_manager"]
         tags:
            - { name: form.type }
+    app.dept_finder:
+        class: AppBundle\Service\DeptFinder
+        arguments: ["@doctrine.orm.entity_manager"]

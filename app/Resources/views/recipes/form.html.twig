@@ -16,7 +16,8 @@
 			<tr>
 				<th class="col-sm-2">Hoeveelheid</th>
 				<th class="col-sm-2">Eenheid</th>
-				<th class="col-sm-7">Ingredient</th>
+				<th class="col-sm-6">Ingredient</th>
+				<th class="col-sm-1"></th>
 				<th class="col-sm-1"></th>
 			</tr>
 		</thead>
@@ -26,6 +27,7 @@
 			<td>{{ form_widget(ingredient.hoeveelheid) }}{{ form_errors(ingredient.hoeveelheid) }}</td>
 			<td>{{ form_widget(ingredient.eenheid) }}{{ form_errors(ingredient.eenheid) }}</td>
 			<td>{{ form_widget(ingredient.ingredient) }}{{ form_errors(ingredient.ingredient) }}</td>
+			<td>{{ form_widget(ingredient.afdeling) }}{{ form_errors(ingredient.afdeling) }}</td>
 			</tr>
 		{% endfor %}
 		</tbody>

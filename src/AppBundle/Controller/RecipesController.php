@@ -69,7 +69,7 @@ class RecipesController extends Controller
     		->leftJoin('r.hoofdingredient', 'h')
     		->where('r.user = :user')
     		->setParameter('user', $user)
-    		->orderBy('r.'.$sort, 'ASC');
+    		->orderBy('r.'.$sort, 'DESC');
     		
     	if ($gerechtid) {
     		$filters += 1;
@@ -211,7 +211,7 @@ class RecipesController extends Controller
 		$hoofdingredienten = $query->getResult();		
     	
         return $this->render('recipes/recepten.html.twig', array(
-			'recepten' => $recepten, 
+			'recepten' => $recepten,
 			'gerechten' => $gerechten,
 			'keukens' => $keukens,
 			'hoofdingredienten' => $hoofdingredienten,
@@ -254,15 +254,14 @@ class RecipesController extends Controller
 		// Get 'id' field value from form
 		$id = $request->request->get('recept')['id'];
 		
-		if(!null == $id){
+		if (!null == $id) {
 			$recept = $this->getDoctrine()->getRepository('AppBundle:Recept')->find($id);
 		} else {
 			$recept = new Recept();
 		}
 		
-		$originalIngredients = new ArrayCollection();
-
 		// Create an ArrayCollection of the current Ingredient objects in the database
+		$originalIngredients = new ArrayCollection();
 		foreach ($recept->getIngredienten() as $ingredient) {
 			$originalIngredients->add($ingredient);
 		}	
@@ -279,7 +278,7 @@ class RecipesController extends Controller
 			$em = $this->getDoctrine()->getManager();
 			
 			// set default value for gerecht property ('hoofdgerecht')
-			if($recept->getGerecht() == null){
+			if ($recept->getGerecht() == null) {
 				$gerecht = $this->getDoctrine()->getRepository('AppBundle:Gerecht')->findOneByName('Hoofdgerecht');
 				$recept->setGerecht($gerecht);
 			}
@@ -293,9 +292,19 @@ class RecipesController extends Controller
 					$em->remove($ingredient);
 				}
 			}
+
 			$user = $this->getUser();
 			$recept->setUser($user);
-			
+
+			// Assign department to each ingredient when ingredient is new only
+			foreach ($recept->getIngredienten() as $i) {
+				if (null === $i->getId()) {
+					$finder = $this->container->get('app.dept_finder');
+					$dept = $finder->findDept($i->getIngredient());
+					$i->setAfdeling($dept);
+				}
+			}
+
         	$em->persist($recept);
         	$em->flush();
         			
@@ -599,7 +608,5 @@ class RecipesController extends Controller
 
 	    return $response;
 	}
-
-
 	
 }

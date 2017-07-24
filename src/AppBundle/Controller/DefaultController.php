@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use RecipeParser\RecipeParser;
 
 class DefaultController extends Controller
 {
@@ -23,8 +24,10 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
+		$sites_nl = RecipeParser::getSupportedSites('nl');
+		$sites_en = RecipeParser::getSupportedSites('en');
 
-    	return $this->render('default/index.html.twig');
+    	return $this->render('default/index.html.twig', array('sites_nl' => $sites_nl, 'sites_en' => $sites_en));
 	}
 
     /**
@@ -100,4 +103,15 @@ class DefaultController extends Controller
      {
      	return $this->render('default/about.html.twig');
      }
+
+    /**
+     * @Route("support", name="support")
+     */
+     public function supportAction(Request $request)
+     {
+     	$sites_nl = RecipeParser::getSupportedSites('nl');
+		$sites_en = RecipeParser::getSupportedSites('en');
+
+     	return $this->render('default/support.html.twig', array('sites_nl' => $sites_nl, 'sites_en' => $sites_en));
+     }     
 }

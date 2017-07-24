@@ -86,4 +86,8 @@ a.desc:after {
     left:20px;
 }
 
+.modal-header .rating {
+    float:left;
+}
+
 

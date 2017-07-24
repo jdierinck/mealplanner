@@ -11,7 +11,7 @@
     color: #ffffff;
 }
 
-/*Hack for placeholder text being cut off in new version of Select2Entity*/
+/* Hack for placeholder text being cut off in new version of Select2Entity */
 .select2-container .select2-search, 
 .select2-container .select2-search__field {
     width: 100% !important;
@@ -47,9 +47,9 @@
     color: #337ab7;
 }
 
-.footermenu li a .fa {
-	/*text-shadow: 1px 1px 2px black;*/
+/*.footermenu li a .fa {
+	text-shadow: 1px 1px 2px black;
 	position: absolute;
 	top: -20px;
 	right: 50%;
-}
+}*/

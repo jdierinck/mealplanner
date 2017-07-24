@@ -30,7 +30,9 @@
         "blackknight467/star-rating-bundle": "1.*",
         "ninsuo/symfony-collection": "^2.0",
         "liip/imagine-bundle": "^1.8",
-        "relayfoods/recipe-parser": "^1.0"
+        "relayfoods/recipe-parser": "^1.0",
+        "fabpot/goutte": "^3.2",
+        "coogle/recipe-parser": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.0",

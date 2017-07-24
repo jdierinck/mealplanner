@@ -3,8 +3,6 @@
 {% form_theme form ':form:jquery.collection.html.twig' ':form:my-form-theme.html.twig' %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{{ asset('css/stickyfooter.css') }}">
-<link rel="stylesheet" href="{{ asset('css/general.css') }}">
 <style>
 .glyphicon-move {
     position: absolute;
@@ -26,7 +24,7 @@
             {{ form_label(form.afdelingenordered) }}
             <p>Gebruik de pijltjes of sleep de afdelingen in de juiste volgorde.</p>
             {{ form_widget(form.afdelingenordered) }}
-            {{ form_widget(form.afdelingenordered) }}
+            {{ form_errors(form.afdelingenordered) }}
             <button type="submit" value="save" class="btn btn-primary">Bewaar</button>
             <a href="{{ path('boodschappen') }}" class="btn btn-default btn-sm">Annuleer</a>
             <a href="{{ path('setafdelingen') }}" id="reset" class="btn btn-default btn-sm">Stel opnieuw in</a>

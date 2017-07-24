@@ -24,7 +24,6 @@ class ReceptType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        dump($options);
         $builder
         	->add('titel', TextType::class)
             ->add('rating', RatingType::class, array('label' => 'Rating'))

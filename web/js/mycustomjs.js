@@ -1,17 +1,24 @@
 $(document).ready(function(){
 
+	// Delete modal content when modal is hidden
+	// This prevents previously loaded content from being shown (briefly) before loading new content
+	$('div.modal').on('hide.bs.modal', function(e){
+		$('div.modal-content', this).html('Inhoud wordt geladen...');
+	});
+
+	// Show collapsed content
+	$('.collapse').addClass('in');
+
 	$('.btn-group button').click(function(){
 		$(this).addClass('active').siblings().removeClass('active');
 	});
 	
 	$('#list').click(function(){
-		// $('#recepten .item').addClass('list-group-item');
 		localStorage.setItem('view','list');
 		$('#gridview').hide();
 		$('#listview').show();
 	});
  	$('#grid').click(function(){
- 		// $('#recepten .item').removeClass('list-group-item');
  		localStorage.removeItem('view');
  		$('#gridview').show();
  		$('#listview').hide();
@@ -19,7 +26,6 @@ $(document).ready(function(){
 	
 	var view = localStorage.getItem('view');
 	if(view){
-		// $('#recepten .item').addClass('list-group-item');
 		$('#list').addClass('active').siblings().removeClass('active');
 		$('#gridview').hide();
 		$('#listview').show();
@@ -30,13 +36,12 @@ $(document).ready(function(){
 	//Initialize popovers
 	$('[data-toggle="popover"]').popover();
     
+    // Load content into modal
 	$('body').on('click','.showrecipe', function(){	
-		$('#myModal').modal();
-		$('#myModalContent').load($(this).data('url'));
+		$('#myOtherModal').modal();
+		$('#myOtherModalContent').load($(this).data('url'));
 	});
-
-	// Load content into modal
-	$('body').on('click', 'a#addrecipe, a#editrecipe, a#deleterecipe', function(e) {
+	$('body').on('click', 'a#addrecipe, a.editrecipe, a.deleterecipe', function(e) {
 		e.preventDefault();
 		$('#myModal').modal();
 		$('#myModalContent').load($(this).attr('href'));
@@ -44,7 +49,7 @@ $(document).ready(function(){
     });
 
 	// Prevent modal from opening when clicking on add to shopping list in list view
-    $('body').on('click', 'div#listview a#addtoshoppinglist', function(e) {
+    $('body').on('click', 'div#listview a.addtoshoppinglist', function(e) {
 		e.stopPropagation();
     });
 
@@ -54,16 +59,15 @@ $(document).ready(function(){
 			target: '#myModalContent',
 			dataType: 'json',
 			success: function(jsondata, statusText, xhr, $form){
-	//            $('#myModalContent').html(jsondata.message);
 	 			$('#myModal').modal('hide');
 	            location.reload(true);
 				},
 			error: function(jsondata, statusText, xhr, $form) {
 				if (jsondata.responseJSON.hasOwnProperty('form')) {
 					$('#myModalContent').html(jsondata.responseJSON.form);
-					}
-				$('.form_error').html(jsondata.responseJSON.message);
 				}
+				$('.form_error').html(jsondata.responseJSON.message);
+			}
 		};
 		$('form[name="recept"]').ajaxSubmit(options);
 	});
@@ -84,7 +88,6 @@ $(document).ready(function(){
 				$('#content').replaceWith(
 					$(html).find('#content')
 				);
-				// if ($('#list').hasClass('active')) { $('#recepten .item').addClass('list-group-item'); }
 				if ($('#list').hasClass('active')) {
 					$('#gridview').hide();
 					$('#listview').show();

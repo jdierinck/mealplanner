@@ -1,6 +1,6 @@
-$('body').on('click', 'a[href="/contact"], a[href="/about"]', function(e){
+$('body').on('click', 'a[href$="/contact"], a[href$="/about"]', function(e){
 	e.preventDefault();
-	// $('#footerModal').modal();
+	$('#footerModal').modal();
 	$('#footerModalContent').load($(this).attr('href'));
 });
 
@@ -32,3 +32,17 @@ $('body').on('submit', "form[name='contactform']", function(e) {
         }
     });
 });
+
+// sticky footer: add JavaScript to get the footer height and set the body marginBottom
+// See https://stackoverflow.com/questions/17966140/twitter-bootstrap-3-sticky-footer/41402667#41402667
+function setfooter(){
+    var ht = document.getElementById("footer").scrollHeight;
+    document.body.style.marginBottom = ht + "px";
+}
+
+window.addEventListener('resize', function(){
+        setfooter();
+    }, true);
+window.addEventListener('load', function(){
+    setfooter();
+}, true);

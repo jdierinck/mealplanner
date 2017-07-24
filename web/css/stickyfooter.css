@@ -6,16 +6,16 @@ html {
 }
 body {
   /* Margin bottom by footer height */
-  margin-bottom: 140px;
+  /*margin-bottom: 140px;*/
 }
 .footer {
   position: absolute;
   bottom: -40px;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 140px;
+  /*height: 140px;*/
 /*   background-color: #f5f5f5; */
-box-shadow: 0px -5px 10px darkgrey;
+  box-shadow: 0px -5px 10px darkgrey;
 }
 
 .footer .container-fluid {

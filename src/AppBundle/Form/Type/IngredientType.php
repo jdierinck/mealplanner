@@ -5,6 +5,7 @@ namespace AppBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -14,16 +15,19 @@ use Symfony\Component\Form\FormEvents;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Form\CallbackTransformer;
+use AppBundle\Form\Type\AfdelingHiddenType;
+use Doctrine\Common\Persistence\ObjectManager;
+use AppBundle\Form\DataTransformer\AfdelingTransformer;
 
 class IngredientType extends AbstractType
 {
     /**
-     * @var EntityManager 
+     * @var ObjectManager 
      */
-    protected $em;
+    protected $om;
 
-	public function __construct(EntityManager $entityManager) {
-		$this->em = $entityManager;
+	public function __construct(ObjectManager $objectManager) {
+		$this->om = $objectManager;
 	}
 
     public function configureOptions(OptionsResolver $resolver)
@@ -37,53 +41,65 @@ class IngredientType extends AbstractType
     {
 
     	
-        $listener = function (FormEvent $event) {
-        	$ingredient = $event->getData();
-			$form = $event->getForm();
-            	
-			$repo = $this->em->getRepository('AppBundle:Afdeling');
-			$afdelingen = $repo->findAll();
-		
-			foreach($afdelingen as $afdeling){
-				$voedingswaren = explode("\n",str_replace("\r", '', $afdeling->getVoedingswaren()));
-				if(in_array($ingredient['ingredient'],$voedingswaren)){
-					$ingredient['afdeling'] = $afdeling;
-				}
-				$event->setData($ingredient);
-			}
+  //       $listener = function (FormEvent $event) {
+  //       	$ingredient = $event->getData();
+		// 	$form = $event->getForm();
 
-		};
+		// 	$repo = $this->em->getRepository('AppBundle:Afdeling');
+		// 	$afdelingen = $repo->findAll();
 		
-		$listener2 = function (FormEvent $event) {
-    		$ingredient = $event->getData();
-    		$repo = $this->em->getRepository('AppBundle:Afdeling');
-			$onbekend = $repo->findOneByName('niet toegewezen');
+		// 	foreach ($afdelingen as $afdeling) {
+		// 		// $voedingswaren = explode("\n", str_replace("\r", '', $afdeling->getVoedingswaren()));
+		// 		// if(in_array($ingredient['ingredient'], $voedingswaren)){
+		// 		// 	$ingredient['afdeling'] = $afdeling;
+		// 		// }
+
+  //               if ($afdeling->getName() == 'niet toegewezen') continue;
+
+  //               $voedingswaren = explode("\r\n", $afdeling->getVoedingswaren());
+  //               // dump($voedingswaren);
+  //               foreach ($voedingswaren as $v) {
+  //                   // if (stripos($ingredient['ingredient'], $v) !== false) {
+  //                   // if (preg_match('/'.$ingredient['ingredient'].'/', $v)) {
+  //                   if (preg_match('/\b'.$v.'\b/i', $ingredient['ingredient'], $matches) === 1) {   
+  //                       $ingredient['afdeling'] = $afdeling;
+  //                       dump($ingredient, $matches);
+  //                       $event->setData($ingredient);
+  //                   }   
+  //               }	
+		// 	}
+		// };
+		
+		// $listener2 = function (FormEvent $event) {
+  //   		$ingredient = $event->getData();
+
+  //   		$repo = $this->em->getRepository('AppBundle:Afdeling');
+		// 	$onbekend = $repo->findOneByName('niet toegewezen');
             
-    		if(!array_key_exists('afdeling', $ingredient)) {
-    			$ingredient['afdeling'] = $onbekend;
-    			$event->setData($ingredient);
-    		}
-    	};
+  //   		if(!array_key_exists('afdeling', $ingredient)) {
+  //   			$ingredient['afdeling'] = $onbekend;
+  //   			$event->setData($ingredient);
+  //   		}
+  //   	};
     	
     	$builder->add('hoeveelheid', TextType::class, array(
-    			'label' => false,
-    			'attr' => array('class' => 'input-sm'),
+        			'label' => false,
+        			'attr' => array('class' => 'input-sm'),
     			))
     			->add('eenheid', TextType::class, array(
-    			'label' => false,
-    			'attr' => array('class' => 'input-sm'),
+        			'label' => false,
+        			'attr' => array('class' => 'input-sm'),
     			))
     			->add('ingredient', TextType::class, array(
-    			'label' => false,
-    			'attr' => array('class' => 'input-sm'),
+                    'label' => false,
+                    'attr' => array('class' => 'input-sm'),
     			))
     			->add('afdeling', TextType::class, array(
-    			'label' => false,
-    			'attr' => array('class' => 'input-sm'),
-    			));
+                    'attr' => array('class' => 'hidden'),
+                ));
     	
-    	$builder->addEventListener(Formevents::PRE_SUBMIT, $listener);
-    	$builder->addEventListener(Formevents::PRE_SUBMIT, $listener2);
+    	// $builder->addEventListener(Formevents::PRE_SUBMIT, $listener);
+    	// $builder->addEventListener(Formevents::PRE_SUBMIT, $listener2);               
 
         // Allow comma in form field instead of dot
         $builder->get('hoeveelheid')
@@ -107,6 +123,9 @@ class IngredientType extends AbstractType
                 }
             ))
         ;
+
+        $builder->get('afdeling')
+            ->addModelTransformer(new AfdelingTransformer($this->om)); 
 
     }
 

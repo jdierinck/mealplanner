@@ -177,6 +177,11 @@ class User implements UserInterface, \Serializable
      * @ORM\OneToMany(targetEntity="Recept", mappedBy="user")
      */
 	private $recepten;
+
+    public function hasRecepten()
+    {
+        return count($this->recepten) !== 0;
+    }
 	
 	/**
 	 * @ORM\OneToOne(targetEntity="Boodschappenlijst", mappedBy="user")

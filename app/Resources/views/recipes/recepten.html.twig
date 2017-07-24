@@ -16,9 +16,156 @@
   
 	<div class="container" style="margin-top:75px;">
 		<div class="row">
-		
-			<div class="col-sm-2">
+			
+			<div class="col-sm-10 col-sm-push-2">
+				<div class="btn-group">
+					<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-plus-sign"></span> Voeg recept toe <span class="caret"></span></button>
+					<ul class="dropdown-menu" role="menu">
+						<li><a href="{{ path('newrecept') }}" id="addrecipe">Voeg manueel toe...</a></li>
+						<li><a href="{{ path('import') }}">Importeer van het web...</a></li>
+						<li class="disabled"><a href="#">Importeer uit een bestand...</a></li>
+					</ul>
+				</div>
 
+				<div class="btn-group btn-group-sm">
+					<button id="grid" type="button" class="btn btn-default active"><span class="glyphicon glyphicon-th"></span> Tegels</button>
+					<button id="list" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th-list"></span> Lijst</button>
+				</div>
+
+				<div class="pull-right">
+					<a type="button" class="btn btn-default btn-sm" href="{{ path('exportcsv') }}"><i class="fa fa-download"></i>&nbsp;Exporteer als CSV</a>
+				</div>
+
+				<br><br>
+				
+				<div id="content">
+					
+					{% for flash_message in app.session.flashBag.get('notice') %}
+						<div class="alert alert-success alert-dismissible">
+							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+							{{ flash_message|raw }}
+						</div>
+					{% endfor %}
+
+					<div id="gridview">
+						{# {% if recepten|length > 0 %} #}
+						{% if app.user.hasRecepten %}
+							<div id="recepten" class="row">
+							{% for recept in recepten %}
+							  <div class="item col-sm-4">
+							  		<div data-url="{{ path('showrecept', {'id':recept.id}) }}" class="showrecipe">
+									{% if recept.fotonaam %}
+									<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_sm') }}" alt="{{ recept.titel }}" class="img-responsive">
+									{% else %}
+									<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height: 100px;">
+									{% endif %}
+									{{ recept.rating|rating }}
+								  	<h5 class="hideOverflow">{{ recept.titel }}</h5>
+								  
+									{% if recept.tags %}
+										<p class="small hideOverflow">
+										{% for tag in recept.tags %}
+											<span class="label label-primary">{{ tag.name }}</span>
+										{% endfor %}
+										</p>
+									{% endif %}	
+									</div>
+									<p id="edit-links">
+										<a href="{{ path('editform', {'id':recept.id}) }}" class="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
+										<a href="{{ path('deleterecept', {'id':recept.id}) }}" class="deleterecipe" data-toggle="tooltip" data-placement="auto bottom" title="Verwijder"><span class="glyphicon glyphicon-trash"></span></a>
+										<a href="{{ path('addrecipetoshoppinglist', {'id':recept.id}) }}" class="addtoshoppinglist" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
+									</p>												  
+							  </div>
+							  {% endfor %}
+							</div>
+						{% else %}
+							<div class="alert alert-info">
+								<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>&nbsp;Geen recepten gevonden.
+							</div>
+							<h3>Hoe kan ik recepten toevoegen?</h3>
+							{% include('support/support01.html.twig') %}
+
+						{% endif %}
+					</div>							
+
+					<div id="listview" style="display:none;">
+						{% if recepten|length > 0 %}
+							<div class="table-responsive"> 
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th></th>
+											<th{% if recepten.isSorted('r.titel') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(recepten, 'Titel', 'r.titel') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Gerecht', 'g.name') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Keuken', 'k.name') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Hoofdingrediënt', 'h.name') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Bereidingstijd', 'r.bereidingstijd') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Kostprijs', 'r.kostprijs') }}</th>
+											<th{% if recepten.isSorted('r.toegevoegdOp') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(recepten, 'Toegevoegd', 'r.toegevoegdOp') }}</th>
+											<th>{{ knp_pagination_sortable(recepten, 'Rating', 'r.rating') }}</th>									
+										</tr>
+									</thead>
+									<tbody>
+										{% for recept in recepten %}
+											<tr class="showrecipe" data-url="{{ path('showrecept', {'id':recept.id}) }}">
+												<td>
+													<div style="height:50px;">
+													{% if recept.fotonaam %}
+													<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_xs') }}" alt="{{ recept.titel }}">
+													{% else %}
+													<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height:100%;">
+													{% endif %}
+													</div>
+												</td>
+												<td>
+													{{ recept.titel }}
+													<p id="edit-links">
+														<a href="{{ path('editform', {'id':recept.id}) }}" class="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
+														<a href="{{ path('deleterecept', {'id':recept.id}) }}" class="deleterecipe" data-toggle="tooltip" data-placement="auto bottom" title="Verwijder"><span class="glyphicon glyphicon-trash"></span></a>
+														<a href="{{ path('addrecipetoshoppinglist', {'id':recept.id}) }}" class="addtoshoppinglist" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
+													</p>													
+												</td>
+												<td>
+													{% if recept.gerecht %} {{ recept.gerecht.name }} {% endif %}
+												</td>
+												<td>
+													{% if recept.keuken %} {{ recept.keuken.name }} {% endif %}
+												</td>										
+												<td>
+													{% if recept.hoofdingredient %} {{ recept.hoofdingredient.name }} {% endif %}
+												</td>										
+												<td>
+													{% if recept.bereidingstijd %} {{ recept.bereidingstijd|date('H:i') }} {% endif %}
+												</td>
+												<td>
+													{{ recept.kostprijs }}
+												</td>										
+												<td>
+													{{ recept.toegevoegdOp|date('d/m/Y') }}
+												</td>
+												<td>
+													{{ recept.rating|rating }}
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						{% else %}
+						Geen recepten gevonden.
+						{% endif %}	
+					</div>
+
+					<div class="navigation text-center">
+       					 {{ knp_pagination_render(recepten) }}
+    				</div>
+
+				</div>	<!-- end div content -->
+
+			</div> <!-- end div class=col-sm-10 -->
+
+			<div class="col-sm-2 col-sm-pull-10">
+				{% if app.user.hasRecepten %} {# only show filters if user has any recipes #}
 				<form name="filters">
 					<div class="form-group">
 						<input type="search" class="form-control" placeholder="Zoek op titel..." name="zoek" id="zoek">				
@@ -89,153 +236,9 @@
 					<div class="form-group">
 						<input type="submit" class="form-control btn btn-default" value="Toepassen">
 					</div>	
-				</form>							
-			</div> <!-- end div class= col-sm-2 -->
-			
-			<div class="col-sm-10">
-				<div class="btn-group">
-					<a type="button" class="btn btn-primary" href="{{ path('newrecept') }}" id="addrecipe"><span class="glyphicon glyphicon-plus-sign"></span> Voeg recept toe</a>
-					<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-						<span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu" role="menu">
-						<li><a>Voeg manueel toe</a></li>
-						<li class="disabled"><a href="#">Importeer van het web</a></li>
-						<li class="disabled"><a href="#">Importeer uit een bestand</a></li>
-					</ul>
-				</div>
-
-				<div class="btn-group btn-group-sm">
-					<button id="grid" type="button" class="btn btn-default active"><span class="glyphicon glyphicon-th"></span> Tegels</button>
-					<button id="list" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th-list"></span> Lijst</button>
-				</div>
-
-				<div class="pull-right">
-					<a type="button" class="btn btn-default btn-sm" href="{{ path('exportcsv') }}"><i class="fa fa-download"></i>&nbsp;Exporteer als CSV</a>
-				</div>
-
-				<br><br>
-				
-				<div id="content">
-					
-					{% for flash_message in app.session.flashBag.get('notice') %}
-						<div class="alert alert-success alert-dismissible">
-							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-							{{ flash_message|raw }}
-						</div>
-					{% endfor %}
-
-					<div id="gridview">
-						{% if recepten %}			
-							<div id="recepten" class="row">
-							{% for recept in recepten %}
-							  <div class="item col-sm-4">
-							  		<div data-url="{{ path('showrecept', {'id':recept.id}) }}" class="showrecipe">
-									{% if recept.fotonaam %}
-									<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_sm') }}" alt="{{ recept.titel }}" class="img-responsive">
-									{% else %}
-									<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height: 100px;">
-									{% endif %}
-									<!-- <div class="rating-bg"></div> -->
-									{{ recept.rating|rating }}
-								  	<h5 class="hideOverflow">{{ recept.titel }}</h5>
-								  
-									{% if recept.tags %}
-										<p class="small hideOverflow">
-										{% for tag in recept.tags %}
-											<span class="label label-primary">{{ tag.name }}</span>
-										{% endfor %}
-										</p>
-									{% endif %}	
-									</div>
-									<p id="edit-links">
-										<a href="{{ path('editform', {'id':recept.id}) }}" id="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
-										<a href="{{ path('deleterecept', {'id':recept.id}) }}" id="deleterecipe" data-toggle="tooltip" data-placement="auto bottom" title="Verwijder"><span class="glyphicon glyphicon-trash"></span></a>
-										<a href="{{ path('addrecipetoshoppinglist', {'id':recept.id}) }}" id="addtoshoppinglist" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
-									</p>												  
-							  </div>
-							  {% endfor %}
-							</div>
-						{% else %}
-						Geen recepten gevonden.
-						{% endif %}
-					</div>							
-
-					<div id="listview" style="display:none;">
-						{% if recepten %}
-							<div class="table-responsive"> 
-								<table class="table table-hover">
-									<thead>
-										<tr>
-											<th></th>
-											<th{% if recepten.isSorted('r.titel') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(recepten, 'Titel', 'r.titel') }}</th>
-											<th>{{ knp_pagination_sortable(recepten, 'Gerecht', 'g.name') }}</th>
-											<th>{{ knp_pagination_sortable(recepten, 'Keuken', 'k.name') }}</th>
-											<th>{{ knp_pagination_sortable(recepten, 'Hoofdingrediënt', 'h.name') }}</th>
-											<th>{{ knp_pagination_sortable(recepten, 'Bereidingstijd', 'r.bereidingstijd') }}</th>
-											<th>{{ knp_pagination_sortable(recepten, 'Kostprijs', 'r.kostprijs') }}</th>
-											<th{% if recepten.isSorted('r.toegevoegdOp') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(recepten, 'Toegevoegd', 'r.toegevoegdOp') }}</th>
-											<th>{{ knp_pagination_sortable(recepten, 'Rating', 'r.rating') }}</th>									
-										</tr>
-									</thead>
-									<tbody>
-										{% for recept in recepten %}
-											<tr class="showrecipe" data-url="{{ path('showrecept', {'id':recept.id}) }}">
-												<td>
-													<div style="height:50px;">
-													{% if recept.fotonaam %}
-													<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_xs') }}" alt="{{ recept.titel }}">
-													{% else %}
-													<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height:100%;">
-													{% endif %}
-													</div>
-												</td>
-												<td>
-													{{ recept.titel }}
-													<p id="edit-links">
-														<a href="{{ path('editform', {'id':recept.id}) }}" id="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
-														<a href="{{ path('deleterecept', {'id':recept.id}) }}" id="deleterecipe" data-toggle="tooltip" data-placement="auto bottom" title="Verwijder"><span class="glyphicon glyphicon-trash"></span></a>
-														<a href="{{ path('addrecipetoshoppinglist', {'id':recept.id}) }}" id="addtoshoppinglist" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
-													</p>													
-												</td>
-												<td>
-													{% if recept.gerecht %} {{ recept.gerecht.name }} {% endif %}
-												</td>
-												<td>
-													{% if recept.keuken %} {{ recept.keuken.name }} {% endif %}
-												</td>										
-												<td>
-													{% if recept.hoofdingredient %} {{ recept.hoofdingredient.name }} {% endif %}
-												</td>										
-												<td>
-													{% if recept.bereidingstijd %} {{ recept.bereidingstijd|date('H:i') }} {% endif %}
-												</td>
-												<td>
-													{{ recept.kostprijs }}
-												</td>										
-												<td>
-													{{ recept.toegevoegdOp|date('d/m/Y') }}
-												</td>
-												<td>
-													{{ recept.rating|rating }}
-												</td>
-											</tr>
-										{% endfor %}
-									</tbody>
-								</table>
-							</div>
-						{% else %}
-						Geen recepten gevonden.
-						{% endif %}	
-					</div>
-
-					<div class="navigation text-center">
-       					 {{ knp_pagination_render(recepten) }}
-    				</div>
-
-				</div>	<!-- end div content -->
-
-			</div> <!-- end div class=col-sm-10 -->
+				</form>
+				{% endif %}						
+			</div> <!-- end div class= col-sm-2 -->			
 			
 		</div> <!-- end div class=row -->
 	</div> <!-- end div class=container -->
@@ -252,7 +255,7 @@
 	
 	<!-- myOtherModal -->
 	<div id="myOtherModal" class="modal fade" role="dialog">
-	  <div class="modal-dialog">
+	  <div class="modal-dialog modal-lg">
 		<div class="modal-content" id="myOtherModalContent">
 		Inhoud wordt geladen...
 		</div>

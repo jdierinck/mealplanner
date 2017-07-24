@@ -1,8 +1,12 @@
-<footer class="footer text-center bg-lightblue">
+<footer class="footer text-center bg-lightblue" id="footer">
 <div class="container">
-	{{ knp_menu_render('AppBundle:Builder:footerMenu', {'currentClass': 'active', 'template': 'AppBundle:Menu:knp_menu.html.twig'}) }}
+  <div class="row text-center">
+    {{ knp_menu_render('AppBundle:Builder:footerMenu', {'currentClass': 'active', 'template': 'AppBundle:Menu:knp_menu.html.twig'}) }}
+  </div>
+  <div class="row">
   	<p>&copy {{ "now"|date("Y") }} Johan Dierinck</p>
-	<p class="small">Created with <a href="http://www.symfony.com" target="_blank"><img src="{{ asset('images/symfony_white_02.png') }}" alt="Symfony logo" height="15"></a></p>
+    <p class="small">Created with <a href="http://www.symfony.com" target="_blank"><img src="{{ asset('images/symfony_white_02.png') }}" alt="Symfony logo" height="15"></a></p>
+  </div>
 </div>
 </footer>
 

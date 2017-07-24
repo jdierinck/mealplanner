@@ -13,7 +13,7 @@ class NavigationController extends Controller
         return $this->render('navigation/navigation.html.twig');
     }
 
-        public function footerAction(Request $request)
+    public function footerAction(Request $request)
     {
         return $this->render('navigation/footer.html.twig');
     }

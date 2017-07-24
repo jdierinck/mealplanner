@@ -55,12 +55,15 @@ class Builder implements ContainerAwareInterface
         $menu = $factory->createItem('root');
         $menu->setChildrenAttribute('class', 'footermenu');
         $menu->addChild('<i class="fa fa-user" aria-hidden="true"></i>&nbsp;Over Mealplanner', array('route' => 'about'))
-            ->setLinkAttribute('data-toggle','modal')
-            ->setLinkAttribute('data-target','#footerModal');
+            // Note: the following attributes are not needed since we activate the modal using Javascript
+            // ->setLinkAttribute('data-toggle','modal')
+            // ->setLinkAttribute('data-target','#footerModal')
+            ;
         $menu->addChild('<i class="fa fa-envelope" aria-hidden="true"></i>&nbsp;Contact', array('route' => 'contact'))
-            ->setLinkAttribute('data-toggle','modal')
-            ->setLinkAttribute('data-target','#footerModal');
-        $menu->addChild('<i class="fa fa-life-ring" aria-hidden="true"></i>&nbsp;Support', array('route' => 'home'));
+            // ->setLinkAttribute('data-toggle','modal')
+            // ->setLinkAttribute('data-target','#footerModal')
+            ;
+        $menu->addChild('<i class="fa fa-life-ring" aria-hidden="true"></i>&nbsp;Support', array('route' => 'support'));
         
         return $menu;
     }
