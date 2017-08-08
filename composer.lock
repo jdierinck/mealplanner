@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "cb7d1d5e6b99a77909370a6b8bb8cf97",
+    "content-hash": "03091fff33ece54a494a860ac2d92fb2",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -2311,33 +2311,6 @@
                 "psr-3"
             ],
             "time": "2016-10-10T12:19:37+00:00"
-        },
-        {
-            "name": "relayfoods/recipe-parser",
-            "version": "1.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/relayfoods/RecipeParser.git",
-                "reference": "e8d999bc92df451d227fc77b64b7bee405e047bd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/relayfoods/RecipeParser/zipball/e8d999bc92df451d227fc77b64b7bee405e047bd",
-                "reference": "e8d999bc92df451d227fc77b64b7bee405e047bd",
-                "shasum": ""
-            },
-            "require-dev": {
-                "phpspec/phpspec": "~2.1",
-                "phpunit/phpunit": "~4.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "RecipeParser\\": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "time": "2015-03-02T21:47:34+00:00"
         },
         {
             "name": "sensio/distribution-bundle",
