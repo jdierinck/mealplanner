@@ -13,8 +13,9 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Boodschappenlijst;
 use AppBundle\Entity\ReceptBLOrdered;
+use AppBundle\Controller\AccountNonExpiredController;
 
-class MenusController extends Controller
+class MenusController extends Controller implements AccountNonExpiredController
 {
     
     /**
@@ -39,7 +40,6 @@ class MenusController extends Controller
 			
 			$em->persist($boodschappenlijst);
 			$em->flush();
-// 			$session->set('boodschappenlijst_id', $boodschappenlijst->getId());
 		}
 		    
     	$menu = new Menu();
@@ -58,9 +58,6 @@ class MenusController extends Controller
 
 			return $this->redirectToRoute('menus');
 		}
-    
-//     	$repository = $this->getDoctrine()->getRepository('AppBundle:Menu');
-//     	$menus = $repository->findAll();
     	
     	$qb = $em->createQueryBuilder();
     	$query = $qb->select('m')
@@ -247,20 +244,6 @@ class MenusController extends Controller
 	
 		$em = $this->getDoctrine()->getManager();
 		
-// 		$qb = $em->createQueryBuilder();
-// 		$query = $qb->select('a','i')
-// 			->from('AppBundle:Afdeling','a')
-// 			->join('a.ingredienten', 'i')
-// 			->join('i.recept', 'r')
-// 			->join('r.menus', 'm')
-// 			->where('m.id = :menuid')
-// // 			->setParameter('menuid', $menu->getId())
-// 			->setParameter('menuid', $id)			
-// 			->orderBy('a.name')
-// 			->getQuery();
-// 		$afdelingen = $query->getResult();
-// 		dump($afdelingen);
-		
 		$afdelingen = $em->getRepository('AppBundle:Menu')
 			->findIngredientenByMenu($id);
 		
@@ -288,8 +271,11 @@ class MenusController extends Controller
 			foreach ($dag->getRecepten() as $recept) {
 
 				$ingredienten = array();
-				foreach($recept->getIngredienten() as $ingredient){
-					$ingredienten[] = $ingredient;
+				
+				foreach ($recept->getIngredienten() as $i) {
+					if (false === $i->isSection()) {
+						$ingredienten[] = $i;
+					}
 				}
 			
 				$ro = new ReceptBLOrdered();

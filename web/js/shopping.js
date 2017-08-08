@@ -163,18 +163,18 @@ $(document).ready(function(){
 	    });
   	
   	});
-	
+
     // Load content into modal
-	$('body').on('click', 'a#voegitemtoe, a#showrecipe, a#sendmail', function(e) {
-		e.preventDefault();
-		$('#myModal').modal();
-		$('#myModalContent').load($(this).attr('href'));
+    $('#myModal').on('show.bs.modal', function(e){
+    	var link = $(e.relatedTarget);
+    	$('#myModalContent').load(link.attr('href'), function(){
+    		// Hide edit and delete buttons when finished loading
+	    	if (link.hasClass('recept-lijst')) {
+	    		var modal = $(this);
+	    		modal.find('a#editrecipe_modal, a#deleterecipe_modal').addClass('hidden');
+		    }
+	    });
     });
-    
-	// Reload page when modal is closed
-//     $('#myModal').on('hidden.bs.modal', function () {
-//  	location.reload();
-// 	});
 	
     $('body').on('submit', "form[name='sendmail'], form[name='additem']", function (e) {
         e.preventDefault();

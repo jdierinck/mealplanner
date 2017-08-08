@@ -1,0 +1,20 @@
+<div id="support01-02" class="collapse">
+	<p>Mealplanner ondersteunt momenteel {{ sites_nl|length }} Nederlandstalige sites, naast {{ sites_en|length }} Engelstalige websites. Geregeld komen er nieuwe sites bij. Zijn we een belangrijke site vergeten? Stuur ons een mailtje via het contactformulier.</p>
+	<p>Als je problemen ondervindt bij het importeren van een recept van een website, laat dit dan weten via het contactformulier. Vermeld in dat geval de URL van het recept, zodat we het probleem snel kunnen opsporen.</p>
+	<h5>Nederlandstalig:</h5>
+	<ul>
+	{% for name, site in sites_nl %}
+		{% if site.pattern starts with '/' %}
+		<li><a href="http://{{ name }}" target="_blank">{{ name }}</a></li>
+		{% else %}
+		<li><a href="http://{{ site.pattern }}" target="_blank">{{ name }}</a></li>
+		{% endif %}
+	{% endfor %}
+	</ul>
+	<h5>Engelstalig:</h5>
+	<ul>
+	{% for name, site in sites_en %}
+		<li><a href="http://{{ site.pattern }}" target="_blank">{{ name }}</a></li>
+	{% endfor %}
+	</ul>
+</div>

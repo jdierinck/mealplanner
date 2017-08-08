@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block body %}
+{{ render(controller('AppBundle:Navigation:menu')) }}
+
+<div class="container" style="margin-top:75px;">
+	<div class="row">
+		<div class="col-sm-8 col-sm-offset-2">
+			<h1>Het slechte nieuws: </h1>
+			<p>Je gratis account op naam van {{ user.username }} is meer dan 30 dagen oud.</p>
+			<p>De recepten die je in Mealplanner bewaard hebt, kan je hier downloaden:</p>
+			<a type="button" class="btn btn-default" href="{{ path('exportcsv', {'all':'true'}) }}">Download</a>
+			<br><br>
+			<h2>Het goede nieuws:<small> upgraden kost slechts enkele minuten tijd...</small></h2>
+			<p>Wil je blijven gebruik maken van Mealplanner, dan vragen we je enkel ons je (hopelijk positieve) mening over Mealplanner te laten weten. Ja, je leest dat goed: een korte review volstaat. En wees gerust: ook suggesties ter verbetering zijn welkom!</p>
+			<a type="button" class="btn btn-primary" href="{{ path('upgrade') }}" id="upgrade-btn" data-toggle="modal" data-target="#myModal">Upgrade naar Premium</a>
+		</div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content" id="myModalContent">
+    </div>
+
+  </div>
+</div>
+<!-- end Modal -->
+
+{{ render(controller('AppBundle:Navigation:footer')) }}
+
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript" src="{{ asset('js/upgrade.js') }}"></script>
+{% endblock %}

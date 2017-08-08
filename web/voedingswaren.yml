@@ -77,6 +77,7 @@ kaasburgers
 kalfsblanquette
 kalfsescalope
 kalfsgebraad
+kalfsgehakt
 kalfskoteletten
 kalfslever
 kalfsmedaillon
@@ -518,6 +519,7 @@ puntpaprika's
 raap
 rabarber
 radijs
+radijsjes
 radijzen
 rammenas
 rapen
@@ -612,6 +614,7 @@ witte selder
 wittekool
 wokmix
 wortel
+wortels
 wortelen
 zespri kiwi
 zespri kiwi's
@@ -755,6 +758,7 @@ halloumi
 jongbelegen kaas
 jonge gouda
 jonge kaas
+kaas
 kaasfondue
 karnemelk
 kefir
@@ -811,6 +815,8 @@ volle yoghurt
 yoghurt
 zure room
 deegwaren & rijst:
+arborio
+arboriorijst
 basmati
 basmatirijst
 bulgur
@@ -834,6 +840,7 @@ paëllarijst
 paellarijst
 pappardelle
 papardelle
+pasta
 penne
 penne rigate
 polenta
@@ -862,6 +869,7 @@ durum
 dürüm
 eiermie
 galanga
+galangal
 galangawortel
 gedroogde garnalen
 gevulde wijnbladeren
@@ -876,9 +884,11 @@ hoi-sin-saus
 hoisin-saus
 ingelegde gember
 kafir
+kafir blaadjes
 kafirblaadjes
 kaffir
 kaffir blaadjes
+kaffirblaadjes
 ketjap
 kokoscrème
 kokosmelk
@@ -893,6 +903,7 @@ mexicaanse wraps
 mirin
 nori
 oestersaus
+palmsuiker
 pad thai currypasta
 platte rijstnoedels
 poppadoms
@@ -909,6 +920,8 @@ sriracha chilisaus
 tabasco
 taco's
 tacos
+tamarinde
+tamarindepulp
 tandoori pasta
 tandooripasta
 tarama
@@ -928,33 +941,34 @@ woksaus
 wraps
 zoetzure saus
 dranken:
+appelsap
+appelsiensap
 bier
-rode wijn
-sake
-sherry
-wijn
-witte wijn
-rosé wijn
-rosé
-schuimwijn
+bronwater
+bruisend mineraalwater
+bruisend water
 cava
 champagne
-prosecco
-water
-mineraalwater
-bronwater
-plat water
-bruisend water
-bruisend mineraalwater
-frisdrank
 cola
+frisdrank
 fruitsap
-vruchtensap
-sinaasappelsap
-appelsiensap
-appelsap
-pompelmoessap
 groentesap
+mineraalwater
+plat water
+pompelmoessap
+prosecco
+rode wijn
+rosé
+rosé wijn
+sake
+schuimwijn
+sherry
+sinaasappelsap
+vermouth
+vruchtensap
+water
+wijn
+witte wijn
 kruiden/bouillon:
 bouillonblokje
 bouillonblokjes
@@ -995,6 +1009,7 @@ groentebouillonblokjes
 harissa
 jeneverbessen
 kalfsfond
+kaneel
 kaneel gemalen
 kaneelstokje
 kardemom

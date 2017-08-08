@@ -17,3 +17,37 @@
     top: 0;
   }
 }
+
+/*Put shopping list in multiple text columns on larger screens*/
+@media (min-width: 1200px) {
+    #shoppinglist {
+      -webkit-column-count: 3;
+      -moz-column-count: 3;
+      column-count: 3;
+      -webkit-column-gap: 3em;
+      -moz-column-gap: 3em;
+      column-gap: 3em;
+    }
+  }
+
+@media (min-width: 600px) and (max-width: 1200px) {
+  #shoppinglist {
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+    -webkit-column-gap: 3em;
+    -moz-column-gap: 3em;
+    column-gap: 3em;
+  }
+}
+
+@media (max-width: 600px) {
+  #shoppinglist {
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-count: 1;
+    -webkit-column-gap: 3em;
+    -moz-column-gap: 3em;
+    column-gap: 3em;
+  }
+}

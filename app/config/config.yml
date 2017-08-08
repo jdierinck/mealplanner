@@ -137,4 +137,10 @@ liip_imagine :
         thumb_xs :
             quality : 90
             filters :
-                thumbnail  : { size : [75, 50], mode : outbound }                        
+                thumbnail  : { size : [75, 50], mode : outbound }
+
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     /usr/local/bin/wkhtmltopdf
+        options:    []

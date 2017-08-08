@@ -1,44 +1,46 @@
-
 {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 	{{ form_row(form.titel) }}
 	{{ form_row(form.bron) }}
 	{{ form_row(form.bereidingstijd) }}
-<h5><strong>Ingrediënten</strong></h5>	
-<ul class="nav nav-tabs">
-  <li class="active"><a data-toggle="tab" href="#manual" id="manualtab">Manuele invoer</a></li>
-  <li><a data-toggle="tab" href="#bulk" id="bulktab">Bulk invoer</a></li>
-</ul>	
-	
-<div class="tab-content">
-	<div id="manual" class="tab-pane fade in active">
-	<table class="table table-condensed" id="recept_ingredienten" data-prototype="{{ form_widget(form.ingredienten.vars.prototype)|e('html_attr') }}">
-		<thead>
-			<tr>
-				<th class="col-sm-2">Hoeveelheid</th>
-				<th class="col-sm-2">Eenheid</th>
-				<th class="col-sm-6">Ingredient</th>
-				<th class="col-sm-1"></th>
-				<th class="col-sm-1"></th>
-			</tr>
-		</thead>
-		<tbody>
-		{% for ingredient in form.ingredienten %}
-			<tr class="ingredientform">
-			<td>{{ form_widget(ingredient.hoeveelheid) }}{{ form_errors(ingredient.hoeveelheid) }}</td>
-			<td>{{ form_widget(ingredient.eenheid) }}{{ form_errors(ingredient.eenheid) }}</td>
-			<td>{{ form_widget(ingredient.ingredient) }}{{ form_errors(ingredient.ingredient) }}</td>
-			<td>{{ form_widget(ingredient.afdeling) }}{{ form_errors(ingredient.afdeling) }}</td>
-			</tr>
-		{% endfor %}
-		</tbody>
-	</table>
+	<h5><strong>Ingrediënten</strong></h5>	
+	<ul class="nav nav-tabs">
+	  <li class="active"><a data-toggle="tab" href="#manual" id="manualtab">Manuele invoer</a></li>
+	  <li><a data-toggle="tab" href="#bulk" id="bulktab">Bulk invoer</a></li>
+	</ul>	
+		
+	<div class="tab-content" style="margin-bottom:15px;">
+		<div id="manual" class="tab-pane fade in active">
+			<table class="table table-condensed" id="recept_ingredienten" data-prototype="{{ form_widget(form.ingredienten.vars.prototype)|e('html_attr') }}" style="margin-bottom:0;">
+				<thead>
+					<tr>
+						<th class="col-sm-1"></th>
+						<th class="col-sm-1 small">Hoeveelheid</th>
+						<th class="col-sm-1 small">Eenheid</th>
+						<th class="col-sm-6 small">Ingrediënt</th>
+						<th class="col-sm-1"></th>
+						<th class="col-sm-1"></th>
+					</tr>
+				</thead>
+				<tbody id="sortable">
+				{% for ingredient in form.ingredienten %}
+					<tr class="ingredientform">
+						<td><span class="glyphicon glyphicon-move"></span></td>
+						<td>{{ form_widget(ingredient.hoeveelheid) }}{{ form_errors(ingredient.hoeveelheid) }}</td>
+						<td>{{ form_widget(ingredient.eenheid) }}{{ form_errors(ingredient.eenheid) }}</td>
+						<td>{{ form_widget(ingredient.ingredient) }}{{ form_errors(ingredient.ingredient) }}</td>
+						<td>{{ form_widget(ingredient.section) }}{{ form_errors(ingredient.section) }}</td>
+						<td>{{ form_widget(ingredient.afdeling) }}{# {{ form_errors(ingredient.afdeling) }} #}</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div id="bulk" class="tab-pane fade">
+			{{ form_row(form.ingredienten_bulk) }}
+			<button type="button" class="btn btn-default btn-xs" id="import"><span class="glyphicon glyphicon-upload"></span>&nbsp;Importeer</button><br/><br/>
+		</div>
 	</div>
-	<div id="bulk" class="tab-pane fade">
-	{{ form_row(form.ingredienten_bulk) }}
-	<button type="button" class="btn btn-default btn-xs" id="import"><span class="glyphicon glyphicon-upload"></span>&nbsp;Importeer</button><br/><br/>
-	</div>
-</div>
-{% do form.ingredienten.setRendered %}	
+	{% do form.ingredienten.setRendered %}	
 	{{ form_row(form.bereidingswijze) }}
 	{{ form_row(form.fotoBestand) }}
 	{{ form_row(form.gerecht) }}
@@ -57,6 +59,3 @@
 	</div>
 	{{ form_row(form.bewaar) }}
 {{ form_end(form) }}
-
-
-

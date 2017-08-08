@@ -9,4 +9,4 @@
 // 	window.open(url,'mealplanner','location=yes,scrollbars=yes,toolbar=no,resizable=yes,width=550,height=550');
 // }
 
-javascript:(function(){var%20url='http://mealplanner.be/app_dev.php/import?url='+encodeURIComponent(window.location.href);window.open(url,'mealplanner','location=yes,scrollbars=yes,toolbar=no,resizable=yes,width=550,height=550');})();
+javascript:(function(){var%20url='http://www.jdierinck.be/mealplanner/import?url='+encodeURIComponent(window.location.href);window.open(url,'mealplanner','location=yes,scrollbars=yes,toolbar=no,resizable=yes,width=550,height=550');})();

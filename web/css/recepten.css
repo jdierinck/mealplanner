@@ -6,6 +6,12 @@
     vertical-align: top;
 }
 
+.section {
+    font-weight: 500;
+    font-size: 1.2em;
+    padding-top: 10px;
+}
+
 
 .vich-image img {
     width: 20%;

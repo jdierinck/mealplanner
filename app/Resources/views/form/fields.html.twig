@@ -1,14 +1,14 @@
 {# Customize rendering of prototype #}
 {% block _recept_ingredienten_entry_widget %}
 	<tr class="ingredientform">
+		<td><span class="glyphicon glyphicon-move"></span></td>
         <td>{{ form_widget(form.hoeveelheid) }}</td>
         <td>{{ form_widget(form.eenheid) }}</td>
         <td>{{ form_widget(form.ingredient) }}</td>
+        <td>{{ form_widget(form.section) }}</td>
         <td>{{ form_widget(form.afdeling) }}</td>
     </tr>
 {% endblock %}
-
-
 
 {% block _menu_recepten_entry_label %}
 <span class="glyphicon glyphicon-move"></span>&nbsp;&nbsp;&nbsp;{{ form_label(form) }}

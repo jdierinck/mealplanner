@@ -21,6 +21,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\AfdelingOrdered;
 use AppBundle\Form\Type\UserEditAfdelingenType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UserController extends Controller
 {
@@ -69,8 +74,10 @@ class UserController extends Controller
                 $afdeling->addAfdelingenordered($ao);
                 $user->addAfdelingenordered($ao);
             }
-
             // Note: no need to call $em->persist($ao) because of cascade={"persist"} on the associations
+
+            $user->setAccount('FREE');
+
             $em->persist($user);
             $em->flush();
 
@@ -157,7 +164,6 @@ class UserController extends Controller
 
         if ($username) {
             $em = $this->getDoctrine()->getManager();
-            // $user = $em->getRepository('AppBundle:User')->findOneByUsername($username);
             $user = $em->getRepository('AppBundle:User')->loadUserByUserName($username); // query by username or e-mail address
 
             if (!$user) {
@@ -165,6 +171,7 @@ class UserController extends Controller
                     'Geen gebruiker gevonden met naam '.$username
                 );
             }
+
             // Generate token
             $bytes = openssl_random_pseudo_bytes(16); // Generate secure random string
             $token = substr(base64_encode($bytes), 0, 16); // Encode value and trim it
@@ -183,7 +190,6 @@ class UserController extends Controller
                 ->setTo($user->getEmail())
                 ->setBody(
                     $this->renderView(
-                        // appBundle/views/emails/contact.html.twig
                         'user/pwdresetmail.html.twig',
                         array('token' => $token)
                         ),
@@ -314,5 +320,84 @@ class UserController extends Controller
         $em->flush();
 
         return new Response('De afdelingen werden opnieuw ingesteld!');
+    }
+
+    /**
+     * Show free account has expired page
+     * 
+     * @Route("expired", name="expired")
+     */
+    public function expiredAction(Request $request)
+    {
+        $user = $this->getUser();
+
+        return $this->render('user/expired.html.twig', array('user' => $user));
+    }
+
+    /**
+     * Show form to upgrade account to Premium
+     * 
+     * @Route("upgrade", name="upgrade")
+     */
+    public function upgradeAction(Request $request)
+    {
+        $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+             
+        $defaultData = array();
+        $form = $this->get('form.factory')
+            ->createNamedBuilder('upgradeform', FormType::class, $defaultData)
+            ->setAction($this->generateUrl('upgrade'))
+            ->setMethod('POST')
+            ->add('from', HiddenType::class, array(
+                'label' => false,
+                'data' => $user->getEmail(),
+                ))
+            ->add('subject', HiddenType::class, array(
+                'label' => false,
+                'data' => 'Upgrade request from '.$user->getUsername(),
+                ))
+            ->add('message', TextareaType::class, array(
+                'label' => 'Jouw mening',
+                'attr' => array('rows' => 5, 'cols' => 50),
+                'constraints' => new NotBlank(),
+                ))
+            ->add('send', SubmitType::class, array('label' => 'Verzend'))
+            ->getForm();
+            
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            $message = \Swift_Message::newInstance()
+                ->setSubject($data['subject'])
+                ->setFrom($data['from'])
+                ->setTo('johan.dierinck@gmail.com')
+                ->setBody($data['message'])             
+            ;
+            
+            $this->get('mailer')->send($message);
+
+            $user->setAccount('PREMIUM');
+            $em->flush();
+                    
+            return new JsonResponse(array('message' => 'Bedankt! Je account werd geüpgraded naar Premium. Veel eetplezier met Mealplanner!'), 200); 
+
+        }
+        elseif ($form->isSubmitted() && !$form->isValid()) {
+            $response = new JsonResponse(
+                array(
+                    'message' => 'Er is een fout opgetreden',
+                    'form' => $this->renderView('user/upgradeform.html.twig', array(
+                        'form' => $form->createView()
+                        )
+                    )
+                ), 400);
+ 
+            return $response;
+        }
+        
+        return $this->render('user/upgradeform.html.twig', array('form' => $form->createView()));
     }
 }

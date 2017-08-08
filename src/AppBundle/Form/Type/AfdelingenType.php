@@ -21,10 +21,6 @@ class AfdelingenType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        // $builder->add('name', TextType::class, array(
-        //     'label' => false,
-        //     )
-        // );
         $builder->add('afdeling', TextType::class, array(
             'label' => false,
             'attr' => array('readonly' => 'readonly')

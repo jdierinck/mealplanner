@@ -10,7 +10,6 @@ use AppBundle\Entity\Ingredient;
 use AppBundle\Form\ReceptType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-// use RecipeParser\RecipeParser;
 use Symfony\Component\DomCrawler\Crawler;
 use Goutte\Client;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -80,24 +79,31 @@ class ImportController extends Controller
 
 				$newRecipe->setUser($user);
 
-				// foreach ($recipe->ingredients[0]['list'] as $i) {
-				// 	$ingredient = new Ingredient();
-				// 	$ingredient->setIngredient($i);
-				// 	$newRecipe->addIngredienten($ingredient);
-				// }
 				foreach ($recipe->ingredients as $i) {
-					foreach ($i['list'] as $ingr) {
+					if (!$i['name'] === '') {
 						$ingredient = new Ingredient();
-						$ingredient->setIngredient($ingr);
+						$ingredient->setIngredient($i['name']);
+						$ingredient->setSection(true);
+						$newRecipe->addIngredienten($ingredient);
+					}
+					foreach ($i['list'] as $ingr) {
+						list($q, $u, $i) = $this->qui($ingr);
+						$ingredient = new Ingredient();
+						$ingredient->setHoeveelheid($q);
+						$ingredient->setEenheid($u);
+						$ingredient->setIngredient($i);
+						$ingredient->setSection(false);
 						$newRecipe->addIngredienten($ingredient);
 					}
 				}
 
-				// Assign department to each ingredient
+				// Assign department to each ingredient (except for sections)
 				foreach ($newRecipe->getIngredienten() as $i) {
-					$finder = $this->container->get('app.dept_finder');
-					$dept = $finder->findDept($i->getIngredient());
-					$i->setAfdeling($dept);
+					if (false === $i->isSection()) {
+						$finder = $this->container->get('app.dept_finder');
+						$dept = $finder->findDept($i->getIngredient());
+						$i->setAfdeling($dept);
+					}
 				}
 
 				$instructions = '';
@@ -123,7 +129,7 @@ class ImportController extends Controller
 				$this->addFlash(
 	            	'notice',
 	            	'Het recept <em>'.$newRecipe->getTitel().'</em> werd aangemaakt. '
-	            	.'Klik <a href="'.$this->generateUrl('editform', array('id'=>$id)).'" id="editrecipe">hier</a> om te bewerken'
+	            	.'Klik <a href="'.$this->generateUrl('editform', array('id'=>$id)).'" id="editrecipe">hier</a> om te bewerken.'
             	);
 
     	        return $this->redirectToRoute('recipes');
@@ -137,8 +143,6 @@ class ImportController extends Controller
 			}
 		}
 
-		// $sites_nl = $this->getSupportedSites('nl');
-		// $sites_en = $this->getSupportedSites('en');
 		$sites_nl = RecipeParser::getSupportedSites('nl');
 		$sites_en = RecipeParser::getSupportedSites('en');
 		
@@ -148,23 +152,7 @@ class ImportController extends Controller
 			'sites_nl' => $sites_nl, 
 			'sites_en' => $sites_en
 			));
-
 	}
-
-	// public function getSupportedSites($lang) {
-	// 	// $parsers_ini_file = $this->get('kernel')->getRootDir().'/../vendor/coogle/recipe-parser/lib/RecipeParser/Parser/parsers.ini';
-
-	// 	$sites = parse_ini_file($parsers_ini_file, true);
-
-	// 	ksort($sites);
-
-	// 	foreach ($sites as $key => $value) {
-	// 		if ($value['lang'] === $lang) { $results[$key] = $value; }
-	// 	}
-
-	// 	return $results;
-
-	// }
 	
 
 	public function parse($url)
@@ -195,7 +183,7 @@ class ImportController extends Controller
 	{
 		$client = new Client();
 
-		$url = 'http://rasamalaysia.com/butter-prawns/2';
+		$url = 'https://www.jamiemagazine.nl/recepten/japanse-zalm-met-frisse-salade.html';
 
 		$crawler = $client->request('GET', $url);
 
@@ -214,25 +202,32 @@ class ImportController extends Controller
 	}
 
 	/**
-	 * Test PHP code
-	 *
-	 * @Route("/testphp", name="testphp")
+	 * Separate quantities, units and ingredients 
+	 * qui stands for quantity - unit - ingredient
 	 */
-	public function testPHPAction(Request $request)
+	public function qui($string)
 	{
-		// $result = stripos('1 avocado' ,'avocado');
-		// $a = 'kerstomaten';
-		// $result = preg_match('/'.$a.'/', '');
-		// $arr = array("key" => "value");
-		// $result = reset($arr);
+		$string = preg_replace('/\s{2,}/', ' ', $string); // Ensure there's only one whitespace between words
+		$string = trim($string);
+		$words = explode(' ', $string);
+		$units = array('gram', 'gr', 'g', 'kilo', 'kilo\'s', 'kg', 'eetlepel', 'eetlepels', 'el', 'koffielepel', 'koffielepels', 'kl', 'theelepel', 'theelepels', 'tl', 'liter', 'liters', 'l', 'deciliter', 'deciliters', 'dl', 'milliliter', 'mililiter', 'mililiters', 'ml', 'stuk', 'stuks', 'cm', 'stengel', 'stengels', 'teen', 'tenen', 'teentje', 'teentjes', 'pot', 'potten', 'potje', 'potjes', 'kop', 'koppen', 'kopje', 'kopjes', 'blik', 'blikken', 'blikjes', 'blikje', 'bol', 'bollen', 'bolletje', 'bolletjes', 'zak', 'zakken', 'zakje', 'zakjes','tak', 'takken', 'takje','takjes');
+		$q = null;
+		$u = null;
+		$i = $words;
+		if (preg_match('/^\d+((\.|,)\d+)?$/', $words[0])) {
+			$q = $words[0];
+			array_shift($i);
+			if (in_array($words[1], $units)) {
+				$u = $words[1];
+				array_shift($i);
+			}
+			$i = implode(' ', $i);
+		} else {
+			$i = $string;
+		}
 
-		$var ="javascript:(function()%7Bf='http://www.delicious.com/save?url='+encodeURIComponent(window.location.href)+'&title='+encodeURIComponent(document.title)+'&notes='+encodeURIComponent(''+(window.getSelection?window.getSelection():document.getSelection?document.getSelection():document.selection.createRange().text))+'&v=6&';a=function()%7Bif(!window.open(f+'noui=1&jump=doclose','deliciousuiv6','location=yes,links=no,scrollbars=no,toolbar=no,width=550,height=550'))location.href=f+'jump=yes'%7D;if(/Firefox/.test(navigator.userAgent))%7BsetTimeout(a,0)%7Delse%7Ba()%7D%7D)()";
-		$result = rawurldecode($var);
-
-		return new Response(dump($result));
-
+		return array($q, $u, $i);
 	}
-
 
 
 }

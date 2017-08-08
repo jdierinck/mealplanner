@@ -40,45 +40,15 @@ class MenuType extends AbstractType
     	$user = $this->securityContext->getToken()->getUser();
     	 
         $builder->add('naam', TextType::class)
-    //     	->add('recepten', CollectionType::class, array(
-    //     	'required' => false,
-    //         'entry_type' => EntityType::class,
-    //         'entry_options' => array(
-    //         	'class' => 'AppBundle:Recept',
-    //         	'choice_label' => 'titel',
-    //         	'query_builder' => function(EntityRepository $e) use($user){
-    //         		return $e->createQueryBuilder('r')
-    //         			->where('r.user = :user')
-    //         			->setParameter('user', $user);
-    //         	}
-    //         	),
-			 // 'allow_add' => true,
-			 // 'allow_delete' => true,
-    //          'prototype' => true,
-    //          'attr' => array('class' => 'recipecollection'),
-    //     	))
             ->add('dagen', CollectionType::class, array(
-            'required' => false,
-            'entry_type' => DagType::class,
-            'allow_add' => true,
-            'allow_delete' => true,
-            'prototype' => true,
-            'attr' => array('class' => 'daycollection'),
-            'by_reference' => false,
-            ))            
-    //     	->add('dagen', Select2EntityType::class, array(
-    //     		'multiple' => true,
-    //     		'required' => false,
-				// 'class' => 'AppBundle:Recept',
-				// 'remote_route' => 'findrecept',
-				// 'text_property' => 'titel',
-				// 'allow_clear' => true,
-				// 'placeholder' => 'Selecteer een recept',
-				// 'minimum_input_length' => 0,
-				// 'language' => 'nl',
-				// 'width' => '100%',
-				// ))
-        	// ->add('bewaar', SubmitType::class)
+                'required' => false,
+                'entry_type' => DagType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'prototype' => true,
+                'attr' => array('class' => 'daycollection'),
+                'by_reference' => false,
+            ))
             ;
         	       
     }

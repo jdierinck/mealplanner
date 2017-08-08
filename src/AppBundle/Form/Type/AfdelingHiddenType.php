@@ -21,22 +21,23 @@ class AfdelingHiddenType extends HiddenType
     {
         // attach the specified model transformer for this entity list field
         // this will convert data between object and string formats
-        $builder->addModelTransformer(new CallbackTransformer(
-                function ($afdeling) {
-                    return $afdeling->getId();
-                },
-                function ($string) {
-                    $afdeling = $this->em->getRepository('AppBundle:Afdeling')->find($string);
-                    return $afdeling;
-                }
-            ))
-        ; 
+        // $builder->addModelTransformer(new CallbackTransformer(
+        //         function ($afdeling) {
+        //             return $afdeling->getId();
+        //         },
+        //         function ($string) {
+        //             $afdeling = $this->em->getRepository('AppBundle:Afdeling')->find($string);
+        //             return $afdeling;
+        //         }
+        //     ))
+        // ; 
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => Afdeling::class,
+            // 'data_class' => Afdeling::class,
+            'data_class' => null,
         ));
     }
 

@@ -25,15 +25,6 @@ class BoodschappenlijstRepository extends EntityRepository
 				->orderBy('a.name')
 				->getQuery()
 				->getResult();
-				
-// 				->select('partial af.{id,name}', 'i')
-// 				->from('AppBundle:Ingredient','i')
-// 				->join('i.afdeling','af')
-// 				->join('i.boodschappenlijst', 'b')
-// 				->where('b.id = :boodschappenid')
-// 				->setParameter('boodschappenid', $id)
-// 				->getQuery()
-// 				->getResult();
 	}
 
 	
@@ -48,7 +39,6 @@ class BoodschappenlijstRepository extends EntityRepository
 				->setParameter('boodschappenid', $id)
 				->groupBy('r.titel')
 				->getQuery()
-				->getResult();
-							
+				->getResult();			
 	}
 }

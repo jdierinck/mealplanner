@@ -28,7 +28,6 @@ class DeptFinder
 	        if ($afdeling->getName() == 'niet toegewezen') continue;
 
 	        $voedingswaren = explode("\r\n", $afdeling->getVoedingswaren());
-	        // dump($voedingswaren);
 
 	        foreach ($voedingswaren as $v) {
 	            if (preg_match('/\b'.$v.'\b/i', $str) === 1) {   

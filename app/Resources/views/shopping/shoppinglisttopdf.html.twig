@@ -1,13 +1,11 @@
 {% extends 'base.html.twig' %}
 
-
-
 {% block body %}
 		<h3>Boodschappenlijst</h3>
 		{% for afdeling in afdelingen %}
-		 <h4>{{ afdeling.name }}</h4>
+		 <h4>{{ afdeling.afdeling.name }}</h4>
 		 <ul class="list-unstyled ingredient-list">
-		 {% for ingrbl in afdeling.ingrbl %}
+		 {% for ingrbl in afdeling.afdeling.ingrbl %}
 			<li>
 				<span class="hoeveelheid">{% if ingrbl.ingredient.hoeveelheid %}{{ 0 + ingrbl.ingredient.hoeveelheid}}{% endif %}</span>
 				<span class="eenheid">{{ ingrbl.ingredient.eenheid}}</span>

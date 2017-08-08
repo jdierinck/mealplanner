@@ -21,6 +21,9 @@ class User implements UserInterface, \Serializable
 {
     const ROLE_DEFAULT = 'ROLE_USER';
     const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+
+    const ACCOUNT_FREE = 'FREE';
+    const ACCOUNT_PREMIUM = 'PREMIUM';
     
     /**
      * @ORM\Column(type="integer")
@@ -276,6 +279,17 @@ class User implements UserInterface, \Serializable
                 
                 $this->addAfdelingenordered($ao);
         }
+    }
+
+    /**
+     * @ORM\Column(type="string", length=64)
+     */
+    private $account;
+
+    public function isFreeAccountExpired($ttl)
+    {
+        return $this->account === static::ACCOUNT_FREE && 
+            $this->getRegistratieDatum()->getTimestamp() + $ttl < time();
     }
 
 
@@ -616,4 +630,28 @@ class User implements UserInterface, \Serializable
         return $this->afdelingenordered;
     }
 
+
+    /**
+     * Set account
+     *
+     * @param string $account
+     *
+     * @return User
+     */
+    public function setAccount($account)
+    {
+        $this->account = $account;
+
+        return $this;
+    }
+
+    /**
+     * Get account
+     *
+     * @return string
+     */
+    public function getAccount()
+    {
+        return $this->account;
+    }
 }

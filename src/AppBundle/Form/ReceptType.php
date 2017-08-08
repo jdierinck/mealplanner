@@ -65,13 +65,6 @@ class ReceptType extends AbstractType
 				'multiple' => false,
 				'expanded' => false,
 				))
-    //     	->add('keuken', EntityType::class, array(
-    //     		'required' => false,
-				// 'class' => 'AppBundle:Keuken',
-				// 'choice_label' => 'name',
-				// 'multiple' => false,
-				// 'expanded' => false,
-				// ))
             ->add('keuken', Select2EntityType::class, array(
                     'multiple' => false,
                     'required' => false,

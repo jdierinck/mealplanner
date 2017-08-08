@@ -2,7 +2,11 @@
 
 	// setup an "add a ingredient" link
 	var addIngredientLink = $('<a href="#" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus-sign"></span>&nbsp;Voeg een ingredient toe</a>');
-	var newLink = $('<p></p>').append(addIngredientLink);
+	var newLink = $('<span></span>').append(addIngredientLink);
+
+	// Add section link
+	var addSectionLink = $('<a href="#" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus-sign"></span>&nbsp;Voeg een sectie toe</a>');
+	var newSectionLink = $('<span></span>').append(addSectionLink);	
 	
 $(document).ready(function(){
 	
@@ -17,16 +21,28 @@ $(document).ready(function(){
     // add the "add a ingredient" anchor after the table
 //     collectionHolder.append(newLink);
 	collectionHolder.after(newLink);
+	collectionHolder.after(newSectionLink);
 	
     // count the current form inputs we have (e.g. 2), use that as the new
     // index when inserting a new item (e.g. 2)
-    collectionHolder.data('index', collectionHolder.find(':input').length/4);
+    collectionHolder.data('index', collectionHolder.find(':input').length/5);
 
     $(addIngredientLink).on('click', function(e) {
         // prevent the link from creating a "#" on the URL
         e.preventDefault();
         // add a new ingredient form (see next code block)
         addIngredientForm(collectionHolder, newLink);
+    });
+
+    $(addSectionLink).on('click', function(e) {
+        // prevent the link from creating a "#" on the URL
+        e.preventDefault();
+        // add a new ingredient form (see next code block)
+        addIngredientForm(collectionHolder, newLink);
+        var newForm = $('tr.ingredientform:last');
+        $(newForm).find('input').not('[id$="ingredient"]').addClass('hidden');
+        $(newForm).find('input[id$="ingredient"]').attr('placeholder', 'Bv. "Voor de salade"');
+        $(newForm).find('input[id$="section"]').prop('checked', true);
     });
     
 	function addIngredientForm(collectionHolder, newLink) {
@@ -87,27 +103,29 @@ $(document).ready(function(){
 // 
 // 	});
 
+	// Bulk import ingredients: add new form for each one and separate quantity, unit and ingredient
 	$('#import').on('click', function(e){
 		var bulk = $('#recept_ingredienten_bulk');
 		var data = bulk.val();
 		var items = data.split('\n');
 		for (i=0; i<items.length; i++) {
 			addIngredientForm(collectionHolder, newLink);
-			// $('input[id$="ingredient"]:last').val(items[i]);
-			var words = items[i].split(' ');
-			var rest='';
-			for (x=0; x<words.length; x++) {
-				if (words[x].search(/^\d+((.|,)\d+)?$/) > -1) {
-					$('input[id$="hoeveelheid"]:last').val(words[x]);
-				} else if (words[x].search(/^(gram|gr|g|kilo|kg|eetlepel|el|koffielepel|kl|liter|l|deciliter|dl|milliliter|mililiter|ml|stuk|stuks|cm|stengel|teen|teentje|teentjes|pot|potje|kop|kopje|blik|blikken|blikjes|blikje)$/) > -1) {
-					$('input[id$="eenheid"]:last').val(words[x]);
-				} else {
-					rest += words[x] + ' ';
+			var item = items[i];
+			item = item.replace(/\s{2,}/, ' ');
+			item = item.trim();
+			var words = item.split(' ');
+			if (words[0].search(/^\d+((\.|,)\d+)?$/) > -1) {
+				$('input[id$="hoeveelheid"]:last').val(words[0]);
+				words.shift();
+				if (words[0].search(/^(gram|gr|g|kilo|kilo\'s|kg|eetlepel|eetlepels|el|koffielepel|koffielepels|kl|theelepel|theelepels|tl|liter|liters|l|deciliter|deciliters|dl|milliliter|mililiter|mililiters|ml|stuk|stuks|cm|stengel|stengels|teen|tenen|teentje|teentjes|pot|potten|potje|potjes|kop|koppen|kopje|kopjes|blik|blikken|blikjes|blikje|bol|bollen|bolletje|bolletjes|zak|zakken|zakje|zakjes|tak|takken|takje|takjes)$/) > -1) {
+					$('input[id$="eenheid"]:last').val(words[0]);
+					words.shift();
 				}
-				$('input[id$="ingredient"]:last').val(rest.trim());
-				
+				var rest = words.join(' ');
+				$('input[id$="ingredient"]:last').val(rest);
+			} else {
+				$('input[id$="ingredient"]:last').val(item);
 			}
-
 		}
 		bulk.val('');
 		$('#manualtab').tab('show');
@@ -115,6 +133,27 @@ $(document).ready(function(){
 
 	// Activate CKEditor on field
 	CKEDITOR.replace('recept[bereidingswijze]');
+
+	// Make table rows sortable
+	$('#sortable').sortable();
+
+	// After reordering an ingredient, re-index each input's id and name attributes to reflect new order
+	$('#sortable').on('sortstop', function(event, ui){
+		var index = collectionHolder.data('index');
+		for (var i=0; i<index; i++){
+			var tr = collectionHolder.find('tr.ingredientform')[i];
+			$(tr).find('input').each(function(){
+				var id = $(this).attr('id');
+				var newId = id.replace(/_[0-9]+_/, '_' + i + '_');
+				var name = $(this).attr('name');
+				var newName = name.replace(/\[[0-9]+]/, '[' + i + ']');
+				$(this).attr({
+					'id': newId,
+					'name': newName
+				});				
+			});
+		}
+	});
 		  
 	
 });

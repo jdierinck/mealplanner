@@ -45,14 +45,11 @@ class DefaultController extends Controller
      		->setMethod('POST')
 			->add('from', EmailType::class, array(
 			'label' => 'Van:',
-// 			'attr' => array('placeholder' => $user->getEmail()),
 			'data' => $from,
 			'constraints' => array(new NotBlank(), new Email()),
 			))
 			->add('subject', TextType::class, array(
 			'label' => 'Onderwerp',
-			// 'attr' => array('placeholder' => 'Onderwerp'),
-			// 'empty_data' => 'Boodschappenlijst',
 			'constraints' => new NotBlank(),
 			))
 			->add('message', TextareaType::class, array(
@@ -83,7 +80,7 @@ class DefaultController extends Controller
 		elseif ($form->isSubmitted() && !$form->isValid()) {
 			$response = new JsonResponse(
 				array(
-					'message' => 'Error',
+					'message' => 'Er is een fout opgetreden',
 					'form' => $this->renderView('default/contactform.html.twig', array(
 						'form' => $form->createView()
 						)

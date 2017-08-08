@@ -18,6 +18,8 @@ use Symfony\Component\Form\CallbackTransformer;
 use AppBundle\Form\Type\AfdelingHiddenType;
 use Doctrine\Common\Persistence\ObjectManager;
 use AppBundle\Form\DataTransformer\AfdelingTransformer;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class IngredientType extends AbstractType
 {
@@ -26,9 +28,9 @@ class IngredientType extends AbstractType
      */
     protected $om;
 
-	public function __construct(ObjectManager $objectManager) {
-		$this->om = $objectManager;
-	}
+  	public function __construct(ObjectManager $objectManager) {
+  		$this->om = $objectManager;
+  	}
 
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -38,51 +40,8 @@ class IngredientType extends AbstractType
     }
     
     public function buildForm(FormBuilderInterface $builder, array $options)
-    {
-
-    	
-  //       $listener = function (FormEvent $event) {
-  //       	$ingredient = $event->getData();
-		// 	$form = $event->getForm();
-
-		// 	$repo = $this->em->getRepository('AppBundle:Afdeling');
-		// 	$afdelingen = $repo->findAll();
-		
-		// 	foreach ($afdelingen as $afdeling) {
-		// 		// $voedingswaren = explode("\n", str_replace("\r", '', $afdeling->getVoedingswaren()));
-		// 		// if(in_array($ingredient['ingredient'], $voedingswaren)){
-		// 		// 	$ingredient['afdeling'] = $afdeling;
-		// 		// }
-
-  //               if ($afdeling->getName() == 'niet toegewezen') continue;
-
-  //               $voedingswaren = explode("\r\n", $afdeling->getVoedingswaren());
-  //               // dump($voedingswaren);
-  //               foreach ($voedingswaren as $v) {
-  //                   // if (stripos($ingredient['ingredient'], $v) !== false) {
-  //                   // if (preg_match('/'.$ingredient['ingredient'].'/', $v)) {
-  //                   if (preg_match('/\b'.$v.'\b/i', $ingredient['ingredient'], $matches) === 1) {   
-  //                       $ingredient['afdeling'] = $afdeling;
-  //                       dump($ingredient, $matches);
-  //                       $event->setData($ingredient);
-  //                   }   
-  //               }	
-		// 	}
-		// };
-		
-		// $listener2 = function (FormEvent $event) {
-  //   		$ingredient = $event->getData();
-
-  //   		$repo = $this->em->getRepository('AppBundle:Afdeling');
-		// 	$onbekend = $repo->findOneByName('niet toegewezen');
-            
-  //   		if(!array_key_exists('afdeling', $ingredient)) {
-  //   			$ingredient['afdeling'] = $onbekend;
-  //   			$event->setData($ingredient);
-  //   		}
-  //   	};
-    	
-    	$builder->add('hoeveelheid', TextType::class, array(
+    {	
+    	$builder->add('hoeveelheid', NumberType::class, array(
         			'label' => false,
         			'attr' => array('class' => 'input-sm'),
     			))
@@ -91,41 +50,63 @@ class IngredientType extends AbstractType
         			'attr' => array('class' => 'input-sm'),
     			))
     			->add('ingredient', TextType::class, array(
-                    'label' => false,
-                    'attr' => array('class' => 'input-sm'),
+              'label' => false,
+              'attr' => array('class' => 'input-sm'),
     			))
-    			->add('afdeling', TextType::class, array(
-                    'attr' => array('class' => 'hidden'),
-                ));
-    	
-    	// $builder->addEventListener(Formevents::PRE_SUBMIT, $listener);
-    	// $builder->addEventListener(Formevents::PRE_SUBMIT, $listener2);               
-
-        // Allow comma in form field instead of dot
-        $builder->get('hoeveelheid')
-            ->addModelTransformer(new CallbackTransformer(
-                function($number){
-                    if (null === $number) {
-                        return;
-                    } else {
-                        // Get rid of trailing zeroes and decimal point in case of integers
-                        $number += 0;
-                        // Replace dots with commas
-                        return str_replace('.', ',', $number);
-                    }
-                },
-                function($input){
-                    if (null === $input) {
-                        return;
-                    } else {
-                        return str_replace(',', '.', $input);
-                    }
-                }
+          ->add('section', CheckboxType::class, array(
+              'label' => false,
+              'attr' => array('class' => 'hidden')
             ))
-        ;
+          ->add('afdeling', AfdelingHiddenType::class)
+          ;
 
         $builder->get('afdeling')
-            ->addModelTransformer(new AfdelingTransformer($this->om)); 
+            ->addModelTransformer(new AfdelingTransformer($this->om));
+        
+        //Modify options of field: hide fields hoeveelheid en eenheid when ingredient is section
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            $form = $event->getForm();
+            $ingredient = $event->getData();
+
+            if (!$ingredient == null) {
+              if ($ingredient->isSection()) {
+                // Get configuration & options of specific field
+                $config = $form->get('hoeveelheid')->getConfig();
+                $options = $config->getOptions();
+
+                $form->add(
+                    // Replace original field... 
+                    'hoeveelheid',
+                    $config->getType()->getName(),
+                    // while keeping the original options... 
+                    array_replace(
+                        $options, 
+                        [
+                            // replacing specific ones
+                            'attr' => array('class' => 'input-sm hidden'),
+                        ]
+                    )
+                );
+                // Get configuration & options of specific field
+                $config = $form->get('eenheid')->getConfig();
+                $options = $config->getOptions();
+
+                $form->add(
+                    // Replace original field... 
+                    'eenheid',
+                    $config->getType()->getName(),
+                    // while keeping the original options... 
+                    array_replace(
+                        $options, 
+                        [
+                            // replacing specific ones
+                            'attr' => array('class' => 'input-sm hidden'),
+                        ]
+                    )
+                );                
+              }
+            }
+        });     
 
     }
 

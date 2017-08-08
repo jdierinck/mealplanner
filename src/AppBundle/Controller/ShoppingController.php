@@ -21,8 +21,9 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Validator\Constraints as Assert;
+use AppBundle\Controller\AccountNonExpiredController;
 
-class ShoppingController extends Controller
+class ShoppingController extends Controller implements AccountNonExpiredController
 {  
     /**
      * @Route("boodschappen", name="boodschappen")
@@ -70,13 +71,12 @@ class ShoppingController extends Controller
 						if ($recept === null) {
 							$em->remove($ingredient);
 						}
-
 						$em->remove($ibl);
 					}
 				}
 			}
-		$em->flush();
-		$em->refresh($boodschappenlijst);
+			$em->flush();
+			$em->refresh($boodschappenlijst);
 		}
 		
 		if($persons){
@@ -119,7 +119,7 @@ class ShoppingController extends Controller
 	    		->setParameter('boodschappenlijst', $boodschappenlijst)
 	    		->groupBy('ibl.receptblordered')
 	    		->getQuery();
-	    $ro_ids=$query->getResult();
+	    $ro_ids = $query->getResult();
 	    $ids = array();
 	    foreach($ro_ids as $key=>$value){
 	    	$ids[]=$value[1];
@@ -131,7 +131,6 @@ class ShoppingController extends Controller
 	    }
 	    $em->flush();
 
-
     	$qb = $em->createQueryBuilder();
     	$query = $qb->select('ro', 'partial r.{id,titel,personen}')
     			->from('AppBundle:ReceptBLOrdered','ro')
@@ -140,19 +139,6 @@ class ShoppingController extends Controller
     			->setParameter('boodschappenlijst', $boodschappenlijst)
     			->getQuery();
     	$recepten = $query->getResult();
-    	
-//     	$qb = $em->createQueryBuilder();
-//     	$query = $qb->select('a','ibl')
-//     			->from('AppBundle:Afdeling','a')
-//     			->join('a.ingrbl', 'ibl')
-//     			->join('ibl.ingredient','i')
-//     			->where('ibl.boodschappenlijst = :boodschappenlijst')
-//     			->setParameter('boodschappenlijst', $boodschappenlijst)
-//     			->orderBy('a.name')
-//     			->getQuery();
-//     	$afdelingen = $query->getResult();
-    
-    	// $afdelingen = $em->getRepository('AppBundle:AfdelingOrdered')->findIngredientenByAfdeling($boodschappenlijst, $user);
 
 		$qb = $em->createQueryBuilder();
 		$query = $qb->select('ao','a','ibl')
@@ -168,7 +154,7 @@ class ShoppingController extends Controller
 	        ->getQuery();
         $afdelingenordered = $query->getResult();
 		
-		// $alleafdelingen = $em->getRepository('AppBundle:Afdeling')->findAll();
+		// Get all departments, ordered
 		$qb = $em->createQueryBuilder();
 		$query = $qb->select('ao','a')
 	        ->from('AppBundle:AfdelingOrdered','ao')           
@@ -292,8 +278,10 @@ class ShoppingController extends Controller
 		}
 		
 		$ingredienten = array();
-		foreach($recept->getIngredienten() as $ingredient){
-			$ingredienten[] = $ingredient;
+		foreach ($recept->getIngredienten() as $i) {
+			if (false === $i->isSection()) { 
+				$ingredienten[] = $i;
+			}
 		}
 
 		// Find last date in BL, and if it exists increment it and set it on new object
@@ -343,34 +331,28 @@ class ShoppingController extends Controller
 		$boodschappenlijst = $user->getBoodschappenlijst();
 		    	
     	$ingredient = new Ingredient();
-    	
-    	// $form = $this->get('form.factory')
-     // 		->createNamedBuilder('additem', FormType::class, $ingredient)
-    	// 	->setAction($this->generateUrl('additemtoshoppinglist'))
-    	// 	->add('hoeveelheid', TextType::class)
-    	// 	->add('eenheid', TextType::class)
-    	// 	->add('ingredient', TextType::class)
-    	// 	->add('afdeling', EntityType::class, array(
-    	// 		'class' => 'AppBundle:Afdeling',
-    	// 		'choice_label' => 'name'
-    	// 	))
-    	// 	->add('submit', SubmitType::class, array(
-    	// 	'label' => 'Voeg toe'))
-    	// 	->getForm();
 
     	$form = $this->get('form.factory')
      		->createNamedBuilder('additem', IngredientType::class, $ingredient)
     		->setAction($this->generateUrl('additemtoshoppinglist'))
     		->add('submit', SubmitType::class, array(
-    		'label' => 'Voeg toe'))
+    			'label' => 'Voeg toe'
+    		))
     		->getForm();    		
     	
     	$form->handleRequest($request);
     	
     	if($form->isSubmitted() && $form->isValid()){
     		$ingredient = $form->getData();
+
+    		// Assign department
+			$finder = $this->container->get('app.dept_finder');
+			$dept = $finder->findDept($ingredient->getIngredient());
+			$ingredient->setAfdeling($dept);
+
 			$ingredienten = array($ingredient);
 			$boodschappenlijst->setIngredienten($ingredienten);
+
     		$em->persist($ingredient);
     		$em->flush();
 
@@ -406,7 +388,19 @@ class ShoppingController extends Controller
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
 
-		$afdelingen = $em->getRepository('AppBundle:Afdeling')->findIngredientenByAfdeling($boodschappenlijst);
+		$qb = $em->createQueryBuilder();
+		$query = $qb->select('ao','a','ibl')
+	        ->from('AppBundle:AfdelingOrdered','ao')           
+	        ->where('ao.user = :user')
+	        ->orderBy('ao.positie')             
+	        ->setParameter('user', $user)
+	        ->join('ao.afdeling', 'a')
+	        ->join('a.ingrbl', 'ibl')
+	        ->andWhere('ibl.boodschappenlijst = :boodschappenlijst')
+	        // ->setParameters(['boodschappenlijst'=>$boodschappenlijst, 'user'=>$user])
+	        ->setParameter('boodschappenlijst', $boodschappenlijst)
+	        ->getQuery();
+        $afdelingen = $query->getResult();
 			
 		$html = $this->render('shopping/shoppinglisttopdf.html.twig', array(
 			'afdelingen'  => $afdelingen
@@ -426,9 +420,6 @@ class ShoppingController extends Controller
 				'Content-Disposition'   => 'attachment; filename="Mealplanner.pdf"'
 			)
 		);
-// 		return $this->render('shopping/shoppinglisttopdf.html.twig', array(
-// 			'afdelingen'  => $afdelingen
-// 		));
     }
     
     /**
@@ -479,24 +470,23 @@ class ShoppingController extends Controller
      		->setAction($this->generateUrl('sendmail'))
      		->setMethod('POST')
 			->add('from', EmailType::class, array(
-			'label' => 'Van:',
-// 			'attr' => array('placeholder' => $user->getEmail()),
-			'data' => $user->getEmail(),
-			'constraints' => array(new NotBlank(), new Email()),
-			))
+				'label' => 'Van:',
+				'data' => $user->getEmail(),
+				'constraints' => array(new NotBlank(), new Email()),
+				))
 			->add('to', EmailType::class, array(
-			'label' => 'Aan:',
-			'constraints' => array(new NotBlank(), new Email()),
-			))
+				'label' => 'Aan:',
+				'constraints' => array(new NotBlank(), new Email()),
+				))
 			->add('subject', TextType::class, array(
-			'label' => 'Onderwerp',
-			'attr' => array('placeholder' => 'Boodschappenlijst'),
-			'empty_data' => 'Boodschappenlijst',
-			))
+				'label' => 'Onderwerp',
+				'attr' => array('placeholder' => 'Boodschappenlijst'),
+				'empty_data' => 'Boodschappenlijst',
+				))
 			->add('message', TextareaType::class, array(
-			'label' => 'Bericht',
-			'attr' => array('rows' => 5, 'cols' => 50, 'placeholder' => 'Hier is mijn geweldige boodschappenlijst!'),
-			))
+				'label' => 'Bericht',
+				'attr' => array('rows' => 5, 'cols' => 50, 'placeholder' => 'Hier is mijn geweldige boodschappenlijst!'),
+				))
 			->add('send', SubmitType::class, array('label' => 'Verzend'))
 			->getForm();
 			
@@ -511,7 +501,6 @@ class ShoppingController extends Controller
 				->setTo($data['to'])
 				->setBody(
 					$this->renderView(
-						// appBundle/views/emails/contact.html.twig
 						'shopping/email.html.twig',
 						array('data' => $data)
 						),
@@ -529,6 +518,7 @@ class ShoppingController extends Controller
 			$pdf = $this->forward('AppBundle:Shopping:generatePDF');
 			$attachment = \Swift_Attachment::newInstance($pdf, 'Boodschappenlijst.pdf', 'application/pdf');
 			$message->attach($attachment);
+			
 			$this->get('mailer')->send($message);			
 			
 			// add flash message

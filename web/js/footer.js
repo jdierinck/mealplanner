@@ -5,7 +5,6 @@ $('body').on('click', 'a[href$="/contact"], a[href$="/about"]', function(e){
 });
 
 $('body').on('submit', "form[name='contactform']", function(e) {
-	console.log('Ajax');
 	e.preventDefault();
 	$.ajax({
 		type: $(this).attr('method'),

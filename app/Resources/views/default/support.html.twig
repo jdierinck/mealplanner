@@ -5,17 +5,38 @@
 {{ render(controller('AppBundle:Navigation:menu')) }}
 
 <div class="container" style="margin-top:70px;">
-	<div class="alert alert-info">
-		<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>&nbsp;Deze pagina is nog in opbouw.
-	</div>
-	<h4>Recepten toevoegen en verzamelen</h4>
-	<div>
-	<a href="#support01" data-toggle="collapse">Hoe kan ik recepten toevoegen?</a>
-	{% include('support/support01.html.twig') %}
-	</div>
-	<div>
-	<a href="#support02" data-toggle="collapse">Van welke sites kan ik recepten importeren?</a>
-	{% include('support/support02.html.twig') %}
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2" id="accordion">
+			<div class="alert alert-info">
+				<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>&nbsp;Deze pagina is nog in opbouw.
+			</div>
+			<h3>Recepten toevoegen en verzamelen</h3>
+			<div class="panel">
+				<a href="#support01-01" data-toggle="collapse" data-parent="#accordion">Hoe kan ik recepten toevoegen?</a>
+				{% include('support/support01-01.html.twig') %}
+			</div>
+			<div class="panel">
+				<a href="#support01-02" data-toggle="collapse" data-parent="#accordion">Van welke sites kan ik recepten importeren?</a>
+				{% include('support/support01-02.html.twig') %}
+			</div>
+			<div class="panel">
+				<a href="#support01-03" data-toggle="collapse" data-parent="#accordion">Ik zie geen bladwijzerbalk, hoe kan ik de Bladwijzer dan installeren?</a>
+				{% include('support/support01-03.html.twig') %}
+			</div>			
+			<h3>Mijn account</h3>
+			<div class="panel">
+				<a href="#support02-01" data-toggle="collapse" data-parent="#accordion">Wat kost <span class="logo">MealPlanner</span>?</a>
+				{% include('support/support02-01.html.twig') %}
+			</div>
+			<div class="panel">
+				<a href="#support02-02" data-toggle="collapse" data-parent="#accordion">Wat gebeurt er met mijn recepten wanneer de proefperiode afgelopen is?</a>
+				{% include('support/support02-02.html.twig') %}
+			</div>
+			<div class="panel">
+				<a href="#support02-03" data-toggle="collapse" data-parent="#accordion">Waarom is <span class="logo">MealPlanner</span> zo goedkoop?</a>
+				{% include('support/support02-03.html.twig') %}
+			</div>									
+		</div>
 	</div>
 </div>
 

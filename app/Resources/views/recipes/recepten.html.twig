@@ -1,11 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
-	<style>
-/*		#myModal {
-			z-index: 1080 !important;
-		}*/
-	</style>
 	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/starrating/css/rating.css') }}" />
 	<link rel="stylesheet" href="{{ asset('css/recepten.css') }}"> 
 {% endblock %}
@@ -32,9 +27,11 @@
 					<button id="list" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th-list"></span> Lijst</button>
 				</div>
 
+				{% if app.user.hasRecepten %}
 				<div class="pull-right">
 					<a type="button" class="btn btn-default btn-sm" href="{{ path('exportcsv') }}"><i class="fa fa-download"></i>&nbsp;Exporteer als CSV</a>
 				</div>
+				{% endif %}
 
 				<br><br>
 				
@@ -53,22 +50,21 @@
 							<div id="recepten" class="row">
 							{% for recept in recepten %}
 							  <div class="item col-sm-4">
-							  		<div data-url="{{ path('showrecept', {'id':recept.id}) }}" class="showrecipe">
-									{% if recept.fotonaam %}
-									<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_sm') }}" alt="{{ recept.titel }}" class="img-responsive">
-									{% else %}
-									<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height: 100px;">
-									{% endif %}
-									{{ recept.rating|rating }}
-								  	<h5 class="hideOverflow">{{ recept.titel }}</h5>
-								  
-									{% if recept.tags %}
-										<p class="small hideOverflow">
-										{% for tag in recept.tags %}
-											<span class="label label-primary">{{ tag.name }}</span>
-										{% endfor %}
-										</p>
-									{% endif %}	
+							  		<div data-url="{{ path('showrecept', {'id':recept.id}) }}" class="showrecipe" data-id="{{ recept.id }}"  data-toggle="modal" data-target="#myOtherModal">
+										{% if recept.fotonaam %}
+										<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_sm') }}" alt="{{ recept.titel }}" class="img-responsive">
+										{% else %}
+										<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height: 100px;">
+										{% endif %}
+										{{ recept.rating|rating }}
+									  	<h4 class="hideOverflow">{{ recept.titel }}</h4>
+										{% if recept.tags %}
+											<p class="small hideOverflow">
+											{% for tag in recept.tags %}
+												<span class="label label-primary">{{ tag.name }}</span>
+											{% endfor %}
+											</p>
+										{% endif %}	
 									</div>
 									<p id="edit-links">
 										<a href="{{ path('editform', {'id':recept.id}) }}" class="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
@@ -83,7 +79,7 @@
 								<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>&nbsp;Geen recepten gevonden.
 							</div>
 							<h3>Hoe kan ik recepten toevoegen?</h3>
-							{% include('support/support01.html.twig') %}
+							{% include('support/support01-01.html.twig') %}
 
 						{% endif %}
 					</div>							
@@ -107,7 +103,7 @@
 									</thead>
 									<tbody>
 										{% for recept in recepten %}
-											<tr class="showrecipe" data-url="{{ path('showrecept', {'id':recept.id}) }}">
+											<tr class="showrecipe" data-url="{{ path('showrecept', {'id':recept.id}) }}" data-toggle="modal" data-target="#myOtherModal">
 												<td>
 													<div style="height:50px;">
 													{% if recept.fotonaam %}
@@ -268,11 +264,9 @@
 {% endblock %}
 
 {% block javascripts %}
-    <!-- <script src="http://malsup.github.com/jquery.form.js"></script> -->
     <script src="//oss.maxcdn.com/jquery.form/3.50/jquery.form.min.js"></script>
 	<script src="{{ asset('js/mycustomjs.js') }}"></script>
 	<script src="{{ asset('bundles/tetranzselect2entity/js/select2entity.js') }}"></script>
 	<script src="{{ asset('bundles/starrating/js/rating.js') }}"></script>
 	<script src="https://cdn.ckeditor.com/4.6.2/basic/ckeditor.js"></script>
-
 {% endblock %}

@@ -25,3 +25,10 @@ services:
     app.dept_finder:
         class: AppBundle\Service\DeptFinder
         arguments: ["@doctrine.orm.entity_manager"]
+    app.account.listener:
+        class: AppBundle\EventListener\AccountListener
+        arguments:
+            - "@security.token_storage"
+            - "@controller_resolver"
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller }

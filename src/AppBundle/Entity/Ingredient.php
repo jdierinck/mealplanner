@@ -76,7 +76,17 @@ class Ingredient
     /**
      * @ORM\OneToMany(targetEntity="IngrBL", mappedBy="ingredient", cascade={"all"})
      */    
-    private $ingrbl;  
+    private $ingrbl;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $section;
+
+    public function isSection()
+    {
+        return $this->section;
+    }
 
     /**
      * Get id
@@ -258,5 +268,29 @@ class Ingredient
     public function getIngrbl()
     {
         return $this->ingrbl;
+    }
+
+    /**
+     * Set section
+     *
+     * @param boolean $section
+     *
+     * @return Ingredient
+     */
+    public function setSection($section = false)
+    {
+        $this->section = $section;
+
+        return $this;
+    }
+
+    /**
+     * Get section
+     *
+     * @return boolean
+     */
+    public function getSection()
+    {
+        return $this->section;
     }
 }

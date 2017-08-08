@@ -20,7 +20,6 @@ class TagType extends AbstractType
                 'attr' => array('class' => 'position-field'),
             ))
         ;
-
     }
 
     public function configureOptions(OptionsResolver $resolver)

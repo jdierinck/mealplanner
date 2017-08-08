@@ -37,10 +37,20 @@ $(document).ready(function(){
 	$('[data-toggle="popover"]').popover();
     
     // Load content into modal
-	$('body').on('click','.showrecipe', function(){	
-		$('#myOtherModal').modal();
-		$('#myOtherModalContent').load($(this).data('url'));
+	// $('body').on('click','.showrecipe', function(e){
+	// 	$('#myOtherModal').modal();
+	// 	$('#myOtherModalContent').load($(this).data('url'));
+	// 	var id = $(this).data('id');
+	// 	console.log(id);		
+	// });
+
+	$('#myOtherModal').on('show.bs.modal', function(e){
+		var element = $(e.relatedTarget);
+		var url = element.data('url');
+		$('#myOtherModalContent').load(url);
 	});
+
+
 	$('body').on('click', 'a#addrecipe, a.editrecipe, a.deleterecipe', function(e) {
 		e.preventDefault();
 		$('#myModal').modal();

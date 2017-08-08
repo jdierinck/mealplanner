@@ -14,16 +14,6 @@ class MenuRepository extends EntityRepository
 {
 	public function findIngredientenByMenu($id){
 		return $this->getEntityManager()->createQueryBuilder()
-// 			->select('a', 'i')
-// 			->from('AppBundle:Afdeling','a')
-// 			->join('a.ingredienten', 'i')
-// 			->join('i.recept', 'r')
-// 			->join('r.menus', 'm')
-// 			->where('m.id = :menuid')
-// 			->setParameter('menuid', $id)			
-// 			->orderBy('a.name')
-// 			->getQuery()
-// 			->getResult();
 			->select('a', 'i')
 			->from('AppBundle:Afdeling','a')
 			->join('a.ingredienten', 'i')

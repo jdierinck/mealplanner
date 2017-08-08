@@ -1,27 +1,29 @@
-
 <div class="modal-header">
-<button type="button" class="close" data-dismiss="modal">&times;</button>
-<h4 class="modal-title">Voeg item toe</h4>
+	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	<h3 class="modal-title">Voeg item toe</h3>
 </div>
 <div class="modal-body">
-<div class="form_error"></div>
-{# {{ form(form, {'attr': {'novalidate': 'novalidate'}}) }} #}
-{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+	<div class="form_error"></div>
+	{# {{ form(form, {'attr': {'novalidate': 'novalidate'}}) }} #}
+	{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-	{{ form_label(form.hoeveelheid, 'Hoeveelheid') }}
-    {{ form_errors(form.hoeveelheid) }}
-    {{ form_widget(form.hoeveelheid) }}
+		{{ form_label(form.hoeveelheid, 'Hoeveelheid') }}
+	    {{ form_errors(form.hoeveelheid) }}
+	    {{ form_widget(form.hoeveelheid) }}
 
-	{{ form_label(form.eenheid, 'Eenheid') }}
-    {{ form_errors(form.eenheid) }}
-    {{ form_widget(form.eenheid) }}
+		{{ form_label(form.eenheid, 'Eenheid') }}
+	    {{ form_errors(form.eenheid) }}
+	    {{ form_widget(form.eenheid) }}
 
-	{{ form_label(form.ingredient, 'Ingrediënt') }}
-    {{ form_errors(form.ingredient) }}
-    {{ form_widget(form.ingredient) }}
-{% do form.afdeling.setRendered %}	
-{{ form_end(form) }}
+		{{ form_label(form.ingredient, 'Ingrediënt') }}
+	    {{ form_errors(form.ingredient) }}
+	    {{ form_widget(form.ingredient) }}
+	{% do form.afdeling.setRendered %}
+	{% do form.section.setRendered %}
+	
+	{{ form_end(form) }}
 </div>
+
 <!-- 
 <div class="modal-footer">
 <!~~ <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> ~~>

@@ -14,10 +14,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Ingredient;
 use AppBundle\Entity\Boodschappenlijst;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use RecipeParser\RecipeParser;
+use AppBundle\Controller\AccountNonExpiredController;
 
-class RecipesController extends Controller
+class RecipesController extends Controller implements AccountNonExpiredController
 {
     /**
      * @Route("/recepten", name="recipes")
@@ -31,7 +31,9 @@ class RecipesController extends Controller
 		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			throw $this->createAccessDeniedException();
 		}
-// 		$user = $this->get('security.token_storage')->getToken()->getUser();
+
+		// Get user (long version)
+		// $user = $this->get('security.token_storage')->getToken()->getUser();
 		$user = $this->getUser();
 		$boodschappenlijst = $user->getBoodschappenlijst();
 	
@@ -44,9 +46,20 @@ class RecipesController extends Controller
 			$em->flush();
 		}
 
-    	$allowedsorts = array('titel', 'gerecht', 'keuken', 'hoofdingredient', 'bereidingstijd', 'toegevoegdOp', 'kostprijs');
+    	$allowedsorts = array(
+    		'titel', 
+    		'gerecht', 
+    		'keuken', 
+    		'hoofdingredient', 
+    		'bereidingstijd', 
+    		'toegevoegdOp', 
+    		'kostprijs',
+    		);
+
     	$sort = $request->query->get('sortBy');
-    	if (null == $sort || !in_array($sort, $allowedsorts)) { $sort = 'toegevoegdOp'; }
+    	if (null == $sort || !in_array($sort, $allowedsorts)) { 
+    		$sort = 'toegevoegdOp'; 
+    	}
     	
     	$gerechtid = $request->query->get('gerecht');
     	$keukenid = $request->query->get('keuken');
@@ -152,8 +165,6 @@ class RecipesController extends Controller
     		$result_ids[] = $result->getId();
     	}
     	$session->set('results', $result_ids);
-
-//     	$total = count($recepten);
     	
     	// Paginate search results
     	$query = $qb->getQuery();
@@ -243,14 +254,6 @@ class RecipesController extends Controller
 	 */
 	public function createAction (Request $request)
 	{
-		
-// 		Dump request to see POST values
-// 		return new JsonResponse(array('request'=>dump($request->request->all())),400);
-		
-// 		if (!$request->isXmlHttpRequest()) {
-// 			return new JsonResponse(array('message' => 'You can access this only using Ajax!'), 400);
-// 		}
-
 		// Get 'id' field value from form
 		$id = $request->request->get('recept')['id'];
 		
@@ -282,10 +285,6 @@ class RecipesController extends Controller
 				$gerecht = $this->getDoctrine()->getRepository('AppBundle:Gerecht')->findOneByName('Hoofdgerecht');
 				$recept->setGerecht($gerecht);
 			}
-			// set default value for personen
-			// if($recept->getPersonen() == null){
-			// 	$recept->setPersonen(4);
-			// }
 
 			foreach ($originalIngredients as $ingredient) {
 				if (false === $recept->getIngredienten()->contains($ingredient)) {
@@ -296,9 +295,9 @@ class RecipesController extends Controller
 			$user = $this->getUser();
 			$recept->setUser($user);
 
-			// Assign department to each ingredient when ingredient is new only
+			// Assign department to each ingredient if ingredient is new and not a section
 			foreach ($recept->getIngredienten() as $i) {
-				if (null === $i->getId()) {
+				if (null === $i->getAfdeling() && false === $i->isSection()) {
 					$finder = $this->container->get('app.dept_finder');
 					$dept = $finder->findDept($i->getIngredient());
 					$i->setAfdeling($dept);
@@ -335,7 +334,7 @@ class RecipesController extends Controller
 	 *
 	 * @Route("recept/{id}", name="showrecept")
 	 */
-	public function showAction($id) 
+	public function showAction($id, Request $request) 
 	{
 		$recept = $this->getDoctrine()
 			->getRepository('AppBundle:Recept')
@@ -346,9 +345,14 @@ class RecipesController extends Controller
 				'No recipe found for id '.$id
 			);
 		}
+
+		$p = $request->query->get('p');
+
+		$servings = (!null == $p) ? $p : 4;
 		
 		return $this->render('recipes/show.html.twig', array(
-			'recept' => $recept
+			'recept' => $recept,
+			'servings' => $servings,
 		));
 	}
 	
@@ -517,96 +521,6 @@ class RecipesController extends Controller
 		}
 
 		return new JsonResponse($finalresult);
-	}
-
-
-	/**
-	 * Export recipes as CSV
-	 *
-	 * @Route("/recepten/exportcsv", name="exportcsv")
-	 */	
-	public function generateCsvAction(Request $request)
-	{
-		$result_ids = $request->getSession()->get('results');
-
-	    $response = new StreamedResponse();
-	    $response->setCallback(function() use($result_ids){
-	        $handle = fopen('php://output', 'w+');
-
-	        // Add the header of the CSV file
-	        fputcsv($handle, array(
-	        	'Titel', 
-	        	'Bron', 
-	        	'Bereidingstijd', 
-	        	'Ingrediënten',
-	        	'Bereidingswijze',
-	        	'Gerecht',
-	        	'Keuken',
-	        	'Hoofdingredient',
-	        	// 'Tags',
-	        	'Kostprijs',
-	        	'Personen',
-	        	'Rating'
-	        	),
-	        	';'
-	        );
-	        
-	        // Query data from database
-		    $repository = $this->getDoctrine()
-	    		->getRepository('AppBundle:Recept');
-
-	    	$results = $repository->findBy(
-	    		array('id'=>$result_ids)
-	    	);
-
-	    	foreach ($results as $result) {
-
-            	$ingredienten = '';
-            	foreach ($result->getIngredienten() as $ingr) {
-            		$hoeveelheid = $ingr->getHoeveelheid();
-            		$eenheid = $ingr->getEenheid();
-            		$ingredient = $ingr->getIngredient();
-            		
-            		if (!null == $hoeveelheid && !null == $eenheid) {
-            			$ingredienten .= 0 + $hoeveelheid.' '.$eenheid.' '.$ingredient."\n";
-            		}
-            		elseif (!null == $hoeveelheid && null == $eenheid) {
-            			$ingredienten .= 0 + $hoeveelheid.' '.$ingredient."\n";
-            		}
-            		else {
-            			$ingredienten .= $ingredient."\n";
-            		}
-            	}
-
-		        // Add the data queried from database
-		            fputcsv(
-		                $handle, // The file pointer
-		                array(
-		                	$result->getTitel(), 
-		                	$result->getBron(), 
-		                	$result->getBereidingstijd(),
-		                	$ingredienten,
-		                	$result->getBereidingswijze(),
-		                	null === $result->getGerecht() ? '' : $result->getGerecht()->getName(),
-		                	null === $result->getKeuken() ? '' : $result->getKeuken()->getName(),
-		                	null === $result->getHoofdingredient() ? '' : $result->getHoofdingredient()->getName(),
-		                	// $result->getTags(),
-		                	$result->getKostprijs(),
-		                	$result->getPersonen(),
-		                	$result->getRating()
-		                ),  // The fields
-		                ';' // The delimiter
-		            );
-	    	}
-
-	        fclose($handle);
-	    });
-
-	    $response->setStatusCode(200);
-	    $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
-	    $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
-
-	    return $response;
 	}
 	
 }
