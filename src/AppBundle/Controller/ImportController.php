@@ -87,6 +87,7 @@ class ImportController extends Controller
 						$newRecipe->addIngredienten($ingredient);
 					}
 					foreach ($i['list'] as $ingr) {
+						dump($this->qui($ingr));
 						list($q, $u, $i) = $this->qui($ingr);
 						$ingredient = new Ingredient();
 						$ingredient->setHoeveelheid($q);
@@ -129,7 +130,7 @@ class ImportController extends Controller
 				$this->addFlash(
 	            	'notice',
 	            	'Het recept <em>'.$newRecipe->getTitel().'</em> werd aangemaakt. '
-	            	.'Klik <a href="'.$this->generateUrl('editform', array('id'=>$id)).'" id="editrecipe">hier</a> om te bewerken.'
+	            	.'Klik <a href="'.$this->generateUrl('editform', array('id'=>$id)).'" id="editrecipe" class="editrecipe">hier</a> om te bewerken.'
             	);
 
     	        return $this->redirectToRoute('recipes');
@@ -183,7 +184,7 @@ class ImportController extends Controller
 	{
 		$client = new Client();
 
-		$url = 'https://www.jamiemagazine.nl/recepten/japanse-zalm-met-frisse-salade.html';
+		$url = 'http://www.24kitchen.nl/recepten/lichte-coq-au-vin-met-witte-wijn';
 
 		$crawler = $client->request('GET', $url);
 
@@ -207,9 +208,14 @@ class ImportController extends Controller
 	 */
 	public function qui($string)
 	{
-		$string = preg_replace('/\s{2,}/', ' ', $string); // Ensure there's only one whitespace between words
+		$string = str_replace('&nbsp;', ' ', $string);                   // get rid of non-breaking space (html code)
+        $string = str_replace('&#160;', ' ', $string);                   // get rid of non-breaking space (numeric)
+        $string = preg_replace('/\xC2\xA0/', ' ', $string);              // get rid of non-breaking space (UTF-8)
+
+		$string = preg_replace('/\s+/', ' ', $string); // Ensure there's only one whitespace between words
 		$string = trim($string);
 		$words = explode(' ', $string);
+
 		$units = array('gram', 'gr', 'g', 'kilo', 'kilo\'s', 'kg', 'eetlepel', 'eetlepels', 'el', 'koffielepel', 'koffielepels', 'kl', 'theelepel', 'theelepels', 'tl', 'liter', 'liters', 'l', 'deciliter', 'deciliters', 'dl', 'milliliter', 'mililiter', 'mililiters', 'ml', 'stuk', 'stuks', 'cm', 'stengel', 'stengels', 'teen', 'tenen', 'teentje', 'teentjes', 'pot', 'potten', 'potje', 'potjes', 'kop', 'koppen', 'kopje', 'kopjes', 'blik', 'blikken', 'blikjes', 'blikje', 'bol', 'bollen', 'bolletje', 'bolletjes', 'zak', 'zakken', 'zakje', 'zakjes','tak', 'takken', 'takje','takjes');
 		$q = null;
 		$u = null;
