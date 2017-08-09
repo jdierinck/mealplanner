@@ -87,7 +87,6 @@ class ImportController extends Controller
 						$newRecipe->addIngredienten($ingredient);
 					}
 					foreach ($i['list'] as $ingr) {
-						dump($this->qui($ingr));
 						list($q, $u, $i) = $this->qui($ingr);
 						$ingredient = new Ingredient();
 						$ingredient->setHoeveelheid($q);
