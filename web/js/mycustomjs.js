@@ -146,7 +146,8 @@ $(document).ready(function(){
 	function sendAjaxForm(data){
 		$.ajax({
 			type: 'GET',
-			url: '/recepten',
+			// url: '/recepten',
+			url: Routing.generate('recipes'),
 			data: data,
 			success: function(html){
 				$('#content').replaceWith(
