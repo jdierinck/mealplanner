@@ -14,7 +14,7 @@
 			  	{{ knp_menu_render('AppBundle:Builder:mainMenu', {'currentClass': 'active', 'template': 'navigation/knp_menu_bs.html.twig'}) }}
 			  	{{ knp_menu_render('AppBundle:Builder:userMenu', {'currentClass': 'active', 'template': 'navigation/knp_menu_bs.html.twig'}) }}
 			{% elseif is_granted('IS_AUTHENTICATED_ANONYMOUSLY') %}
-				{{ knp_menu_render('AppBundle:Builder:homepageMenu', {'currentClass': 'active'}) }}
+				{{ knp_menu_render('AppBundle:Builder:homepageMenu', {'currentClass': 'active', 'template': 'navigation/knp_menu_bs.html.twig'}) }}
 			{% endif %}			  
 		  </div>
 	  </div>
