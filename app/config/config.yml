@@ -144,3 +144,6 @@ knp_snappy:
         enabled:    true
         binary:     /usr/local/bin/wkhtmltopdf
         options:    []
+
+fos_js_routing:
+    routes_to_expose: [ events, saveevents, wisrecept, boodschappen ]

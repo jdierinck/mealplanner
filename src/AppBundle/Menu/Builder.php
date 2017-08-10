@@ -44,7 +44,7 @@ class Builder implements ContainerAwareInterface
     {
         $menu = $factory->createItem('root');
         $menu->setChildrenAttribute('class', 'nav navbar-nav navbar-right');
-        $menu->addChild('<span class="glyphicon glyphicon-log-in"></span>&nbsp;Log&nbsp;in', array('route' => 'login'));
+        $menu->addChild('<span class="glyphicon glyphicon-log-in"></span>&nbsp;Log in', array('route' => 'login'));
         
         return $menu;
     }

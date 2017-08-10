@@ -33,7 +33,8 @@ $(document).ready(function(){
 		var eventId = $(this).data('id');
 		$(this).parents('.modal-body').find('.pop').popover('hide');
 		$('#calendar').fullCalendar('removeEvents',eventId);
-		$.post('wis/recept/'+eventId, function(){ alert('Recept gewist'); });
+		// $.post('wis/recept/'+eventId, function(){ alert('Recept gewist'); });
+		$.post(Routing.generate('wisrecept', {id: eventId}), function(){ alert('Recept gewist'); });
 	});
 	
     $('#calendar').fullCalendar({
@@ -58,7 +59,8 @@ $(document).ready(function(){
 // 			});
 // 			callback(events);
 // 		},
-		events: '/events',
+		// events: '/events',
+		events: Routing.generate('events'),
 		eventRender: function(event, element) {
 			// Important: append the popover to a specific element within the modal otherwise it won't show up correctly!
 			element.find('.fc-content').wrap("<a href='#' class='pop' data-toggle='popover' data-trigger='click' title='"+event.title+"' data-content='<a href=\"#\" class=\"del-event\" data-id=\""+event.id+"\">Verwijder recept</a>' data-container='.modal-body' data-html='true' style='color:white;'></a>");
@@ -146,7 +148,8 @@ $(document).ready(function(){
 	
 	$('#saveCal').on('click', function (){
 	    var events = $('#calendar').fullCalendar('clientEvents');
-	    var url = '/saveevents';
+	    // var url = '/saveevents';
+	    var url = Routing.generate('saveevents');
 	    var data = {events: JSON.stringify(events)};
 		
 	    $.ajax({
@@ -219,7 +222,8 @@ $(document).ready(function(){
 	$(document).on('change', 'select', function(){
 			$.ajax({
 			type: 'POST',
-			url: '/boodschappen',
+			// url: '/boodschappen',
+			url: Routing.generate('boodschappen'),
 			data: $(this).serialize(),
 			success: function(html){
 				$('#lijst-inhoud').replaceWith(
@@ -240,7 +244,8 @@ $(document).ready(function(){
 		$(this).find('i').replaceWith($(this).find('i').hasClass('fa-toggle-on') ? '<i class="fa fa-toggle-off fa-lg" aria-hidden="true"></i>' : '<i class="fa fa-toggle-on fa-lg" aria-hidden="true"></i>');
 		$.ajax({
 			type: 'POST',
-			url: '/boodschappen',
+			// url: '/boodschappen',
+			url: Routing.generate('boodschappen'),
 			data: null,
 			success: function(html){
 				$('#lijst-inhoud').replaceWith(

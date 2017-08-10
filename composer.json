@@ -31,7 +31,8 @@
         "ninsuo/symfony-collection": "^2.0",
         "liip/imagine-bundle": "^1.8",
         "fabpot/goutte": "^3.2",
-        "coogle/recipe-parser": "dev-master"
+        "coogle/recipe-parser": "dev-master",
+        "friendsofsymfony/jsrouting-bundle": "^1.6"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.0",
