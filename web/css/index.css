@@ -9,7 +9,7 @@
 
 .jumbotron {
 position: relative;
-background: #000 url("mealplanner/images/pexels-photo-128402-2.jpeg") center center;
+background: #000 url("/images/pexels-photo-128402-2.jpeg") center center;
 width: 100%;
 height: 100%;
 background-size: cover;
