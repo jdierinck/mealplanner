@@ -15,8 +15,11 @@ class Builder implements ContainerAwareInterface
         $em = $this->container->get('doctrine.orm.entity_manager');
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         $bl = $user->getBoodschappenlijst();
-        $itemcount = count($bl->getIngrbl());
-        $items = $itemcount > 0 ? $itemcount : '';
+        $items = '';
+        if ($bl) {
+            $itemcount = count($bl->getIngrbl());
+            $items = $itemcount > 0 ? $itemcount : '';
+        }
 
         $menu = $factory->createItem('root');
         $menu->setChildrenAttribute('class', 'nav navbar-nav');

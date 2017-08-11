@@ -59,11 +59,14 @@ class UserController extends Controller
                 'omega 3',
                 'feestgerecht',
             );
+            $i = 0;
             foreach ($defaultTags as $tagName) {
                 $tag = new Tag();
                 $tag->setName($tagName);
                 $tag->setUser($user);
+                $tag->setPosition($i);
                 $user->addTag($tag);
+                $i++;
             }
 
             // Set default order of Afdelingen
