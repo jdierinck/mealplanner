@@ -10,9 +10,9 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<!-- Select2 CSS -->
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
-		<link rel="stylesheet" href="{{ asset('css/select2-bootstrap.css') }}">	
-		<link rel="stylesheet" href="{{ asset('css/general.css') }}">
-		<link rel="stylesheet" href="{{ asset('css/stickyfooter.css') }}">
+		<link rel="stylesheet" href="{{ absolute_url(asset('css/select2-bootstrap.css')) }}">	
+		<link rel="stylesheet" href="{{ absolute_url(asset('css/general.css')) }}">
+		<link rel="stylesheet" href="{{ absolute_url(asset('css/stickyfooter.css')) }}">
         {% block stylesheets %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great|Oregano|Open+Sans" rel="stylesheet">
@@ -29,9 +29,9 @@
 		<script src="https://use.fontawesome.com/59c1b2ebf8.js"></script>
 		<!-- 		Select2 JS-->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
-		<script src="{{ asset('js/footer.js') }}"></script>
-		<script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
-		<script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+		<script src="{{ absolute_url(asset('js/footer.js')) }}"></script>
+		<script src="{{ absolute_url(asset('bundles/fosjsrouting/js/router.js')) }}"></script>
+		<script src="{{ url('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>
