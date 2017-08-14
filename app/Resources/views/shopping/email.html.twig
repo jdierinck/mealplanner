@@ -1,7 +1,4 @@
-{% if is_granted('IS_AUTHENTICATED_FULLY') %}
 
 {{ app.user.username }} heeft een boodschappenlijst met je gedeeld met volgend bericht:
 
 {{ data.message }}
-
-{% endif %}
