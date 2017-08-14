@@ -58,7 +58,10 @@ class ImportController extends Controller
 
 				$newRecipe->setBron($recipe->url);
 
-				$photoName = urldecode(substr(strrchr($recipe->photo_url,'/'), 1));
+				// $photoName = urldecode(substr(strrchr($recipe->photo_url,'/'), 1));
+				// Assign unique name to img
+				$ext = strrchr($recipe->photo_url,'.');
+				$photoName = 'user'.$user->getId().'_'.md5(uniqid()).$ext;
 				$photo = file_get_contents($recipe->photo_url);
 				$path = $this->get('kernel')->getRootDir().'/../web/images/recepten/'.$photoName;
 				file_put_contents($path, $photo);
