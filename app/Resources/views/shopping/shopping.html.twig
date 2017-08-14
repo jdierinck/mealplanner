@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{{ asset('css/shopping.css') }}" />
-<link rel="stylesheet" href="{{ asset('vendors/fullcalendar/fullcalendar.css') }}" />
-<link rel="stylesheet" href="{{ asset('vendors/fullcalendar/fullcalendar.print.css') }}" type="text/css" media="print"/>
+<link rel="stylesheet" href="{{ absolute_url(asset('css/shopping.css')) }}" />
+<link rel="stylesheet" href="{{ absolute_url(asset('vendors/fullcalendar/fullcalendar.css')) }}" />
+<link rel="stylesheet" href="{{ absolute_url(asset('vendors/fullcalendar/fullcalendar.print.css')) }}" type="text/css" media="print"/>
 <!-- Bootstrap Datepicker CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.css"/>
 
@@ -41,7 +41,7 @@
 								<span class="sr-only">Toggle Dropdown</span>
 							</button>
 							<ul class="dropdown-menu">
-								<li><a href="{{ path('topdf') }}">Exporteer naar pdf</a></li>
+								<li><a href="{{ path('topdf') }}" id="topdf">Exporteer naar pdf</a></li>
 								<li><a href="{{ path('tocsv') }}">Exporteer naar CSV</a></li>
 								<li><a href="{{ path('sendmail') }}" id="sendmail" data-toggle="modal" data-target="#myModal">Verstuur per e-mail</a></li>
 							</ul>
@@ -207,10 +207,10 @@
 {% endblock %}
 
 {% block javascripts %}
-<script src="{{ asset('vendors/fullcalendar/lib/moment.min.js') }}"></script>
-<script src="{{ asset('vendors/fullcalendar/fullcalendar.js') }}"></script>
-<script src="{{ asset('vendors/fullcalendar/locale/nl-be.js') }}"></script>
-<script src="{{ asset('js/shopping.js') }}" type="text/javascript"></script>
+<script src="{{ absolute_url(asset('vendors/fullcalendar/lib/moment.min.js')) }}"></script>
+<script src="{{ absolute_url(asset('vendors/fullcalendar/fullcalendar.js')) }}"></script>
+<script src="{{ absolute_url(asset('vendors/fullcalendar/locale/nl-be.js')) }}"></script>
+<script src="{{ absolute_url(asset('js/shopping.js')) }}" type="text/javascript"></script>
 <!-- Bootstrap Date-Picker Plugin -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.nl-BE.min.js"></script>    

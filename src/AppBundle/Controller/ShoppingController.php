@@ -400,10 +400,13 @@ class ShoppingController extends Controller implements AccountNonExpiredControll
 	        // ->setParameters(['boodschappenlijst'=>$boodschappenlijst, 'user'=>$user])
 	        ->setParameter('boodschappenlijst', $boodschappenlijst)
 	        ->getQuery();
-        $afdelingen = $query->getResult();
-			
-		$html = $this->render('shopping/shoppinglisttopdf.html.twig', array(
-			'afdelingen'  => $afdelingen
+        $afdelingenordered = $query->getResult();
+
+        // Note: use renderView method instead of render
+        // otherwise http header will be displayed as text in the pdf
+		$html = $this->renderView('shopping/shoppinglisttopdf.html.twig', array(
+			'afdelingenordered'  => $afdelingenordered,
+			'boodschappenlijst' => $boodschappenlijst,
 		));
 
 		return new Response(
@@ -421,6 +424,7 @@ class ShoppingController extends Controller implements AccountNonExpiredControll
 			)
 		);
     }
+
     
     /**
      * @Route("csv", name="tocsv")

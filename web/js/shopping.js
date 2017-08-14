@@ -266,6 +266,20 @@ $(document).ready(function(){
 		$(this).prev('div').find('span').replaceWith('<span class="glyphicon glyphicon-collapse-down"></span>');
 	});
 
+	// $('#topdf').on('click', function(e){
+	// 	e.preventDefault();
+	// 	var html = $('#lijst-inhoud');
+	// 	$.ajax({
+	// 		type: 'POST',
+	// 		url: Routing.generate('topdf'),
+	// 		data: { name: 'html', data: html.html() },
+	// 		success: function(data, textStatus, jqXHR){
+	// 			var blob = new Blob([data]);
+	// 			window.open(URL.createObjectURL(blob));
+	// 		}
+	// 	});
+	// });
+
 
 // 	$('ul.ingredient-list').each(function(){
 // 		var duplicates = [];
