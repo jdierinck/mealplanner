@@ -1,4 +1,4 @@
-$('body').on('click', 'a[href$="/contact"], a[href$="/about"]', function(e){
+$('body').on('click', 'a[href$="/contact"], a[href$="/about"], a[href$="/whatsnew"]', function(e){
 	e.preventDefault();
 	$('#footerModal').modal();
 	$('#footerModalContent').load($(this).attr('href'));

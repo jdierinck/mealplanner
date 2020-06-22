@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
-use RecipeParser\RecipeParser;
+use Symfony\Component\Yaml\Yaml;
 
 class DefaultController extends Controller
 {
@@ -24,8 +24,9 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-		$sites_nl = RecipeParser::getSupportedSites('nl');
-		$sites_en = RecipeParser::getSupportedSites('en');
+		$appPath = $this->container->getParameter('kernel.root_dir');
+		$sites_nl = Yaml::parse(file_get_contents($appPath . '/../src/AppBundle/Resources/sites_nl.yml'));
+		$sites_en = Yaml::parse(file_get_contents($appPath . '/../src/AppBundle/Resources/sites_en.yml'));
 
     	return $this->render('default/index.html.twig', array('sites_nl' => $sites_nl, 'sites_en' => $sites_en));
 	}
@@ -106,9 +107,19 @@ class DefaultController extends Controller
      */
      public function supportAction(Request $request)
      {
-     	$sites_nl = RecipeParser::getSupportedSites('nl');
-		$sites_en = RecipeParser::getSupportedSites('en');
+		$appPath = $this->container->getParameter('kernel.root_dir');
+		$sites_nl = Yaml::parse(file_get_contents($appPath . '/../src/AppBundle/Resources/sites_nl.yml'));
+		$sites_en = Yaml::parse(file_get_contents($appPath . '/../src/AppBundle/Resources/sites_en.yml'));
 
      	return $this->render('default/support.html.twig', array('sites_nl' => $sites_nl, 'sites_en' => $sites_en));
-     }     
+     }
+
+    /**
+     * @Route("whatsnew", name="whatsnew")
+     */
+     public function whatsnewAction(Request $request)
+     {
+
+     	return $this->render('default/whatsnew.html.twig');
+     }
 }

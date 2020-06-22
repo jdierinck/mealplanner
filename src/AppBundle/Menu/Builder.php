@@ -66,6 +66,8 @@ class Builder implements ContainerAwareInterface
             // ->setLinkAttribute('data-target','#footerModal')
             ;
         $menu->addChild('<i class="fa fa-life-ring" aria-hidden="true"></i>&nbsp;Support', array('route' => 'support'));
+
+        $menu->addChild('<i class="fa fa-bullhorn" aria-hidden="true"></i>&nbsp;Wat is nieuw', array('route' => 'whatsnew'));
         
         return $menu;
     }

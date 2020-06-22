@@ -1,20 +1,18 @@
 <div id="support01-02" class="collapse">
-	<p>Mealplanner ondersteunt momenteel {{ sites_nl|length }} Nederlandstalige sites, naast {{ sites_en|length }} Engelstalige websites. Geregeld komen er nieuwe sites bij. Zijn we een belangrijke site vergeten? Stuur ons een mailtje via het contactformulier.</p>
+	<p><strong>Update 06/2020</strong>: Mealplanner ondersteunt in principe alle kook- en receptensites die gebruik maken van gestructureerde data in de <em>schema.org</em> markup. Zo goed als alle moderne websites gebruiken gestructureerde data om goed te scoren in de resultaten van zoekmachines zoals Google. Mealplanner ondersteunt gestructureerde data in de volgende formaten: JSON-LD (aanbevolen), Microdata en RDFa.</p>
+	 <p>Gezien het toenemend gebruik en de populariteit van <em>schema.org</em> markup zullen websites die het verouderde <em>data-vocabulary.org</em> schema gebruiken niet langer ondersteund worden.</p>
 	<p>Als je problemen ondervindt bij het importeren van een recept van een website, laat dit dan weten via het contactformulier. Vermeld in dat geval de URL van het recept, zodat we het probleem snel kunnen opsporen.</p>
+	<p>Enkele voorbeelden van ondersteunde sites (deze lijst is niet exhaustief):</p>
 	<h5>Nederlandstalig:</h5>
 	<ul>
-	{% for name, site in sites_nl %}
-		{% if site.pattern starts with '/' %}
-		<li><a href="http://{{ name }}" target="_blank">{{ name }}</a></li>
-		{% else %}
-		<li><a href="http://{{ site.pattern }}" target="_blank">{{ name }}</a></li>
-		{% endif %}
+	{% for name, url in sites_nl %}
+		<li><a href="{{ url }}" target="_blank">{{ name }}</a></li>
 	{% endfor %}
 	</ul>
 	<h5>Engelstalig:</h5>
 	<ul>
-	{% for name, site in sites_en %}
-		<li><a href="http://{{ site.pattern }}" target="_blank">{{ name }}</a></li>
+	{% for name, url in sites_en %}
+	 	<li><a href="{{ url }}" target="_blank">{{ name }}</a></li>
 	{% endfor %}
 	</ul>
 </div>

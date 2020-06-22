@@ -50,11 +50,15 @@
 							<div id="recepten" class="row">
 							{% for recept in recepten %}
 							  <div class="item col-sm-4">
-							  		<div data-url="{{ path('showrecept', {'id':recept.id}) }}" class="showrecipe" data-id="{{ recept.id }}"  data-toggle="modal" data-target="#myOtherModal">
+							  		<div data-url="{{ path('showrecept', {'id':recept.id}) }}" class="showrecipe" data-id="{{ recept.id }}" data-toggle="modal" data-target="#myOtherModal">
 										{% if recept.fotonaam %}
-										<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_sm') }}" alt="{{ recept.titel }}" class="img-responsive">
+											{% if recept.fotonaam matches '/^(https|http):\\/\\//' %}
+												<img src="{{ recept.fotonaam }}" alt="{{ recept.titel }}" class="img-responsive" style="max-height:100px">
+											{% else %}
+												<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_sm') }}" alt="{{ recept.titel }}" class="img-responsive">
+											{% endif %}
 										{% else %}
-										<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height: 100px;">
+											<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height: 100px;">
 										{% endif %}
 										{{ recept.rating|rating }}
 									  	<h4 class="hideOverflow">{{ recept.titel }}</h4>
@@ -107,9 +111,13 @@
 												<td>
 													<div style="height:50px;">
 													{% if recept.fotonaam %}
-													<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_xs') }}" alt="{{ recept.titel }}">
+														{% if recept.fotonaam matches '/^(https|http):\\/\\//' %}
+															<img src="{{ recept.fotonaam }}" alt="{{ recept.titel }}" class="img-responsive" style="max-height:100%;">
+														{% else %}											
+															<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_xs') }}" alt="{{ recept.titel }}">
+														{% endif %}
 													{% else %}
-													<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height:100%;">
+														<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height:100%;">
 													{% endif %}
 													</div>
 												</td>

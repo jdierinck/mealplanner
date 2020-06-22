@@ -13,9 +13,13 @@
 				<div class="row">
 					<div class="col-sm-12">
 						{% if recept.fotonaam %}
-						<img src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_lg') }}" alt="{{ recept.titel }}" class="img-responsive">
+							{% if recept.fotonaam matches '/^(https|http):\\/\\//' %}
+								<img src="{{ recept.fotonaam }}" alt="{{ recept.titel }}" class="img-responsive">
+							{% else %}
+								<img src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_lg') }}" alt="{{ recept.titel }}" class="img-responsive">
+							{% endif %}
 						{% else %}
-						<img src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height: 250px;">
+							<img src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height: 250px;">
 						{% endif %}
 					</div>
 				</div>
