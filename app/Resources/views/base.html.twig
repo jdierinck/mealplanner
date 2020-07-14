@@ -5,9 +5,9 @@
         <title>{% block title %}Mealplanner{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="Een online applicatie om al je recepten te beheren, menu's aan te maken en automatisch je boodschappenlijst aan te maken">
-		<meta name="keywords" content="maaltijdplanner, menu's, recepten, boodschappenlijst, nederlandstalig, nederlands">        
+		<meta name="keywords" content="maaltijdplanner, menu's, recepten, boodschappenlijst, nederlandstalig, nederlands">
         <!-- Latest compiled and minified CSS -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 		<!-- Select2 CSS -->
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
 		<link rel="stylesheet" href="{{ absolute_url(asset('css/select2-bootstrap.css')) }}">	
@@ -15,18 +15,17 @@
 		<link rel="stylesheet" href="{{ absolute_url(asset('css/stickyfooter.css')) }}">
         {% block stylesheets %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-        <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great|Oregano|Open+Sans" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great|Work+Sans|Oswald" rel="stylesheet">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     </head>
     <body>
         {% block body %}{% endblock %}
 		<!-- jQuery library -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-		<!-- Load jQuery UI before Bootstrap so that Bootstrap gets precedence -->
-		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 		<!-- Latest compiled JavaScript -->
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
 		<!-- Font Awesome CDN embed code -->
-		<script src="https://use.fontawesome.com/59c1b2ebf8.js"></script>
+		<!-- <script src="https://use.fontawesome.com/59c1b2ebf8.js"></script> -->
 		<!-- 		Select2 JS-->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 		<script src="{{ absolute_url(asset('js/footer.js')) }}"></script>

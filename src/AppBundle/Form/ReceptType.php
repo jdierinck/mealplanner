@@ -100,17 +100,21 @@ class ReceptType extends AbstractType
         		'required' => false,
         		'mapped' => false,
         		))
-            ->add('personen', TextType::class, array(
-                    'label' => 'Aantal personen',
-                    'attr' => array('min' => 1, 'max' => 20),
-                    // Set default value for personen
-                    'data' => (isset($options['data']) && $options['data']->getPersonen() !== null) ? $options['data']->getPersonen() : 4,
-                    // 'empty_data' => 4
+            ->add('yield', TextType::class, array(
+                'label' => 'Hoeveelheid',
+                'attr' => array('min' => 1, 'max' => 100),
+                ))
+            ->add('yieldType', EntityType::class, array(
+                'label' => 'Eenheid',
+                'class' => 'AppBundle:YieldType',
+                'choice_label' => 'unitPlural',
+                'multiple' => false,
+                'expanded' => false,
                 ))
         	->add('bewaar', SubmitType::class, array(
         		'label' => 'Bewaar recept'
         		))
-        ;		
+        ;
 
         	
     }

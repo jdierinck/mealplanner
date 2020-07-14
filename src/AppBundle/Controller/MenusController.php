@@ -281,7 +281,7 @@ class MenusController extends Controller implements AccountNonExpiredController
 				$ro = new ReceptBLOrdered();
 				$ro->setBoodschappenlijst($boodschappenlijst);
 				$ro->setRecept($recept);
-				$ro->setServings(4);
+				$ro->setServings($recept->getYield());
 				$ro->setDatum($date);
 			
 				$ro->setIngrBL($ingredienten);

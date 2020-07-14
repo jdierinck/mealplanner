@@ -35,7 +35,8 @@ class ExportController extends Controller
 	        	'Hoofdingredient',
 	        	// 'Tags',
 	        	'Kostprijs',
-	        	'Personen',
+	        	'Hoeveelheid',
+	        	'Eenheid',
 	        	'Rating'
 	        	),
 	        	';'
@@ -86,8 +87,9 @@ class ExportController extends Controller
 		                	null === $result->getHoofdingredient() ? '' : $result->getHoofdingredient()->getName(),
 		                	// $result->getTags(),
 		                	$result->getKostprijs(),
-		                	$result->getPersonen(),
-		                	$result->getRating()
+		                	$result->getYield(),
+		                	$result->getYieldType()->getUnitPlural(),
+		                	$result->getRating(),
 		                ),  // The fields
 		                ';' // The delimiter
 		            );

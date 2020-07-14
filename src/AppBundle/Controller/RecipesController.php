@@ -26,7 +26,7 @@ class RecipesController extends Controller implements AccountNonExpiredControlle
     {
     	$em = $this->getDoctrine()->getManager();
     	
-		$session = $request->getSession();
+		// $session = $request->getSession();
 		
 		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			throw $this->createAccessDeniedException();
@@ -61,78 +61,71 @@ class RecipesController extends Controller implements AccountNonExpiredControlle
     		$sort = 'toegevoegdOp'; 
     	}
     	
-    	$gerechtid = $request->query->get('gerecht');
-    	$keukenid = $request->query->get('keuken');
-    	$hoofdingredientid = $request->query->get('hoofdingredient');
+    	$gerecht = $request->query->get('gerecht');
+    	$keuken = $request->query->get('keuken');
+    	$hoofdingredient = $request->query->get('hoofdingredient');
     	$bereidingstijd = $request->query->get('bereidingstijd');
     	$zoek = $request->query->get('zoek');
-    	$metIngr = $request->query->get('met');
+    	// $metIngr = $request->query->get('met');
     	$zonderIngr = $request->query->get('zonder');
-
-    	$filters = 0;
+    	$tags = $request->query->get('tag');
     	
     	$repository = $this->getDoctrine()->getRepository('AppBundle:Recept');
 
-    	$qb = $repository->createQueryBuilder('r')
-    		->addSelect('g')
-    		->leftJoin('r.gerecht', 'g')
-    		->addSelect('k')
-    		->leftJoin('r.keuken', 'k')
-    		->addSelect('h')
-    		->leftJoin('r.hoofdingredient', 'h')
+    	$qb = $repository->createQueryBuilder('r', 'r.id') // index by id
+    		->addSelect('i')
+    		->leftJoin('r.ingredienten', 'i')
     		->where('r.user = :user')
     		->setParameter('user', $user)
     		->orderBy('r.'.$sort, 'DESC');
     		
-    	if ($gerechtid) {
-    		$filters += 1;
-    		$qb->andWhere('r.gerecht = :gerechtid')
-    			->setParameter('gerechtid', $gerechtid);
+    	if ($gerecht) {
+    		$qb->andWhere('r.gerecht IN (:gerecht)')
+    			->setParameter('gerecht', $gerecht);
     	}
     	
-    	if ($keukenid) {
-    		$filters += 1;
-    		$qb->andWhere('r.keuken = :keukenid')
-    			->setParameter('keukenid', $keukenid);
+    	if ($keuken) {
+    		$qb->andWhere('r.keuken IN (:keuken)')
+    			->setParameter('keuken', $keuken);
     	}
     	
-    	if ($hoofdingredientid) {
-    		$filters += 1;
-    		$qb->andWhere('r.hoofdingredient = :hoofdingredientid')
-    			->setParameter('hoofdingredientid', $hoofdingredientid);
+    	if ($hoofdingredient) {
+    		$qb->andWhere('r.hoofdingredient IN (:hoofdingredient)')
+    			->setParameter('hoofdingredient', $hoofdingredient);
+    	}
+
+    	if ($tags) {
+    		$qb->join('r.tags', 't')
+    			->addSelect('t')
+    			->andWhere('t.id IN (:tags)')
+    			->setParameter('tags', $tags);
     	}
     	
     	if ($bereidingstijd) {
-    		$filters += 1;
-    		switch ($bereidingstijd) {
-    			case "030":
-				$qb->andWhere('r.bereidingstijd <= :tijd')
-					->setParameter('tijd', '00:30:00');
-				break;
-				case "3060":
-				$qb->andWhere('r.bereidingstijd > :starttijd')
-					->andWhere('r.bereidingstijd <= :eindtijd')
-// 					->setParameters(array('starttijd' => '00:30:00', 'eindtijd' => '00:60:00'));
-					->setParameter('starttijd', '00:30:00')
-					->setParameter('eindtijd', '00:60:00');
-				break;
-				case "60":
-				$qb->andWhere('r.bereidingstijd > :tijd')
-					->setParameter('tijd', '00:60:00');
-				break;
-    		}
-    	}
 
-    	if ($metIngr) {
-    		$filters += 1;
-    		$qb->join('r.ingredienten','i')
-    			->andWhere('i.ingredient LIKE :met')
-    			->setParameter('met', '%'.$metIngr.'%');
+    		$subquery = [];
+
+    		if (in_array('030', $bereidingstijd)) {
+    			$subquery[] = 'r.bereidingstijd != \'\' AND r.bereidingstijd <= :halfhour';
+    			$qb->setParameter('halfhour', '00:30:00');
+    		}
+    		if (in_array('3060', $bereidingstijd)) {
+    			$subquery[] = '(r.bereidingstijd > :starttijd AND r.bereidingstijd <= :eindtijd)';
+				$qb->setParameter('starttijd', '00:30:00')
+					->setParameter('eindtijd', '00:60:00');   			
+    		}
+    		if (in_array('60', $bereidingstijd)) {
+    			$subquery[] = 'r.bereidingstijd > :hour';
+				$qb->setParameter('hour', '00:60:00');
+    		}
+
+    		$subquery = implode(' OR ', $subquery);
+
+    		$qb->andWhere($subquery);
+
     	}
 
     	if ($zonderIngr) {
-    		$filters += 1;
-
     		$qb2 = $this->getDoctrine()->getManager()->createQueryBuilder();
     		$ids = $qb2->select('r')
     			->from('AppBundle:Recept', 'r', 'r.id')
@@ -140,9 +133,10 @@ class RecipesController extends Controller implements AccountNonExpiredControlle
     			->setParameter('user', $user)
     			->join('r.ingredienten','i')
     			->andWhere('i.ingredient LIKE :zonder')
-    			->setParameter('zonder', '%'.$zonderIngr.'%')
+    			->setParameter('zonder', '%' . $zonderIngr . '%')
     			->getQuery()
     			->getResult();
+  			
     		$ids = array_keys($ids);
 
     		if ($ids) {
@@ -151,20 +145,13 @@ class RecipesController extends Controller implements AccountNonExpiredControlle
     		}
     	}
     	
-    	if($zoek){
-    		$qb->andWhere('r.titel LIKE :zoek')
+    	if ($zoek) {
+    		$qb->andWhere('r.titel LIKE :zoek OR i.ingredient LIKE :zoek')
     			->setParameter('zoek', '%'.$zoek.'%');
     	}
     	
     	// Get unpaginated array of recipes	
     	$results = $qb->getQuery()->getResult();
-
-    	// Store recipe ids is session
-    	$result_ids = array();
-    	foreach ($results as $result) {
-    		$result_ids[] = $result->getId();
-    	}
-    	$session->set('results', $result_ids);
     	
     	// Paginate search results
     	$query = $qb->getQuery();
@@ -173,60 +160,36 @@ class RecipesController extends Controller implements AccountNonExpiredControlle
     	$recepten = $paginator->paginate(
     		$query,
     		$request->query->getInt('page',1),
-    		$request->query->getInt('limit',9)
+    		$request->query->getInt('limit',12)
     	);
     	$total = $recepten->getTotalItemCount();
-    	
-    	if ($zoek || $filters > 0) {			
-			$message = $total.' recepten gevonden met ';
-			if ($zoek) { $message .= '<mark>'.$zoek.'</mark>'; } 
-			if ($zoek && $filters > 0) { $message .= ' en '; }
-			if ($filters > 0) { $message .= $filters.' filters';}
-			$message .= '.';
-			$this->addFlash(
-					'notice',
-					$message);
-		}
 
 		$repository = $this->getDoctrine()->getRepository('AppBundle:Gerecht');
-// 		$gerechten = $repository->findAll();
-		$query = $repository->createQueryBuilder('g')	
-				->select('count(g.id) as number, g.id, g.name')
-				->join('g.recepten', 'r')
-				->where('r.user = :user')
-				->setParameter('user', $user)	
-				->groupBy('g.name')
-				->getQuery();
-		$gerechten = $query->getResult();
-		
+		$gerechten = $repository->findAllByUser($user);
+
 		$repository = $this->getDoctrine()->getRepository('AppBundle:Keuken');
-// 		$keukens = $repository->findAll();
-		$query = $repository->createQueryBuilder('k')				
-				->select('count(k.id) as number, k.id, k.name')
-				->join('k.recepten', 'r')
-				->where('r.user = :user')
-				->setParameter('user', $user)				
-				->groupBy('k.name')
-				->getQuery();
-		$keukens = $query->getResult();
+		$keukens = $repository->findAllByUser($user);
 		
 		$repository = $this->getDoctrine()->getRepository('AppBundle:Hoofdingredient');
-// 		$hoofdingredienten = $repository->findAll();
-		$query = $repository->createQueryBuilder('h')
-				->select('count(h.id) as number, h.id, h.name')
-				->join('h.recepten', 'r')
-				->where('r.user = :user')
-				->setParameter('user', $user)					
-				->groupBy('h.name')
-				->getQuery();
-		$hoofdingredienten = $query->getResult();		
-    	
+		$hoofdingredienten = $repository->findAllByUser($user);
+
+		$repository = $this->getDoctrine()->getRepository('AppBundle:Tag');
+		$tags = $repository->findAllByUser($user);
+
+		$intervals = [
+			'030' => '< 30 min',
+			'3060' => '30 min - 1 u',
+			'60' => '> 1 u',
+		];
+
         return $this->render('recipes/recepten.html.twig', array(
 			'recepten' => $recepten,
 			'gerechten' => $gerechten,
 			'keukens' => $keukens,
 			'hoofdingredienten' => $hoofdingredienten,
-			'filters' => $filters,
+			'total' => $total,
+			'intervals' => $intervals,
+			'tags' => $tags,
         ));
     }
     
@@ -236,6 +199,10 @@ class RecipesController extends Controller implements AccountNonExpiredControlle
     public function newAction(Request $request)
 	{
     	$recept = new Recept();
+    	// set default value for yield and yieldtype
+    	$recept->setYield(4);
+    	$type = $this->getDoctrine()->getRepository('AppBundle:YieldType')->findOneByUnitPlural('personen');
+    	$recept->setYieldType($type);
     	
     	$form = $this->createForm(ReceptType::class, $recept, array(
     		'action' => $this->generateUrl('createrecept'),
@@ -348,8 +315,8 @@ class RecipesController extends Controller implements AccountNonExpiredControlle
 
 		$p = $request->query->get('p');
 
-		$servings = (!null == $p) ? $p : 4;
-		
+		$servings = (!null == $p) ? $p : $recept->getYield();
+
 		return $this->render('recipes/show.html.twig', array(
 			'recept' => $recept,
 			'servings' => $servings,
@@ -412,7 +379,7 @@ class RecipesController extends Controller implements AccountNonExpiredControlle
 
 		$defaultData = array();
 		$form = $this->createFormBuilder($defaultData, array(
-				'action' => $this->generateUrl('deleterecept', array('id'=>$id)),
+				'action' => $this->generateUrl('deleterecept', array('id' => $id, 'page' => $request->query->get('page'))),
 				'method' => 'POST',
 			))
 			->add('submit', SubmitType::class, array('label' => 'Wis'))
@@ -433,9 +400,14 @@ class RecipesController extends Controller implements AccountNonExpiredControlle
 				// delete Recept from database
 				$em->remove($recept);
 				$em->flush();
-			}
+
+				$this->addFlash(
+	            	'notice',
+	            	'Het recept <em>' . $recept->getTitel() . '</em> werd verwijderd.'
+	            );
+			}		
 		
-			return $this->redirectToRoute('recipes');
+			return $this->redirectToRoute('recipes', $request->query->all());
 		}			
 		
 		return $this->render('recipes/delete.html.twig', array(

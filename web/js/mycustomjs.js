@@ -3,7 +3,8 @@ $(document).ready(function(){
 	// Delete modal content when modal is hidden
 	// This prevents previously loaded content from being shown (briefly) before loading new content
 	$('div.modal').on('hide.bs.modal', function(e){
-		$('div.modal-content', this).html('Inhoud wordt geladen...');
+		// $('div.modal-content', this).html('Inhoud wordt geladen...');
+		$('div.modal-content', this).html('<div class="text-center"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Loading...</span></div>');
 	});
 
 	// Show collapsed content
@@ -58,8 +59,13 @@ $(document).ready(function(){
 		e.stopPropagation();
     });
 
-	// Prevent modal from opening when clicking on add to shopping list in list view
-    $('body').on('click', 'div#listview a.addtoshoppinglist', function(e) {
+	// Prevent modal from opening when clicking on add to shopping list
+    $('body').on('click', 'a.addtoshoppinglist', function(e) {
+		e.stopPropagation();
+    });
+
+	// Prevent modal from opening when clicking on menus list
+    $('body').on('click', 'a.menus-popover', function(e) {
 		e.stopPropagation();
     });
 
@@ -81,30 +87,36 @@ $(document).ready(function(){
 		};
 		$('form[name="recept"]').ajaxSubmit(options);
 	});
-	
-	$('form[name="filters"]').on('keyup submit change', function(e){
-		e.preventDefault();
-		var data = $(this).serialize();
-		sendAjaxForm(data);
-	});
 
-	$('body').on('click', 'th>a, ul.pagination>li>a', function(e){
-		e.preventDefault();
-		$.ajax({
-			type: 'GET',
-			url: $(this).attr('href'),
-			data: null,
-			success: function(html){
-				$('#content').replaceWith(
-					$(html).find('#content')
-				);
-				if ($('#list').hasClass('active')) {
-					$('#gridview').hide();
-					$('#listview').show();
-				}
-			}
-		});	
+	$('input[type="checkbox"]').on('click', function(e){
+		console.log($(this));
+		$('form[name="filters"]').submit();
 	});
+	
+	// $('form[name="filters"]').on('keyup submit change', function(e){
+	// 	e.preventDefault();
+	// 	var data = $(this).serialize();
+	// 	sendAjaxForm(data);
+	// });
+
+	// Load content via ajax using pagination
+	// $('body').on('click', 'th>a, ul.pagination>li>a', function(e){
+	// 	e.preventDefault();
+	// 	$.ajax({
+	// 		type: 'GET',
+	// 		url: $(this).attr('href'),
+	// 		data: null,
+	// 		success: function(html){
+	// 			$('#content').replaceWith(
+	// 				$(html).find('#content')
+	// 			);
+	// 			if ($('#list').hasClass('active')) {
+	// 				$('#gridview').hide();
+	// 				$('#listview').show();
+	// 			}
+	// 		}
+	// 	});	
+	// });
 
 	// Fix for Select2 input element not accepting any input
 	// See https://github.com/select2/select2/issues/1436

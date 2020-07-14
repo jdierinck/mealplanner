@@ -133,9 +133,16 @@ class Recept
 	/**
 	 * @ORM\Column(type="integer", nullable=false)
      * @Assert\NotBlank()
-     * @Assert\Range(min=1, max=20, minMessage="Deze waarde moet tussen 1 en 20 liggen", maxMessage="Deze waarde moet tussen 1 en 20 liggen")     
+     * @Assert\Range(min=1, max=100, minMessage="Deze waarde moet tussen 1 en 100 liggen", maxMessage="Deze waarde moet tussen 1 en 100 liggen")     
 	 */
-	private $personen;
+	private $yield;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="YieldType")
+     * @ORM\JoinColumn(name="yieldtype_id", referencedColumnName="id")
+     */
+    private $yieldType;
+
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -559,31 +566,6 @@ class Recept
     }
 
     /**
-     * Set personen
-     *
-     * @param integer $personen
-     *
-     * @return Recept
-     */
-    public function setPersonen($personen)
-    {
-        $this->personen = $personen;
-
-        return $this;
-    }
-
-    /**
-     * Get personen
-     *
-     * @return integer
-     */
-    public function getPersonen()
-    {
-        return $this->personen;
-    }  
-
-
-    /**
      * Set bron
      *
      * @param string $bron
@@ -663,5 +645,68 @@ class Recept
     public function getDagen()
     {
         return $this->dagen;
+    }
+
+    /**
+     * Set yield
+     *
+     * @param integer $yield
+     *
+     * @return Recept
+     */
+    public function setYield($yield)
+    {
+        $this->yield = $yield;
+
+        return $this;
+    }
+
+    /**
+     * Get yield
+     *
+     * @return integer
+     */
+    public function getYield()
+    {
+        return $this->yield;
+    }
+
+    /**
+     * Set yieldType
+     *
+     * @param \AppBundle\Entity\YieldType $yieldType
+     *
+     * @return Recept
+     */
+    public function setYieldType(\AppBundle\Entity\YieldType $yieldType = null)
+    {
+        $this->yieldType = $yieldType;
+
+        return $this;
+    }
+
+    /**
+     * Get yieldType
+     *
+     * @return \AppBundle\Entity\YieldType
+     */
+    public function getYieldType()
+    {
+        return $this->yieldType;
+    }
+
+    /**
+     * Get menus
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMenus()
+    {
+        $dagen = $this->dagen;
+        $menus = [];
+        foreach ($dagen as $dag) {
+            $menus[] = $dag->getMenu()->getNaam();
+        }
+        return $menus;
     }
 }

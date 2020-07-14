@@ -12,4 +12,14 @@ use Doctrine\ORM\EntityRepository;
  */
 class KeukenRepository extends EntityRepository
 {
+	public function findAllByUser(\AppBundle\Entity\User $user) {
+		return $this->createQueryBuilder('k')
+			->leftJoin('k.recepten', 'r')
+			->addSelect('r')
+			->where('r.user = :user')
+			->setParameter('user', $user)
+			->getQuery()
+			->getResult();
+	}
+
 }

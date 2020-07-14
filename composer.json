@@ -32,7 +32,8 @@
         "liip/imagine-bundle": "^1.8",
         "fabpot/goutte": "^3.2",
         "coogle/recipe-parser": "dev-master",
-        "friendsofsymfony/jsrouting-bundle": "^1.6"
+        "friendsofsymfony/jsrouting-bundle": "^1.6",
+        "doctrine/doctrine-migrations-bundle": "^1.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.0",

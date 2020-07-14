@@ -9,7 +9,7 @@
 	
 	{{ render(controller('AppBundle:Navigation:menu')) }}
   
-	<div class="container" style="margin-top:75px;">
+	<div class="container-fluid" style="margin-top:75px;">
 		<div class="row">
 			
 			<div class="col-sm-10 col-sm-push-2">
@@ -45,36 +45,44 @@
 					{% endfor %}
 
 					<div id="gridview">
-						{# {% if recepten|length > 0 %} #}
-						{% if app.user.hasRecepten %}
-							<div id="recepten" class="row">
+						{% if recepten|length > 0 %}
+							<div id="recepten" class="row equal">
 							{% for recept in recepten %}
-							  <div class="item col-sm-4">
-							  		<div data-url="{{ path('showrecept', {'id':recept.id}) }}" class="showrecipe" data-id="{{ recept.id }}" data-toggle="modal" data-target="#myOtherModal">
-										{% if recept.fotonaam %}
-											{% if recept.fotonaam matches '/^(https|http):\\/\\//' %}
-												<img src="{{ recept.fotonaam }}" alt="{{ recept.titel }}" class="img-responsive" style="max-height:100px">
+
+							  <div class="item col-sm-6 col-md-4 col-lg-3">
+								  <div class="thumbnail" data-url="{{ path('showrecept', {'id':recept.id}) }}" class="showrecipe" data-id="{{ recept.id }}" data-toggle="modal" data-target="#myOtherModal">
+											{% if recept.fotonaam %}
+												{% if recept.fotonaam matches '/^(https|http):\\/\\//' %}
+													<img class="img-responsive" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"  data-src="{{ recept.fotonaam }}" alt="{{ recept.titel }}">
+													<!-- <img class="img-responsive" src="{{ recept.fotonaam }}" alt="{{ recept.titel }}"> -->
+												{% else %}
+													<img src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_sm') }}" alt="{{ recept.titel }}" class="img-responsive">
+												{% endif %}
 											{% else %}
-												<img class="" src="{{ vich_uploader_asset(recept, 'fotoBestand') | imagine_filter('thumb_sm') }}" alt="{{ recept.titel }}" class="img-responsive">
+												<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image">
 											{% endif %}
-										{% else %}
-											<img class="" src="{{ asset('images/recepten/default-recipe-big.png') }}" alt="default image" style="max-height: 100px;">
-										{% endif %}
-										{{ recept.rating|rating }}
-									  	<h4 class="hideOverflow">{{ recept.titel }}</h4>
-										{% if recept.tags %}
-											<p class="small hideOverflow">
-											{% for tag in recept.tags %}
-												<span class="label label-primary">{{ tag.name }}</span>
-											{% endfor %}
-											</p>
-										{% endif %}	
-									</div>
-									<p id="edit-links">
-										<a href="{{ path('editform', {'id':recept.id}) }}" class="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
-										<a href="{{ path('deleterecept', {'id':recept.id}) }}" class="deleterecipe" data-toggle="tooltip" data-placement="auto bottom" title="Verwijder"><span class="glyphicon glyphicon-trash"></span></a>
-										<a href="{{ path('addrecipetoshoppinglist', {'id':recept.id}) }}" class="addtoshoppinglist" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
-									</p>												  
+											<div class="rating-overlay">
+												{{ recept.rating|rating }}
+												{% if recept.getMenus() is not empty %}
+													<a tabindex="0" class="btn btn-primary btn-xs menus-popover" role="button" data-toggle="popover" data-container="body" data-trigger="focus" title="Menu's met dit recept:" data-content="{{ recept.getMenus()|join('<br/>') }}" data-html="true"><span class="badge">{{ recept.getMenus()|length }}</span></a>
+												{% endif %}
+											</div>
+											<div class="caption">
+											  	<h4>{{ recept.titel }}</h4>
+												{% if recept.tags %}
+													<p class="small">
+													{% for tag in recept.tags %}
+														<span class="label label-primary">{{ tag.name }}</span>
+													{% endfor %}
+													</p>
+												{% endif %}	
+												<p id="edit-links">
+													<a href="{{ path('editform', {'id':recept.id}) }}" class="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
+													<a href="{{ path('deleterecept', {'id':recept.id, 'page':app.request.query.get('page')}) }}" class="deleterecipe" data-toggle="tooltip" data-placement="auto bottom" title="Verwijder"><span class="glyphicon glyphicon-trash"></span></a>
+													<a href="{{ path('addrecipetoshoppinglist', {'id':recept.id, 'page':app.request.query.get('page')}) }}" class="addtoshoppinglist" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
+												</p>
+											</div>
+								  </div>
 							  </div>
 							  {% endfor %}
 							</div>
@@ -82,8 +90,11 @@
 							<div class="alert alert-info">
 								<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>&nbsp;Geen recepten gevonden.
 							</div>
-							<h3>Hoe kan ik recepten toevoegen?</h3>
-							{% include('support/support01-01.html.twig') %}
+
+							{% if not app.user.hasRecepten %}
+								<h3>Hoe kan ik recepten toevoegen?</h3>
+								{% include('support/support01-01.html.twig') %}
+							{% endif %}
 
 						{% endif %}
 					</div>							
@@ -156,7 +167,9 @@
 								</table>
 							</div>
 						{% else %}
-						Geen recepten gevonden.
+							<div class="alert alert-info">
+								<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>&nbsp;Geen recepten gevonden.
+							</div>
 						{% endif %}	
 					</div>
 
@@ -169,77 +182,100 @@
 			</div> <!-- end div class=col-sm-10 -->
 
 			<div class="col-sm-2 col-sm-pull-10">
+
+				<div class="well well-sm recipe-count">{{ total }} recepten</div>
+
 				{% if app.user.hasRecepten %} {# only show filters if user has any recipes #}
 				<form name="filters">
-					<div class="form-group">
-						<input type="search" class="form-control" placeholder="Zoek op titel..." name="zoek" id="zoek">				
-					</div>
+				    <div class="input-group">
+						<input type="text" class="form-control" placeholder="Titel of ingrediënt" name="zoek" id="zoek" value="{{ app.request.query.get('zoek') }}">
+					    <span class="input-group-btn">
+					    	<button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+					    </span>
+					</div> <!-- input-group -->
 
-					<h3>Filters</h3>
+					<h3>Gerecht</h3>
+					{% set currentGerecht = app.request.query.get('gerecht') %}
 
-					<div class="form-group">
-					<select class="filter form-control input-sm" name="sortBy" id="sortBy">
-						<option value="" selected="selected">- Sorteer op...</option>
-						<option value="titel">Titel</option>
-						<option value="gerecht">Gerecht</option>
-						<option value="keuken">Keuken</option>
-						<option value="hoofdingredient">Hoofdingredient</option>
-						<option value="bereidingstijd">Bereidingstijd</option>
-						<option value="toegevoegdOp">Toegevoegd</option>
-						<option value="kostprijs">Kostprijs</option>
-					</select>
-					</div>
-
-					<div class="form-group">
-					<select class="filter form-control input-sm" name="gerecht" id="gerecht">
-						<option value="" selected="selected">- Gerecht...</option>
+					{% if gerechten %}
 						{% for gerecht in gerechten %}
-						<option value="{{ gerecht.id }}">{{ gerecht.name }} ({{ gerecht.number }})</option>	
+						<div class="checkbox">
+						  <label>
+						    <input type="checkbox" name="gerecht[]" id="{{ gerecht.id }}" value="{{ gerecht.id }}" {% if gerecht.id in currentGerecht %} checked {% endif %}>
+						    {{ gerecht.name }} ({{ gerecht.recepten|length }})
+						  </label>
+						</div>
 						{% endfor %}
-					</select>
-					</div>
+					{% else %}
+						<p>Geen items gevonden.</p>
+					{% endif %}
 
-					<div class="form-group">
-					<select class="filter form-control input-sm" name="keuken" id="keuken">
-						<option value="" selected="selected">- Keuken...</option>
+					<h3>Keuken</h3>
+					{% set currentKeuken = app.request.query.get('keuken') %}
+
+					{% if keukens %}
 						{% for keuken in keukens %}
-						<option value="{{ keuken.id }}">{{ keuken.name }} ({{ keuken.number }})</option>	
+						<div class="checkbox">
+						  <label>
+						    <input type="checkbox" name="keuken[]" id="{{ keuken.id }}" value="{{ keuken.id }}" {% if keuken.id in currentKeuken %} checked {% endif %}>
+						    {{ keuken.name }} ({{ keuken.recepten|length }})
+						  </label>
+						</div>
 						{% endfor %}
-					</select>
-					</div>
+					{% else %}
+						<p>Geen items gevonden.</p>
+					{% endif %}
 
-					<div class="form-group">
-					<select class="filter form-control input-sm" name="hoofdingredient" id="hoofdingredient">
-						<option value="" selected="selected">- Hoofdingredient...</option>
+					<h3>Hoofdingrediënt</h3>
+					{% set currentMain = app.request.query.get('hoofdingredient') %}
+
+					{% if hoofdingredienten %}
 						{% for hoofdingredient in hoofdingredienten %}
-						<option value="{{ hoofdingredient.id }}">{{ hoofdingredient.name }} ({{ hoofdingredient.number }})</option>	
+						<div class="checkbox">
+						  <label>
+						    <input type="checkbox" name="hoofdingredient[]" id="{{ hoofdingredient.id }}" value="{{ hoofdingredient.id }}" {% if hoofdingredient.id in currentMain %} checked {% endif %}>
+						    {{ hoofdingredient.name }} ({{ hoofdingredient.recepten|length }})
+						  </label>
+						</div>
 						{% endfor %}
-					</select>
+					{% else %}
+						<p>Geen items gevonden.</p>
+					{% endif %}
+
+					<h3>Tags</h3>
+					{% set currentTag = app.request.query.get('tag') %}
+					{% if tags %}
+						{% for tag in tags %}
+						<div class="checkbox">
+						  <label>
+						    <input type="checkbox" name="tag[]" id="{{ tag.id }}" value="{{ tag.id }}" {% if tag.id in currentTag %} checked {% endif %}>
+						    {{ tag.name }} ({{ tag.recepten|length }})
+						  </label>
+						</div>
+						{% endfor %}
+					{% else %}
+						<p>Geen items gevonden.</p>
+					{% endif %}
+
+					<h3>Bereidingstijd</h3>
+					{% set currentTime = app.request.query.get('bereidingstijd') %}
+
+					{% for key,value in intervals %}
+					<div class="checkbox">
+					  <label>
+					    <input type="checkbox" name="bereidingstijd[]" id="{{ key }}" value="{{ key }}" {% if key in currentTime %} checked {% endif %}>
+					    {{ value }}
+					  </label>
+					</div>
+					{% endfor %}
+
+					<h3>Ingrediënten uitsluiten</h3>
+					<div class="form-group">
+						<label for="zonder">Recepten zonder:</label>
+						<input type="text" class="form-control input-sm" name="zonder" id="zonder" value="{{ app.request.query.get('zonder') }}">
+						<p class="help-block">Druk op RETURN om in te dienen</p>
 					</div>
 
-					<div class="form-group">
-						<select class="filter form-control input-sm" name="bereidingstijd" id="bereidingstijd">
-							<option value="" selected="selected">- Bereidingstijd...</option>
-							<option value="030">< 30 min</option>
-							<option value="3060">30 min - 1 u</option>
-							<option value="60">> 1 u</option>
-						</select>
-					</div>
-
-					<div class="form-group">
-						<label for="met">Recepten <span style="font-variant:small-caps;">met</span>:</label>
-						<input type="text" class="form-control input-sm" name="met" id="met">
-					</div>
-					<div class="form-group">
-						<label for="zonder">Recepten <span style="font-variant:small-caps;">zonder</span>:</label>
-						<input type="text" class="form-control input-sm" name="zonder" id="zonder">
-					</div>
-					<div class="form-group">
-						<input type="reset" class="form-control input-sm" value="Wissen">
-					</div>
-					<div class="form-group">
-						<input type="submit" class="form-control btn btn-default" value="Toepassen">
-					</div>	
 				</form>
 				{% endif %}						
 			</div> <!-- end div class= col-sm-2 -->			
@@ -251,7 +287,10 @@
 	<div id="myModal" class="modal fade" role="dialog">
 	  <div class="modal-dialog">
 		<div class="modal-content" id="myModalContent">
-		Inhoud wordt geladen...
+			<div class="text-center">
+				<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+				<span class="sr-only">Loading...</span>
+			</div>
 		</div>
 	  </div>
 	</div>
@@ -261,7 +300,10 @@
 	<div id="myOtherModal" class="modal fade" role="dialog">
 	  <div class="modal-dialog modal-lg">
 		<div class="modal-content" id="myOtherModalContent">
-		Inhoud wordt geladen...
+			<div class="text-center">
+				<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+				<span class="sr-only">Loading...</span>
+			</div>
 		</div>
 	  </div>
 	</div>
@@ -277,4 +319,15 @@
 	<script src="{{ asset('bundles/tetranzselect2entity/js/select2entity.js') }}"></script>
 	<script src="{{ asset('bundles/starrating/js/rating.js') }}"></script>
 	<script src="https://cdn.ckeditor.com/4.6.2/basic/ckeditor.js"></script>
+	<!-- Load (external) images after page has loaded -->
+	<script>
+	window.addEventListener('load', function(){
+	    var allimages= document.getElementsByTagName('img');
+	    for (var i=0; i<allimages.length; i++) {
+	        if (allimages[i].getAttribute('data-src')) {
+	            allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
+	        }
+	    }
+	}, false);
+	</script>
 {% endblock %}

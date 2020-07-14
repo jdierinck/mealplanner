@@ -25,7 +25,7 @@
 										<span class="hoeveelheid">
 											{% if ingrbl.ingredient.hoeveelheid %}
 												{% if ingrbl.ingredient.recept %}
-													{{ (0+ingrbl.ingredient.hoeveelheid * (ingrbl.servings/ingrbl.ingredient.recept.personen))|number_format(1,',','.')|trim('0','right')|trim(',','right') }}
+													{{ (0+ingrbl.ingredient.hoeveelheid * (ingrbl.servings/ingrbl.ingredient.recept.yield))|number_format(1,',','.')|trim('0','right')|trim(',','right') }}
 												{% else %}
 													{{ 0+ingrbl.ingredient.hoeveelheid}}
 												{% endif %}

@@ -132,7 +132,7 @@ class ShoppingController extends Controller implements AccountNonExpiredControll
 	    $em->flush();
 
     	$qb = $em->createQueryBuilder();
-    	$query = $qb->select('ro', 'partial r.{id,titel,personen}')
+    	$query = $qb->select('ro', 'partial r.{id,titel,yield}')
     			->from('AppBundle:ReceptBLOrdered','ro')
     			->join('ro.recept', 'r')
     			->where('ro.boodschappenlijst = :boodschappenlijst')
@@ -251,7 +251,7 @@ class ShoppingController extends Controller implements AccountNonExpiredControll
 		
     	$em->flush();
     	
-    	$message = $ro->getRecept()->getTitel()." werd verwijderd uit je boodschappenlijst.";
+    	$message = '<em>' . $ro->getRecept()->getTitel() . "</em> werd verwijderd uit je boodschappenlijst.";
     	$this->addFlash(
 			'notice',
 			$message);
@@ -303,7 +303,7 @@ class ShoppingController extends Controller implements AccountNonExpiredControll
 		$ro = new ReceptBLOrdered();
 		$ro->setBoodschappenlijst($boodschappenlijst);
         $ro->setRecept($recept);
-        $ro->setServings(4);
+        $ro->setServings($recept->getYield());
         $ro->setDatum($date);
 		
 		$ro->setIngrBL($ingredienten);
@@ -311,12 +311,12 @@ class ShoppingController extends Controller implements AccountNonExpiredControll
 		$em->persist($ro);
     	$em->flush();
     	
-    	$message = $recept->getTitel()." werd toegevoegd aan je boodschappenlijst.";
+    	$message = '<em>' . $recept->getTitel() . "</em> werd toegevoegd aan je boodschappenlijst.";
     	$this->addFlash(
 			'notice',
 			$message);
 
-    	return $this->redirectToRoute('recipes');
+    	return $this->redirectToRoute('recipes', $request->query->all());
     }
     
     /**

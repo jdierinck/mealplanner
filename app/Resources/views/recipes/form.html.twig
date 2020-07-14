@@ -2,7 +2,7 @@
 	{{ form_row(form.titel) }}
 	{{ form_row(form.bron) }}
 	{{ form_row(form.bereidingstijd) }}
-	<h5><strong>Ingrediënten</strong></h5>	
+	<h4><strong>Ingrediënten</strong></h4>	
 	<ul class="nav nav-tabs">
 	  <li class="active"><a data-toggle="tab" href="#manual" id="manualtab">Manuele invoer</a></li>
 	  <li><a data-toggle="tab" href="#bulk" id="bulktab">Bulk invoer</a></li>
@@ -14,9 +14,9 @@
 				<thead>
 					<tr>
 						<th class="col-sm-1"></th>
-						<th class="col-sm-1 small">Hoeveelheid</th>
-						<th class="col-sm-1 small">Eenheid</th>
-						<th class="col-sm-6 small">Ingrediënt</th>
+						<th class="col-sm-1 small">hoeveelheid</th>
+						<th class="col-sm-1 small">eenheid</th>
+						<th class="col-sm-6 small">ingrediënt</th>
 						<th class="col-sm-1"></th>
 						<th class="col-sm-1"></th>
 					</tr>
@@ -53,8 +53,11 @@
 		<div class="col-sm-6">
 		{{ form_row(form.rating) }}
 		</div>
-		<div class="col-sm-6">
-		{{ form_row(form.personen) }}
+		<div class="col-sm-2">
+		{{ form_row(form.yield) }}
+		</div>
+		<div class="col-sm-4">
+		{{ form_row(form.yieldType) }}
 		</div>
 	</div>
 	{{ form_row(form.bewaar) }}

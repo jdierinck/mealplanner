@@ -12,4 +12,13 @@ use Doctrine\ORM\EntityRepository;
  */
 class HoofdingredientRepository extends EntityRepository
 {
+	public function findAllByUser(\AppBundle\Entity\User $user) {
+		return $this->createQueryBuilder('h')
+			->leftJoin('h.recepten', 'r')
+			->addSelect('r')
+			->where('r.user = :user')
+			->setParameter('user', $user)
+			->getQuery()
+			->getResult();
+	}
 }

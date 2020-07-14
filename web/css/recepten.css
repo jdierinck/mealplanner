@@ -17,20 +17,42 @@
     width: 20%;
 }
 
-.item{
-	height: 190px;
+/* equal height for all columns in a row using flexbox */
+/* See https://stackoverflow.com/questions/19695784/how-can-i-make-bootstrap-columns-all-the-same-height */
+/* And https://scotch.io/bar-talk/different-tricks-on-how-to-make-bootstrap-columns-all-the-same-height */
+.row.equal {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+/* ensure thumbnail images are equal height */
+.thumbnail img {
+    width: 400px;
+    height: 150px;
+    object-fit: cover; /* MAGIC! Fill without stretching image */
+}
+.thumbnail {
+    padding: 0px; /* extend thumbnail image to border */
+    height: 95%;  /* make thumbnail boxes with lower heights stretch all the way down so they all get the same height */
+    cursor: pointer;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s;
+    -webkit-transition: box-shadow 0.3s;
+    max-width: 400px; /* prevent longer titles from extending the card's width at xs screen sizes */
+    margin-bottom: 10px;
+}
+.thumbnail:hover {
+    box-shadow: none;
 }
 
-.item img{
-	/*margin-bottom: 10px;*/
-	/*max-height: 100px;*/
-}
-
-.hideOverflow
-{
-    overflow:hidden;
-    white-space:nowrap;
-    text-overflow:ellipsis;
+.showrecipe-image img {
+    width: 600px;
+    height: 400px;
+    object-fit: cover;  /* MAGIC! Fill without stretching image */
 }
 
 /*FontAwesome icons */
@@ -86,14 +108,30 @@ a.desc:after {
     padding-right:0;
 }
 
-#gridview .rating {
-    position: absolute;
-    top:77px;
-    left:20px;
-}
-
 .modal-header .rating {
     float:left;
 }
 
+.rating-overlay {
+    height: 25px;
+    background-color: rgba(0,0,0,0.25);
+    position: absolute;
+    top:126px;
+    left:16px;
+    right:16px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.rating-overlay .rating {
+    float: left;
+}
+.rating-overlay .menus-popover {
+    float: right;
+    margin-top: 1px;
+}
+
+span.yield-switcher {
+    cursor: pointer;
+    margin: 0px 10px 0px 10px;
+}
 

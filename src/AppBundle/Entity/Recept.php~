@@ -19,7 +19,6 @@ class Recept
     public function __construct() {
     	$this->ingredienten = new ArrayCollection();
         $this->tags = new ArrayCollection();
-        $this->receptenordered = new ArrayCollection();
         $this->receptenblordered = new ArrayCollection();
     }
 
@@ -57,7 +56,13 @@ class Recept
      */        
     private $bereidingswijze;
     
-    /** 
+    /**
+     * @Assert\File(
+     *     maxSize = "3M",
+     *     mimeTypes = {"image/jpeg", "image/gif", "image/png", "image/tiff"},
+     *     maxSizeMessage = "De maximaal toegestane bestandsgrootte is 3 MB.",
+     *     mimeTypesMessage = "Enkel afbeeldingen van het type jpeg, gif, png en tiff zijn toegelaten."
+     * ) 
      * @Vich\UploadableField(mapping="recept_foto", fileNameProperty="fotoNaam")
      * @var File
      */
@@ -97,7 +102,7 @@ class Recept
 	 * @var \DateTime $toegevoegdOp
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @var \DateTime      
+     * @var \DateTime
      */   
     private $toegevoegdOp;
     
@@ -128,9 +133,16 @@ class Recept
 	/**
 	 * @ORM\Column(type="integer", nullable=false)
      * @Assert\NotBlank()
-     * @Assert\Range(min=1, max=20, minMessage="Deze waarde moet tussen 1 en 20 liggen", maxMessage="Deze waarde moet tussen 1 en 20 liggen")     
+     * @Assert\Range(min=1, max=100, minMessage="Deze waarde moet tussen 1 en 100 liggen", maxMessage="Deze waarde moet tussen 1 en 100 liggen")     
 	 */
-	private $personen;
+	private $yield;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="YieldType")
+     * @ORM\JoinColumn(name="yieldtype_id", referencedColumnName="id")
+     */
+    private $yieldType;
+
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -554,31 +566,6 @@ class Recept
     }
 
     /**
-     * Set personen
-     *
-     * @param integer $personen
-     *
-     * @return Recept
-     */
-    public function setPersonen($personen)
-    {
-        $this->personen = $personen;
-
-        return $this;
-    }
-
-    /**
-     * Get personen
-     *
-     * @return integer
-     */
-    public function getPersonen()
-    {
-        return $this->personen;
-    }  
-
-
-    /**
      * Set bron
      *
      * @param string $bron
@@ -624,5 +611,63 @@ class Recept
     public function getRating()
     {
         return $this->rating;
+    }
+
+    /**
+     * Add dagen
+     *
+     * @param \AppBundle\Entity\Dag $dagen
+     *
+     * @return Recept
+     */
+    public function addDagen(\AppBundle\Entity\Dag $dagen)
+    {
+        $this->dagen[] = $dagen;
+
+        return $this;
+    }
+
+    /**
+     * Remove dagen
+     *
+     * @param \AppBundle\Entity\Dag $dagen
+     */
+    public function removeDagen(\AppBundle\Entity\Dag $dagen)
+    {
+        $this->dagen->removeElement($dagen);
+    }
+
+    /**
+     * Get dagen
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDagen()
+    {
+        return $this->dagen;
+    }
+
+    /**
+     * Set yield
+     *
+     * @param integer $yield
+     *
+     * @return Recept
+     */
+    public function setYield($yield)
+    {
+        $this->yield = $yield;
+
+        return $this;
+    }
+
+    /**
+     * Get yield
+     *
+     * @return integer
+     */
+    public function getYield()
+    {
+        return $this->yield;
     }
 }

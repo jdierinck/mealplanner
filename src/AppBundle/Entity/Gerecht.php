@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+// use Doctrine\Common\Collections\Criteria;
 
 /**
  * Gerecht
@@ -105,4 +106,11 @@ class Gerecht
     {
         return $this->recepten;
     }
+
+    // public function getReceptenByUser($user){
+    //     $criteria = Criteria::create();
+    //     $criteria->where(Criteria::expr()->eq('user', $user));
+        
+    //     return $this->recepten->matching($criteria);
+    // }
 }

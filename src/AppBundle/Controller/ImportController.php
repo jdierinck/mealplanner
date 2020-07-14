@@ -164,7 +164,7 @@ class ImportController extends Controller
 		// Titel
 		$newRecipe->setTitel(Text::formatLine($recipe['name']));
 
-		// Personen
+		// Yield
 		if (!empty($recipe['recipeYield'])) {
 			if (is_array($recipe['recipeYield'])) {
 				$yield = Text::getYield($recipe['recipeYield'][0]);
@@ -175,7 +175,10 @@ class ImportController extends Controller
 		} else {
 			$yield = 4;
 		}
-		$newRecipe->setPersonen($yield);
+		$newRecipe->setYield($yield);
+		// default to 'persons'
+    	$type = $this->getDoctrine()->getRepository('AppBundle:YieldType')->findOneByUnitPlural('personen');
+		$newRecipe->setYieldType($type);
 
 		// Bron
 		$newRecipe->setBron($recipe['url']);
