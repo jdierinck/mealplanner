@@ -21,9 +21,8 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Validator\Constraints as Assert;
-use AppBundle\Controller\AccountNonExpiredController;
 
-class ShoppingController extends Controller implements AccountNonExpiredController
+class ShoppingController extends Controller
 {  
     /**
      * @Route("boodschappen", name="boodschappen")

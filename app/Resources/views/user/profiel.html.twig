@@ -49,9 +49,6 @@
 						<td class="col-left">Accounttype:</td>
 						<td>
 							{{ user.account }}
-							{% if user.account is same as('FREE') %}
-								&nbsp;&nbsp;<a type="button" class="btn btn-default btn-xs" href="{{ path('upgrade') }}" id="upgrade-btn" data-toggle="modal" data-target="#myModal">Upgrade naar Premium</a>
-							{% endif %}
 						</td>
 					</tr>
 					<tr>
@@ -70,21 +67,6 @@
 	</div>
 </div>
 
-<!-- Modal -->
-<div id="myModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content" id="myModalContent">
-    </div>
-
-  </div>
-</div>
-<!-- end Modal -->
-
 {{ render(controller('AppBundle:Navigation:footer')) }}
 
-{% endblock %}
-
-{% block javascripts %}
-<script type="text/javascript" src="{{ asset('js/upgrade.js') }}"></script>
 {% endblock %}

@@ -286,13 +286,6 @@ class User implements UserInterface, \Serializable
      */
     private $account;
 
-    public function isFreeAccountExpired($ttl)
-    {
-        return $this->account === static::ACCOUNT_FREE && 
-            $this->getRegistratieDatum()->getTimestamp() + $ttl < time();
-    }
-
-
     /**
      * Get id
      *

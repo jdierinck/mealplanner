@@ -13,9 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Boodschappenlijst;
 use AppBundle\Entity\ReceptBLOrdered;
-use AppBundle\Controller\AccountNonExpiredController;
 
-class MenusController extends Controller implements AccountNonExpiredController
+class MenusController extends Controller
 {
     
     /**

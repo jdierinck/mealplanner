@@ -15,9 +15,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Ingredient;
 use AppBundle\Entity\Boodschappenlijst;
 use RecipeParser\RecipeParser;
-use AppBundle\Controller\AccountNonExpiredController;
 
-class RecipesController extends Controller implements AccountNonExpiredController
+class RecipesController extends Controller
 {
     /**
      * @Route("/recepten", name="recipes")
