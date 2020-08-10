@@ -190,7 +190,12 @@ class User implements UserInterface, \Serializable
 	 * @ORM\OneToOne(targetEntity="Boodschappenlijst", mappedBy="user")
 	 */
 	private $boodschappenlijst;
-	
+
+    /**
+     * @ORM\OneToOne(targetEntity="Mealplan", mappedBy="user")
+     */
+    private $mealplan;
+
 	/**
 	 * @ORM\OneToMany(targetEntity="Menu", mappedBy="user")
 	 */
@@ -646,5 +651,29 @@ class User implements UserInterface, \Serializable
     public function getAccount()
     {
         return $this->account;
+    }
+
+    /**
+     * Set mealplan
+     *
+     * @param \AppBundle\Entity\Mealplan $mealplan
+     *
+     * @return User
+     */
+    public function setMealplan(\AppBundle\Entity\Mealplan $mealplan = null)
+    {
+        $this->mealplan = $mealplan;
+
+        return $this;
+    }
+
+    /**
+     * Get mealplan
+     *
+     * @return \AppBundle\Entity\Mealplan
+     */
+    public function getMealplan()
+    {
+        return $this->mealplan;
     }
 }

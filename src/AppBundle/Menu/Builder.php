@@ -25,7 +25,8 @@ class Builder implements ContainerAwareInterface
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
 
         $menu->addChild('<span class="glyphicon glyphicon-cutlery"></span>&nbsp;Kookboek', array('route' => 'recipes'));
-        $menu->addChild('<span class="glyphicon glyphicon-list-alt"></span>&nbsp;Menu\'s', array('route' => 'menus'));
+        // $menu->addChild('<span class="glyphicon glyphicon-list-alt"></span>&nbsp;Menu\'s', array('route' => 'menus'));
+        $menu->addChild('<span class="glyphicon glyphicon-list-alt"></span>&nbsp;Planning', array('route' => 'mealplanner'));
         $menu->addChild('<span class="glyphicon glyphicon-shopping-cart"></span>&nbsp;Boodschappenlijst&nbsp;<span class="badge">'.$items.'</span>', array('route' => 'boodschappen'));
 
         return $menu;

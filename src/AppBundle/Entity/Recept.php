@@ -153,6 +153,11 @@ class Recept
      * @ORM\ManyToMany(targetEntity="Dag", mappedBy="recepten")
      */   
     private $dagen;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Event", mappedBy="recepten")
+     */   
+    private $events;
     
     /**
      * Get id
@@ -708,5 +713,39 @@ class Recept
             $menus[] = $dag->getMenu()->getNaam();
         }
         return $menus;
+    }
+
+    /**
+     * Add event
+     *
+     * @param \AppBundle\Entity\Event $event
+     *
+     * @return Recept
+     */
+    public function addEvent(\AppBundle\Entity\Event $event)
+    {
+        $this->events[] = $event;
+
+        return $this;
+    }
+
+    /**
+     * Remove event
+     *
+     * @param \AppBundle\Entity\Event $event
+     */
+    public function removeEvent(\AppBundle\Entity\Event $event)
+    {
+        $this->events->removeElement($event);
+    }
+
+    /**
+     * Get events
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEvents()
+    {
+        return $this->events;
     }
 }
