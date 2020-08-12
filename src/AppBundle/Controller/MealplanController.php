@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Entity\Event;
 use AppBundle\Entity\Menu;
+use AppBundle\Entity\Mealplan;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class MealplanController extends Controller
@@ -26,6 +27,7 @@ class MealplanController extends Controller
         if (!$user->getMealplan()) {
             $mealplan = new Mealplan();
             $mealplan->setUser($user);
+            $user->setMealplan($mealplan);
             $em->persist($mealplan);
             $em->flush();
         }
@@ -91,6 +93,7 @@ class MealplanController extends Controller
             'nextWeek' => $nextWeek,
             'previousWeek' => $previousWeek,
             'eventData' => $eventData,
+            'token' => $user->getToken(),
     	]);
     }
 
@@ -168,6 +171,10 @@ class MealplanController extends Controller
 		// date_default_timezone_set('Asia/Tokyo');
         $thisWeek = (new \DateTime('this week'))->format('Y-m-d');
         dump($thisWeek);
+
+        $token = bin2hex(random_bytes(16)); // ea41fda73539e43e8a5fa892440fbede
+        // $token = bin2hex(openssl_random_pseudo_bytes(16)); // cf1c19e974a11a36e3d5a635d8620dbd
+        dump($token);
     }
 
     /**
@@ -482,12 +489,20 @@ class MealplanController extends Controller
    /**
     * Gets the events data from the database and populates the iCal object.
     *
-    * @Route("/ical-events", name="getICalEvents")
-    * Todo: generate unique iCal url for each user, without authentication
+    * @Route("/ical-events/{token}", name="getICalEvents")
     */
-   public function getICalObject()
+   public function getICalObject($token)
    {
-		$user = $this->getUser();
+		// $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository('AppBundle:User')->findOneByToken($token);
+
+        if (!$user) {
+            throw $this->createNotFoundException(
+                'Geen gebruiker gevonden met token '.$token
+            );
+        }
+
         $mealplan = $user->getMealplan();
         $events = $mealplan->getEvents();
 
@@ -496,7 +511,9 @@ class MealplanController extends Controller
 		$icalObject = "BEGIN:VCALENDAR
 VERSION:2.0
 METHOD:PUBLISH
-PRODID:-//Mealplanner//Events//NL\n";
+PRODID:-//Mealplanner//Events//NL
+X-WR-CALNAME:MealPlanner
+X-WR-TIMEZONE:Europe/Brussels\n";
 
 		foreach ($events as $event) {
 	    	switch ($event->getTimeSlot()) {

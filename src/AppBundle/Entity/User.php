@@ -66,6 +66,11 @@ class User implements UserInterface, \Serializable
      */
     private $roles;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $token;
+
     public function __construct()
     {
         $this->isActive = true;
@@ -75,6 +80,32 @@ class User implements UserInterface, \Serializable
         $this->roles = array();
         $this->afdelingenordered = new ArrayCollection();
         $this->afdelingen = new ArrayCollection();
+        $this->token = $this->generateToken(20);
+    }
+
+    public function generateToken($length)
+    {
+        if (function_exists('random_bytes')) { // PHP 7
+            return bin2hex(random_bytes($length));
+        }
+        // if (function_exists('mcrypt_create_iv')) {
+        //     return bin2hex(mcrypt_create_iv($length, MCRYPT_DEV_URANDOM));
+        // }
+        if (function_exists('openssl_random_pseudo_bytes')) { // PHP 5
+            return bin2hex(openssl_random_pseudo_bytes($length));
+        }
+    }
+
+    public function setToken()
+    {
+        $this->token = $this->generateToken(20);
+
+        return $this;
+    }
+
+    public function getToken()
+    {
+        return $this->token;
     }
 
     public function getUsername()

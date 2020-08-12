@@ -116,7 +116,7 @@
 			</div>
 			<div class="col-sm-9">
 				<div class="row">
-					<div class="col-sm-8">
+					<div class="col-sm-6">
 					{% for flash_message in app.session.flashBag.get('notice') %}
 						<div class="alert alert-success alert-dismissible">
 							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -124,11 +124,23 @@
 						</div>
 					{% endfor %}
 					</div>
-					<div class="col-sm-4">
+					<div class="col-sm-6">
 						<div class="text-right">
-							<a role="button" class="btn btn-default" id="clearCal"><i class="fa fa-eraser" aria-hidden="true"></i> Wis planning</a>							
-							<a role="button" href="/ical-events" class="btn btn-default" id="shareCal"><i class="fa fa-share" aria-hidden="true"></i> Deel kalender</a>
+							<a role="button" class="btn btn-default" id="clearCal"><i class="fa fa-eraser" aria-hidden="true"></i> Wis planning</a>
+							<a role="button" class="btn btn-default" id="shareCal" data-toggle="popover" data-placement="bottom" data-contentwrapper="#contentwrapper"><i class="fa fa-refresh" aria-hidden="true"></i> Sync met kalender</a>
 						</div>
+						<div id="contentwrapper">
+							<div class="form-group">
+								<label for="icalurl">Je planning is beschikbaar in iCal-formaat via deze URL:</label>
+								<div class="input-group">
+									<input type="text" id="icalurl" class="form-control" value="{{ url('home') ~ 'ical-events/' ~ token }}">
+									<span class="input-group-btn">
+										<a class="btn btn-default" id="copyBtn" data-toggle="tooltip" title="Kopieer"><i class="fa fa-clipboard" aria-hidden="true"></i></a>
+									</span>
+								</div>
+							</div>
+						</div>
+
 					</div>
 				</div>
 				<br>
@@ -209,7 +221,7 @@
 	<!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script> -->
 <!-- 	<script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.6/lib/draggable.bundle.js"></script> -->
 	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-	<script type="module" src="{{ asset('js/mealplanner.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('js/mealplanner.js') }}"></script>
 	<!-- Bootstrap Date-Picker Plugin -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.nl-BE.min.js"></script>

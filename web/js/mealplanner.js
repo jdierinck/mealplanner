@@ -170,4 +170,29 @@ $(document).ready(function(){
 		startDate: 'today',
 	});
 
+	$('#shareCal').popover({
+		html: true,
+		placement: 'auto',
+		content: function(){
+			var contentwrapper = $(this).data('contentwrapper');
+			return $(contentwrapper).html();
+		},
+		container: 'body',
+		sanitize: false, // important! form elements will be blacklisted otherwise
+	});
+	$('#shareCal').on('shown.bs.popover', function () {
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+
+
+	// Copy iCal URL to clipboard
+	$(document).on('click', '#copyBtn', function(){
+		var copyText = document.getElementById('icalurl');
+		// copyText.focus();
+		copyText.select();
+		copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+		document.execCommand('copy');
+	});
+
 });
+

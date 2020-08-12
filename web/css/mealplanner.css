@@ -81,6 +81,16 @@ form[id^="addMenuOptionsForm"] {
 	padding: 10px 0px 5px 10px;
 }
 
+.popover{
+    max-width:800px;
+}
+
+#contentwrapper { /* move off screen, setting display to none prevents copy event */
+	position: absolute;
+	left: -1000px;
+	top: -1000px;
+}
+
 .title {
     /*position: absolute;*/
 }
