@@ -506,7 +506,7 @@ class MealplanController extends Controller
         $mealplan = $user->getMealplan();
         $events = $mealplan->getEvents();
 
-		define('ICAL_FORMAT', 'Ymd\THis\Z');
+		define('ICAL_FORMAT', 'Ymd\THis');
 
 		$icalObject = "BEGIN:VCALENDAR
 VERSION:2.0
