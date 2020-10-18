@@ -49,20 +49,6 @@ class Event
     private $date;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="start_time", type="datetime")
-     */
-    // private $startTime;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="end_time", type="datetime")
-     */
-    // private $endTime;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="uid", type="string", length=255, unique=true)
@@ -98,6 +84,13 @@ class Event
     private $mealplan;
 
     /**
+     * @var array
+     *
+     * @ORM\Column(name="servings", type="array")
+     */
+    private $servings;
+
+    /**
      * Get id
      *
      * @return int
@@ -116,54 +109,6 @@ class Event
         $this->description = implode(', ', $titles);
 
         return $this->description;
-    }
-
-    /**
-     * Set startTime
-     *
-     * @param \DateTime $startTime
-     *
-     * @return Event
-     */
-    public function setStartTime($startTime)
-    {
-        $this->startTime = $startTime;
-
-        return $this;
-    }
-
-    /**
-     * Get startTime
-     *
-     * @return \DateTime
-     */
-    public function getStartTime()
-    {
-        return $this->startTime;
-    }
-
-    /**
-     * Set endTime
-     *
-     * @param \DateTime $endTime
-     *
-     * @return Event
-     */
-    public function setEndTime($endTime)
-    {
-        $this->endTime = $endTime;
-
-        return $this;
-    }
-
-    /**
-     * Get endTime
-     *
-     * @return \DateTime
-     */
-    public function getEndTime()
-    {
-        return $this->endTime;
     }
 
     /**

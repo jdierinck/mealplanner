@@ -27,6 +27,7 @@ class Event
     {
         $this->uid = uniqid();
         $this->recepten = new ArrayCollection();
+        $this->servings = [];
     }
 
     /**
@@ -82,6 +83,13 @@ class Event
      * @ORM\JoinColumn(name="mealplan_id", referencedColumnName="id")
      */
     private $mealplan;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="servings", type="array")
+     */
+    private $servings;
 
     /**
      * Get id
@@ -285,5 +293,49 @@ class Event
     public function getDate()
     {
         return $this->date;
+    }
+
+    /**
+     * Set servings
+     *
+     * @param array $servings
+     *
+     * @return Event
+     */
+    public function setServings($servings)
+    {
+        $this->servings = $servings;
+
+        return $this;
+    }
+
+    /**
+     * Get servings
+     *
+     * @return array
+     */
+    public function getServings()
+    {
+        return $this->servings;
+    }
+
+    public function addServings($id, $int) {
+        // $servings = $this->getServings();
+        // $servings[$id] = $int;
+        // $this->setServings($servings);
+
+        $this->servings[$id] = $int;
+
+        return $this;
+    }
+
+    public function removeServings($id) {
+        // $servings = $this->getServings();
+        // unset($servings[$id]);
+        // $this->setServings($servings);
+
+        unset($this->servings[$id]);
+
+        return $this;
     }
 }

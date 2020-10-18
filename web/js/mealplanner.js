@@ -39,7 +39,7 @@ $(document).ready(function(){
 						// add eventId
 						parent.dataset.eventid = data;
 						if (!$(evt.item).find('a.removeFromCal').length) {
-							var extra = "<span class='pull-right'><a class='removeFromCal' href='/cal/remove/" + evt.item.dataset.recipeid + "'><i class='fa fa-trash fa-lg'></i></a></span>";
+							var extra = "<span class='pull-right'><a class='removeFromCal' href='/cal/remove/" + evt.item.dataset.recipeid + "' style='display:none;'><i class='fa fa-trash fa-lg'></i></a></span>";
 							$(evt.item).find('.title').append(extra);
 						}
 					},
@@ -149,14 +149,15 @@ $(document).ready(function(){
 	$(document).on('click', 'a.removeFromCal', function(e) {
 		e.preventDefault();
 		var url = $(this).attr('href');
-		var eventid = $(this).parents('td.droppable').data('eventid');
-		var el = $(this);
+		// var eventid = $(this).parents('td.droppable').data('eventid'); // Note: doesn't work after data attribute has been modified
+		var eventid = $(this).parents('td.droppable').attr('data-eventid');
+		var self = this;
 		$.post(url, { eventid: eventid }, function(data, textStatus, jqXHR) {
 			// remove eventid if needed
 			if (jqXHR.responseJSON.eventRemoved) {
-				el.parents('td.droppable').attr('data-eventid', '');
+				$(self).parents('td.droppable').attr('data-eventid', '');
 			}
-			el.parents('.mealplan-item').remove();
+			$(self).parents('.mealplan-item').remove();
 		});
 	});
 
@@ -184,7 +185,6 @@ $(document).ready(function(){
 		$('[data-toggle="tooltip"]').tooltip();
 	});
 
-
 	// Copy iCal URL to clipboard
 	$(document).on('click', '#copyBtn', function(){
 		var copyText = document.getElementById('icalurl');
@@ -192,6 +192,20 @@ $(document).ready(function(){
 		copyText.select();
 		copyText.setSelectionRange(0, 99999); /*For mobile devices*/
 		document.execCommand('copy');
+	});
+
+	$(document).on('mouseover', '.mealplan-item', function(){
+		$(this).find('a.removeFromCal').show();
+	});
+	$(document).on('mouseout', '.mealplan-item', function(){
+		$(this).find('a.removeFromCal').hide();
+	});
+
+  	$('#printCal').click(function(){
+		var element = document.getElementById('calContent');
+		// console.log(element);
+		printElement(element);
+		window.print();
 	});
 
 });

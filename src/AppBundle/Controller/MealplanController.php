@@ -74,13 +74,7 @@ class MealplanController extends Controller
     	$recipes = $query->getQuery()->getResult();
 
     	// Menus
-    	$repo = $em->getRepository('AppBundle:Menu');
-    	$query = $repo->createQueryBuilder('m')
-    		->select('m.id', 'm.naam')
-    		->where('m.user = :user')
-    		->setParameter('user', $user)
-    		->getQuery();
-    	$menus = $query->getResult();
+        $menus = $user->getMenus();
 
         // Events
         $eventData = $this->fetchEvents($user);
@@ -118,65 +112,6 @@ class MealplanController extends Controller
         return $eventData;
     }
 
-  //   /**
-  //    * @Route("/event/get/{day}/{slot}", name="getEvent")
-  //    */
-  //   public function getEventAction($day, $slot){
-
-  //   	$em = $this->getDoctrine()->getManager();
-
-		// $user = $this->getUser();
-  //       $mealplan = $user->getMealplan();
-
-  //   	$repo = $em->getRepository('AppBundle:Event');
-  //   	$query = $repo->createQueryBuilder('e')
-  //   		->where('e.mealplan = :mealplan')
-  //   		->setParameter('mealplan', $mealplan)
-  //   		->andWhere('e.timeSlot = :slot')
-  //   		->setParameter('slot', $slot)
-  //   		->andWhere('e.date = :day')
-  //   		->setParameter('day', $day)
-  //   		// ->join('e.recepten', 'r')
-  //   		->getQuery();
-  //   	// $event= $query->getResult();
-  //   	$event = $query->setMaxResults(1)->getOneOrNullResult();
-
-  //   	if ($event) {
-  //   		$response = [];
-  //   		$recipes = $event->getRecepten();
-  //   		foreach ($recipes as $recipe) {
-  //   			$response[] = [
-  //   				'eventid' => $event->getId(),
-  //   				'id' => $recipe->getId(),
-  //   				'title' => $recipe->getTitel(),
-  //   			];
-  //   		}
-  //   		return new JsonResponse($response);
-  //   	} else {
-  //   		return new JsonResponse(NULL);
-  //   	}
-  //   }
-
-    /**
-     * @Route("/playground", name="playground")
-     */
-    public function playgroundAction(){
-    	$em = $this->getDoctrine()->getManager();
-        $test = array(
-            'days' => array(),
-        );
-        $serialized = serialize($test);
-        dump($serialized); // a:1:{s:4:"days";a:0:{}}
-
-		// date_default_timezone_set('Asia/Tokyo');
-        $thisWeek = (new \DateTime('this week'))->format('Y-m-d');
-        dump($thisWeek);
-
-        $token = bin2hex(random_bytes(16)); // ea41fda73539e43e8a5fa892440fbede
-        // $token = bin2hex(openssl_random_pseudo_bytes(16)); // cf1c19e974a11a36e3d5a635d8620dbd
-        dump($token);
-    }
-
     /**
      * @Route("/cal/recipe/add/{id}", name="addRecipeToCal", methods={"POST"})
      */
@@ -197,6 +132,9 @@ class MealplanController extends Controller
 			return new JsonResponse(array('message' => 'No recipe found for id ' . $id), 404);
 		}
 
+        // use yield as default servings
+        $servings = $recipe->getYield();
+
     	date_default_timezone_set('Europe/Brussels');
 
     	if (!empty($eventId)) {
@@ -205,12 +143,14 @@ class MealplanController extends Controller
 		        return new JsonResponse(array('message' => 'Recept werd reeds toegevoegd.'), 500);
 	    	}
     		$event->addRecepten($recipe);
+            $event->addServings($id, $servings);
     	} else {
     		$event = new Event();
 	    	$event->setTimeSlot($slot);
 	    	$event->setDate(new \DateTime($day));
 	    	$event->addRecepten($recipe);
 	    	$event->setMealplan($mealplan);
+            $event->addServings($id, $servings);
 
     		$em->persist($event);
     	}
@@ -291,6 +231,9 @@ class MealplanController extends Controller
                     	if (!$event->getRecepten()->contains($recipe)) { // skip if event already contains recipe
                         	$event->addRecepten($recipe);
                     	}
+                        // use yield as default servings
+                        $servings = $recipe->getYield();
+                        $event->addServings($recipeId, $servings);
                     }
                 }
                 $event->setMealplan($mealplan);
@@ -473,6 +416,7 @@ class MealplanController extends Controller
 		}
 
 		$event->removeRecepten($recipe);
+        $event->removeServings($id);
 		$response = array('eventRemoved' => false);
 
 		// if no more recipes in event, clear event as well

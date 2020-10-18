@@ -707,12 +707,20 @@ class Recept
      */
     public function getMenus()
     {
-        $dagen = $this->dagen;
-        $menus = [];
-        foreach ($dagen as $dag) {
-            $menus[] = $dag->getMenu()->getNaam();
+        $user = $this->user;
+        $menus = $user->getMenus();
+        $result = [];
+        foreach ($menus as $menu){
+            $data = $menu->getMenuData();
+            foreach ($data['days'] as $day) {
+                foreach ($day['slots'] as $slot) {
+                    if (in_array($this->id, $slot)) {
+                        $result[] = $menu->getNaam();
+                    }
+                }
+            }
         }
-        return $menus;
+        return $result;
     }
 
     /**
