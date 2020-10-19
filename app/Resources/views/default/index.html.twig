@@ -31,25 +31,31 @@
 		<div class="col-sm-4 ">
 			<h1>1.</h1>
 			<h2>Van recept...</h2>
-			<img src="{{ asset('images/screenshots/Kookboek.png') }}" class="img-responsive" width="350" style="display:inline; margin-bottom:20px;" alt="">
+			<a href="{{ asset('images/screenshots/Kookboek.png') }}" data-lightbox="intro" data-title="Van recept...">
+				<img src="{{ asset('images/screenshots/Kookboek.png') }}" style="width:350px;" class="img-thumbnail">
+			</a>
 			<div class="caption">
 			<p class="tekst-groot">Verzamel al je recepten in je online Kookboek</p>
 			</div>
 		</div>
 		<div class="col-sm-4">
 			<h1>2.</h1>
-			<h2>... naar menu...</h2>
-			<img src="{{ asset('images/screenshots/Menu.png') }}" class="img-responsive" width="350" style="display:inline; margin-bottom:20px;" alt="">
+			<h2>... naar planning...</h2>
+			<a href="{{ asset('images/screenshots/Planning.png') }}" data-lightbox="intro" data-title="...naar planning...">
+				<img src="{{ asset('images/screenshots/Planning01.png') }}" style="width:350px;" class="img-thumbnail">
+			</a>
 			<div class="caption">
-			<p class="tekst-groot">Stel herbruikbare menu's samen met je recepten. <span class="logo">MealPlanner</span> zet ze voor jou op de planning.</p>
+			<p class="tekst-groot">Plan wat je deze week (en eventueel zelfs daarna) gaat eten door eenvoudigweg recepten naar een weekkalender te slepen. Je planning kan je bewaren als menu zodat je die nadien kan hergebruiken.</p>
 			</div>
 		</div>
 		<div class="col-sm-4">
 			<h1>3.</h1>
 			<h2>... naar boodschappenlijst</h2>
-			<img src="{{ asset('images/screenshots/Boodschappenlijst.png') }}" class="img-responsive" width="350" style="display:inline; margin-bottom:20px;" alt="">
+			<a href="{{ asset('images/screenshots/Boodschappenlijst.png') }}" data-lightbox="intro" data-title="...naar boodschappenlijst">
+				<img src="{{ asset('images/screenshots/Boodschappenlijst.png') }}" class="img-thumbnail" style="width:350px;">
+			</a>
 			<div class="caption">
-			<p class="tekst-groot">Genereer je boodschappenlijst met één klik</p>
+			<p class="tekst-groot">Op basis van je planning zet <span class="logo">MealPlanner</span> automatisch je boodschappenlijst voor je klaar.</p>
 			</div>
 		</div>
 	</div>
@@ -70,11 +76,11 @@
 		</div>
 		<div class="col-sm-4">
 			<a href="{{ asset('images/screenshots/Kookboek02.png') }}" data-lightbox="kookboek" data-title="Uitgebreide zoekmogelijkheden">
-				<img src="{{ asset('images/screenshots/Kookboek02.png') }}" style="width:250px" class="img-thumbnail"/>
+				<img src="{{ asset('images/screenshots/Kookboek02.png') }}" style="max-width:250px; max-height:170px;" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h3>Wie zoekt...</h3>
-				<p>Vind de recepten die je zoekt op titel, soort gerecht, type keuken, hoofdingrediënt, bereidingstijd of allemaal samen. Ook handig als je nog iets over hebt: zoek wat je allemaal nog kan maken met een bepaald ingrediënt.</p>
+				<p>Vind de recepten die je zoekt op titel, soort gerecht, type keuken, hoofdingrediënt, tags, bereidingstijd of allemaal samen. Ook handig als je nog iets over hebt: zoek wat je allemaal nog kan maken met een bepaald ingrediënt.</p>
 			</div>
 		</div>
 		<div class="col-sm-4">
@@ -104,7 +110,7 @@
 			</a>
 			<div class="caption">
 				<h3>Importeer terwijl je surft</h3>
-				<p>Met de bladwijzer die je éénmalig aan je bladwijzerbalk toevoegt, kan je recepten van een ondersteunde website importeren terwijl je surft, dus zonder dat je die site hoeft te verlaten.</p>
+				<p>Met de bladwijzer die je éénmalig aan je bladwijzerbalk toevoegt, kan je recepten van een website importeren terwijl je surft, dus zonder dat je die site hoeft te verlaten.</p>
 			</div>
 		</div>			
 		<div class="col-sm-4">
@@ -121,60 +127,60 @@
 </div> <!-- end of container Kookboek -->
 
 <div class="container-fluid text-center">
-  <h1 class="margin">Menu's</h1>
+  <h1 class="margin">Planning</h1>
 
 	<div class="row">
 		<div class="col-sm-4">
-			<a href="{{ asset('images/screenshots/Menu.png') }}" data-lightbox="menu's" data-title="Stel menu's samen die je kan hergebruiken">
-				<img src="{{ asset('images/screenshots/Menu.png') }}" style="width:250px" class="img-thumbnail"/>
-			</a>
-			<div class="caption">
-				<h3>Recycleren is in</h3>
-				<p>Waarom zou je elke week opnieuw je hoofd breken over wat we zullen eten? Stel eenvoudig menu's samen met je recepten en hergebruik ze. (Je huisgenoten zullen het nooit te weten komen.)</p>
-			</div>
-		</div>
-		<div class="col-sm-4">
-			<a href="{{ asset('images/screenshots/Menu02.png') }}" data-lightbox="menu's" data-title="De boodschappenlijst voor een hele week is zo gemaakt">
-				<img src="{{ asset('images/screenshots/Menu02.png') }}" style="width:250px" class="img-thumbnail"/>
-			</a>
-			<div class="caption">
-				<h3>1, 2 ... klaar!</h3>
-				<p>Een menu voeg je met één klik toe aan je boodschappenlijst. Zo heb je letterlijk in enkele seconden je boodschappenlijst klaar.</p>
-			</div>
-		</div>
-		<div class="col-sm-4">
-			<a href="{{ asset('images/screenshots/Menu03.png') }}" data-lightbox="menu's" data-title="Bekijk en beheer de planning op de ingebouwde kalender">
-				<img src="{{ asset('images/screenshots/Menu03.png') }}" style="width:250px" class="img-thumbnail"/>
+			<a href="{{ asset('images/screenshots/Planning01.gif') }}" data-lightbox="menu's" data-title="Beheer de planning door middel van <em>drag-and-drop</em> (slepen en neerzetten)">
+				<img src="{{ asset('images/screenshots/Planning01.gif') }}" style="width:350px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h3>Kalender</h3>
-				<p><span class="logo">MealPlanner</span> zet de gekozen recepten automatisch in een kalender. Je kan kiezen tussen week-, maand-, of agendaview. Verschuif de recepten als je wijzigingen wil aanbrengen. Pas eenvoudig de begindatum van de planning aan. Verwijder recepten die je dit keer niet wil maken en vervang ze door andere.</p>
+				<p>Stel je planning op door eenvoudigweg recepten naar de weekkalender te slepen. Er zijn aparte tijdsslots voor het ontbijt, de lunch en het diner.</p>
+			</div>
+		</div>
+		<div class="col-sm-4">
+			<a href="{{ asset('images/screenshots/Planning02.png') }}" data-lightbox="menu's" data-title="Stel menu's samen die je kan hergebruiken">
+				<img src="{{ asset('images/screenshots/Planning02.png') }}" style="width:350px" class="img-thumbnail"/>
+			</a>
+			<div class="caption">
+				<h3>Maak het je gemakkelijk</h3>
+				<p>Bewaar je planning van deze week (en eventueel zelfs daarna) als menu zodat je die later kan hergebruiken. Niemand die er wat op aanmerkt. (Tip: maak wel meer dan één menu.)</p>
+			</div>
+		</div>
+		<div class="col-sm-4">
+			<a href="{{ asset('images/screenshots/Planning03.gif') }}" data-lightbox="menu's" data-title="De planning voor een hele week is zo gemaakt">
+				<img src="{{ asset('images/screenshots/Planning03.gif') }}" style="width:350px" class="img-thumbnail"/>
+			</a>
+			<div class="caption">
+				<h3>Een weekmenu in 1, 2, 3</h3>
+				<p>Een menu voeg je in drie muisklikken toe aan je planning. Bekijk vooraf eventueel een preview van het menu. Standaard wordt een menu toegevoegd vanaf de huidige dag, maar je kan ook een datum in de toekomst kiezen.</p>
 			</div>
 		</div>
 	</div> <!-- end of row 1 -->	
 	
-</div> <!-- end of container Menu's -->
+</div> <!-- end of container Planning -->
 
 <div class="container-fluid bg-grey text-center">
   <h1 class="margin">Boodschappenlijst</h1>
 
 	<div class="row">
 		<div class="col-sm-4">
-			<a href="{{ asset('images/screenshots/Kookboek04.png') }}" data-lightbox="boodschappenlijst" data-title="Ingrediënten komen vanzelf in de juiste afdeling terecht">
-				<img src="{{ asset('images/screenshots/Kookboek04.png') }}" style="width:250px" class="img-thumbnail"/>
-			</a>
-			<div class="caption">
-				<h3>Een zorg minder</h3>
-				<p>Je boodschappenlijst groepeert de ingrediënten volgens afdeling: conserven, groenten en fruit, vlees, zuivel... Maar daar hoef jij je geen zorgen over te maken, want wanneer je een recept toevoegt, zet <span class="logo">MealPlanner</span> de ingrediënten ervan automatisch in de juiste afdeling. Niet toegewezen ingrediënten kan je in je boodschappenlijst nog in de juiste afdeling plaatsen.</p>
-			</div>
-		</div>
-		<div class="col-sm-4">
 			<a href="{{ asset('images/screenshots/Boodschappenlijst.png') }}" data-lightbox="boodschappenlijst" data-title="Boodschappenlijst">
 				<img src="{{ asset('images/screenshots/Boodschappenlijst.png') }}" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h3>Afdrukken en vertrekken</h3>
-				<p>Zodra je een recept of een menu hebt toegevoegd staat je boodschappenlijst klaar, gerangschikt volgens afdeling. Gelijkaardige ingrediënten worden automatisch samengevoegd. Nu nog afdrukken en je kan je inkopen doen.</p>
+				<p>Je boodschappenlijst wordt samengesteld op basis van wat er vanaf vandaag op de planning staat, gerangschikt volgens afdeling. Gelijkaardige ingrediënten worden automatisch samengevoegd. Nu nog afdrukken en je kan je inkopen doen.</p>
+			</div>
+		</div>
+		<div class="col-sm-4">
+			<a href="{{ asset('images/screenshots/Boodschappenlijst01.gif') }}" data-lightbox="boodschappenlijst" data-title="Plaats ingrediënten in de juiste afdeling door ze te verslepen">
+				<img src="{{ asset('images/screenshots/Boodschappenlijst01.gif') }}" style="width:250px" class="img-thumbnail"/>
+			</a>
+			<div class="caption">
+				<h3>Alles op z'n plaats</h3>
+				<p><span class="logo">MealPlanner</span> probeert ingrediënten automatisch in de juiste afdeling te plaatsen. In je boodschappenlijst kan je dit nog wijzigen door ingrediënten te verslepen naar een andere afdeling. <span class="logo">MealPlanner</span> onthoudt je keuze voor de volgende keer.</p>
 			</div>
 		</div>
 		<div class="col-sm-4">
@@ -183,7 +189,7 @@
 			</a>
 			<div class="caption">
 				<h3>In the pocket</h3>
-				<p>Vind je een boodschappenlijst op papier maar <em>old school</em>, dan log je gewoon in op <span class="logo">MealPlanner</span> met je smartphone en je hebt je shopping list altijd mee op zak. Zei iemand het woord <em>responsive</em>&nbsp;?</p>
+				<p>Je kan je booschappenlijst <em>old school</em> afdrukken als je dat wil, maar met je smartphone heb je je boodschappenlijst natuurlijk altijd gewoon mee op zak. Zei iemand het woord <em>responsive</em>&nbsp;?</p>
 			</div>
 		</div>		
 	</div> <!-- end of row 1 -->
@@ -195,7 +201,7 @@
 			</a>
 			<div class="caption">
 				<h3>Volledig aanpasbaar</h3>
-				<p>Wijzig de afdeling van een ingrediënt (<span class="logo">MealPlanner</span> onthoudt je keuze voor de volgende keer). Voeg items toe aan je boodschappenlijst. Vink ingrediënten die je nog in huis hebt af. Pas het aantal porties voor ieder gerecht aan.</p>
+				<p>Plaats ingrediënten in een andere afdeling. Voeg items toe aan je boodschappenlijst. Verwijder ingrediënten die je nog in huis hebt. Pas het aantal porties voor ieder recept aan. Of herstel je boodschappenlijst in z'n oorspronkelijke vorm.</p>
 			</div>
 		</div>	
 		<div class="col-sm-4">
@@ -203,17 +209,17 @@
 				<img src="{{ asset('images/screenshots/Boodschappenlijst04.png') }}" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
-				<h3>Boodschappen à la carte</h3>
-				<p>Afdelingen kan je in een bepaalde volgorde zetten, zodat je boodschappenlijst helemaal is afgestemd op de supermarkt waar je je boodschappen doet. Zo sta je sneller aan de kassa.</p>
+				<h3>Shop efficiënter</h3>
+				<p>Afdelingen kan je in een bepaalde volgorde zetten, zodat je boodschappenlijst helemaal is afgestemd op de manier waarop jij je boodschappen doet. Zo sta je sneller aan de kassa.</p>
 			</div>
 		</div>	
 		<div class="col-sm-4">
-			<a href="{{ asset('images/screenshots/Boodschappenlijst03.png') }}" data-lightbox="boodschappenlijst" data-title="Deel je boodschappenlijst met je huisgenoten">
-				<img src="{{ asset('images/screenshots/Boodschappenlijst03.png') }}" style="width:250px" class="img-thumbnail"/>
+			<a href="{{ asset('images/screenshots/Agenda_sync.png') }}" data-lightbox="boodschappenlijst" data-title="Deel je planning en je boodschappenlijst">
+				<img src="{{ asset('images/screenshots/Agenda_sync.png') }}" style="width:250px" class="img-thumbnail"/>
 			</a>
 			<div class="caption">
 				<h3>Delen</h3>
-				<p>Stuur je boodschappenlijst per e-mail naar je huisgenoten zodat <em>zij</em> de boodschappen kunnen doen. Jij hebt het lijstje al gemaakt, toch? Of print de planning af en hang ze op op een zichtbare plaats. Zo is iedereen op de hoogte.</p>
+				<p>Stuur je boodschappenlijst per e-mail naar je huisgenoten zodat <em>zij</em> de boodschappen kunnen doen. Jij hebt het lijstje al gemaakt, toch? De planning kan je delen via het iCal-formaat of gewoon afdrukken. Zo is iedereen op de hoogte.</p>
 			</div>
 		</div>
 
@@ -256,7 +262,7 @@
 <script src="{{ asset('js/lightbox.js') }}"></script>
 <script>
     lightbox.option({
-      'maxWidth': 700
+      'maxWidth': 1024
     })
     // Show collapsed content
     $('.collapse').addClass('in');
