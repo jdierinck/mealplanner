@@ -45,7 +45,14 @@ class Menu
      * @ORM\ManyToOne(targetEntity="User", inversedBy="menus")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    private $user;   
+    private $user;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="menudata", type="json")
+     */
+    private $menuData;
 
     /**
      * Get id

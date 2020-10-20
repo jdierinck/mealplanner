@@ -39,6 +39,8 @@ twig:
         - 'bootstrap_3_layout.html.twig'
         - 'form/fields.html.twig'
         - 'TetranzSelect2EntityBundle:Form:fields.html.twig'
+    date:
+        timezone: Europe/Brussels
 
 # Doctrine Configuration
 doctrine:
@@ -66,6 +68,8 @@ doctrine:
 swiftmailer:
     transport: "%mailer_transport%"
     host:      "%mailer_host%"
+    port: "%mailer_port%" # necessary
+    encryption: "%mailer_encryption%" # necessary
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
@@ -146,4 +150,4 @@ knp_snappy:
         options:    []
 
 fos_js_routing:
-    routes_to_expose: [ events, saveevents, wisrecept, boodschappen, recipes, topdf ]
+    routes_to_expose: [ events, saveevents, wisrecept, boodschappen, recipes, topdf, addRecipeToCal, addMenuToCal, saveMenuFromCal, deleteMenu, previewMenu, clearCal, removeFromCal, getEvent ]

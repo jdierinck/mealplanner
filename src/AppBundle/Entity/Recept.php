@@ -153,6 +153,11 @@ class Recept
      * @ORM\ManyToMany(targetEntity="Dag", mappedBy="recepten")
      */   
     private $dagen;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Event", mappedBy="recepten")
+     */   
+    private $events;
     
     /**
      * Get id
@@ -702,11 +707,53 @@ class Recept
      */
     public function getMenus()
     {
-        $dagen = $this->dagen;
-        $menus = [];
-        foreach ($dagen as $dag) {
-            $menus[] = $dag->getMenu()->getNaam();
+        $user = $this->user;
+        $menus = $user->getMenus();
+        $result = [];
+        foreach ($menus as $menu){
+            $data = $menu->getMenuData();
+            foreach ($data['days'] as $day) {
+                foreach ($day['slots'] as $slot) {
+                    if (in_array($this->id, $slot)) {
+                        $result[] = $menu->getNaam();
+                    }
+                }
+            }
         }
-        return $menus;
+        return $result;
+    }
+
+    /**
+     * Add event
+     *
+     * @param \AppBundle\Entity\Event $event
+     *
+     * @return Recept
+     */
+    public function addEvent(\AppBundle\Entity\Event $event)
+    {
+        $this->events[] = $event;
+
+        return $this;
+    }
+
+    /**
+     * Remove event
+     *
+     * @param \AppBundle\Entity\Event $event
+     */
+    public function removeEvent(\AppBundle\Entity\Event $event)
+    {
+        $this->events->removeElement($event);
+    }
+
+    /**
+     * Get events
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEvents()
+    {
+        return $this->events;
     }
 }

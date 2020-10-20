@@ -45,7 +45,14 @@ class Menu
      * @ORM\ManyToOne(targetEntity="User", inversedBy="menus")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    private $user;   
+    private $user;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="menudata", type="array")
+     */
+    private $menuData;
 
     /**
      * Get id
@@ -138,5 +145,29 @@ class Menu
     public function getDagen()
     {
         return $this->dagen;
+    }
+
+    /**
+     * Set menuData
+     *
+     * @param array $menuData
+     *
+     * @return Menu
+     */
+    public function setMenuData($menuData)
+    {
+        $this->menuData = $menuData;
+
+        return $this;
+    }
+
+    /**
+     * Get menuData
+     *
+     * @return array
+     */
+    public function getMenuData()
+    {
+        return $this->menuData;
     }
 }

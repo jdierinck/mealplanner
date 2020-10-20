@@ -14,8 +14,7 @@ security:
         - { path: ^/requestpwd, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetpwd, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/contact, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/about, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/support, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/ical-events/.+$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/testimport, roles: ROLE_SUPER_ADMIN }
         - { path: ^/, roles: IS_AUTHENTICATED_REMEMBERED }
 

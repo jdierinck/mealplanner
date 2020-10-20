@@ -64,7 +64,7 @@
 											<div class="rating-overlay">
 												{{ recept.rating|rating }}
 												{% if recept.getMenus() is not empty %}
-													<a tabindex="0" class="btn btn-primary btn-xs menus-popover" role="button" data-toggle="popover" data-container="body" data-trigger="focus" title="Menu's met dit recept:" data-content="{{ recept.getMenus()|join('<br/>') }}" data-html="true"><span class="badge">{{ recept.getMenus()|length }}</span></a>
+													<a tabindex="0" class="btn btn-primary btn-xs menus-popover" role="button" data-toggle="popover" data-container="body" data-trigger="hover" title="Menu's met dit recept:" data-content="{{ recept.getMenus()|join('<br/>') }}" data-html="true"><span class="badge">{{ recept.getMenus()|length }}</span></a>
 												{% endif %}
 											</div>
 											<div class="caption">
@@ -79,7 +79,6 @@
 												<p id="edit-links">
 													<a href="{{ path('editform', {'id':recept.id}) }}" class="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
 													<a href="{{ path('deleterecept', {'id':recept.id, 'page':app.request.query.get('page')}) }}" class="deleterecipe" data-toggle="tooltip" data-placement="auto bottom" title="Verwijder"><span class="glyphicon glyphicon-trash"></span></a>
-													<a href="{{ path('addrecipetoshoppinglist', {'id':recept.id, 'page':app.request.query.get('page')}) }}" class="addtoshoppinglist" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
 												</p>
 											</div>
 								  </div>
@@ -137,7 +136,6 @@
 													<p id="edit-links">
 														<a href="{{ path('editform', {'id':recept.id}) }}" class="editrecipe" data-toggle="tooltip" data-placement="auto bottom" title="Bewerk"><span class="glyphicon glyphicon-pencil"></span></a>
 														<a href="{{ path('deleterecept', {'id':recept.id}) }}" class="deleterecipe" data-toggle="tooltip" data-placement="auto bottom" title="Verwijder"><span class="glyphicon glyphicon-trash"></span></a>
-														<a href="{{ path('addrecipetoshoppinglist', {'id':recept.id}) }}" class="addtoshoppinglist" data-toggle="tooltip" data-placement="auto bottom" title="Voeg toe aan boodschappenlijst"><span class="glyphicon glyphicon-shopping-cart"></span></a>
 													</p>													
 												</td>
 												<td>

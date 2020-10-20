@@ -1,25 +1,19 @@
-@media screen {
-  #printSection {
-      display: none;
-  }
+ul.ingredient-list li {
+  text-indent: -29px;
+  margin-left: 29px;
 }
 
-@media print {
-  body * {
-    visibility: hidden;
-  }
-  #printSection, #printSection * {
-    visibility: visible;
-  }
-  #printSection {
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
+ul.ingredient-list li .fa {
+  text-indent: -29px;
+  margin-left: 29px;
+}
+
+span.ingredient-remove {
+  float:right;
 }
 
 /*Put shopping list in multiple text columns on larger screens*/
-@media (min-width: 1200px) {
+/*@media (min-width: 1200px) {
     #shoppinglist {
       -webkit-column-count: 3;
       -moz-column-count: 3;
@@ -28,9 +22,10 @@
       -moz-column-gap: 3em;
       column-gap: 3em;
     }
-  }
+  }*/
 
-@media (min-width: 600px) and (max-width: 1200px) {
+/*@media (min-width: 600px) and (max-width: 1200px) {*/
+@media (min-width: 600px) {
   #shoppinglist {
     -webkit-column-count: 2;
     -moz-column-count: 2;
@@ -50,4 +45,38 @@
     -moz-column-gap: 3em;
     column-gap: 3em;
   }
+}
+
+span.yield-switcher-shopping-list {
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.grab {
+  cursor: grab;
+}
+.grab.extra_item {
+  cursor: not-allowed;
+}
+
+.dept-empty {
+  color: grey;
+}
+
+.fa-trash {
+  cursor: pointer;
+}
+
+.merge-ingr {
+  cursor: pointer;
+}
+
+a#togglemerge:link, a#showhiderecepten:link {
+  text-decoration: none;
+}
+a#togglemerge:visited, a#showhiderecepten:visited {
+  text-decoration: none;
+}
+a#togglemerge:hover, a#showhiderecepten:hover {
+  text-decoration: none;
 }

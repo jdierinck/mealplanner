@@ -12,21 +12,13 @@ class Builder implements ContainerAwareInterface
 
     public function mainMenu(FactoryInterface $factory, array $options)
     {
-        $em = $this->container->get('doctrine.orm.entity_manager');
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
-        $bl = $user->getBoodschappenlijst();
-        $items = '';
-        if ($bl) {
-            $itemcount = count($bl->getIngrbl());
-            $items = $itemcount > 0 ? $itemcount : '';
-        }
-
         $menu = $factory->createItem('root');
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
 
-        $menu->addChild('<span class="glyphicon glyphicon-cutlery"></span>&nbsp;Kookboek', array('route' => 'recipes'));
-        $menu->addChild('<span class="glyphicon glyphicon-list-alt"></span>&nbsp;Menu\'s', array('route' => 'menus'));
-        $menu->addChild('<span class="glyphicon glyphicon-shopping-cart"></span>&nbsp;Boodschappenlijst&nbsp;<span class="badge">'.$items.'</span>', array('route' => 'boodschappen'));
+        $menu->addChild('<i class="fa fa-cutlery" aria-hidden="true"></i>&nbsp;Kookboek', array('route' => 'recipes'));
+        // $menu->addChild('<span class="glyphicon glyphicon-list-alt"></span>&nbsp;Menu\'s', array('route' => 'menus'));
+        $menu->addChild('<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;Planning', array('route' => 'mealplanner'));
+        $menu->addChild('<i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;Boodschappenlijst', array('route' => 'shoppingList'));
 
         return $menu;
     }

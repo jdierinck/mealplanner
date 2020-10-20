@@ -1,0 +1,107 @@
+
+.panel-body {
+	max-height: 400px;
+	overflow: scroll;
+}
+.mealplan-item {
+/*	min-height: 100px;
+	position:relative;*/
+	cursor:move;
+	border: 1px solid #ddd;
+/*	border-bottom: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #ddd;*/
+	margin:-1px;
+	padding: 5px;
+	overflow: auto;
+}
+#searchRecipes {
+	margin-bottom: 15px;
+}
+
+.menu-item {
+	border: 1px solid #ddd;
+	margin:-1px;
+	padding: 5px;
+	overflow: auto;
+}
+
+table {
+  table-layout: fixed;
+}
+.table>thead>tr>th {
+	padding: 12px;
+  	background-color: #337ab7;
+  	color: white;
+  	font-weight: bold; /* does nothing? */
+}
+.table>thead>tr>th:last-of-type{
+	width:4%;
+	background-color: white;
+}
+.table>tbody>tr>td {
+	padding: 0px;
+}
+td.droppable {
+	/*padding: 0px;*/
+	height: 100px;
+	font-size: 12px;
+}
+
+td.timeSlotName p {
+	transform: rotate(-90deg);
+	/*position: absolute;*/
+}
+.table>tbody>tr>td.timeSlotName {
+	vertical-align: middle;
+	padding: 0px;
+}
+
+.table>thead>tr>th.today {
+	background-color: #5bc0de;
+}
+
+.alert {
+	margin-bottom: 0px;
+	padding: 6px;
+	padding-right: 35px;
+}
+
+#previewTable {
+	table-layout:auto;
+}
+#previewTable th {
+	min-width: 100px;
+}
+#previewTable .mealplan-item {
+	cursor: auto;
+}
+
+form[id^="addMenuOptionsForm"] {
+	padding: 10px 0px 5px 10px;
+}
+
+.popover{
+    max-width:800px;
+}
+
+#contentwrapper { /* move off screen, setting display to none prevents copy event */
+	position: absolute;
+	left: -1000px;
+	top: -1000px;
+}
+
+.title {
+    /*position: absolute;*/
+}
+.overlay {
+/*	height: 25px;
+    background-color: rgba(0,0,0,0.25);
+    position: absolute;
+    top: 50px;*/
+/*    top:126px;
+    left:16px;
+    right:16px;
+    padding-left: 10px;
+    padding-right: 10px;*/
+}

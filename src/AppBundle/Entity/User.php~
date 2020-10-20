@@ -190,7 +190,12 @@ class User implements UserInterface, \Serializable
 	 * @ORM\OneToOne(targetEntity="Boodschappenlijst", mappedBy="user")
 	 */
 	private $boodschappenlijst;
-	
+
+    /**
+     * @ORM\OneToOne(targetEntity="Mealplan", mappedBy="user")
+     */
+    private $mealplan;
+
 	/**
 	 * @ORM\OneToMany(targetEntity="Menu", mappedBy="user")
 	 */
@@ -285,7 +290,6 @@ class User implements UserInterface, \Serializable
      * @ORM\Column(type="string", length=64)
      */
     private $account;
-
 
     /**
      * Get id
@@ -624,4 +628,28 @@ class User implements UserInterface, \Serializable
         return $this->afdelingenordered;
     }
 
+
+    /**
+     * Set account
+     *
+     * @param string $account
+     *
+     * @return User
+     */
+    public function setAccount($account)
+    {
+        $this->account = $account;
+
+        return $this;
+    }
+
+    /**
+     * Get account
+     *
+     * @return string
+     */
+    public function getAccount()
+    {
+        return $this->account;
+    }
 }

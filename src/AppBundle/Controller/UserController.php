@@ -189,7 +189,7 @@ class UserController extends Controller
             // Send e-mail
             $message = \Swift_Message::newInstance()
                 ->setSubject('Mealplanner: Password reset')
-                ->setFrom('johan.dierinck@telenet.be')
+                ->setFrom($this->getParameter('mailer_from'))
                 ->setTo($user->getEmail())
                 ->setBody(
                     $this->renderView(
@@ -277,7 +277,7 @@ class UserController extends Controller
             $em->persist($user);
             $em->flush();
 
-            return $this->redirectToRoute('boodschappen');
+            return $this->redirectToRoute('shoppingList');
         }
 
         return $this->render('user/editafdelingen.html.twig', array(

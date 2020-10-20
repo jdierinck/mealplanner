@@ -153,6 +153,11 @@ class Recept
      * @ORM\ManyToMany(targetEntity="Dag", mappedBy="recepten")
      */   
     private $dagen;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Event", mappedBy="recepten")
+     */   
+    private $events;
     
     /**
      * Get id
@@ -669,5 +674,44 @@ class Recept
     public function getYield()
     {
         return $this->yield;
+    }
+
+    /**
+     * Set yieldType
+     *
+     * @param \AppBundle\Entity\YieldType $yieldType
+     *
+     * @return Recept
+     */
+    public function setYieldType(\AppBundle\Entity\YieldType $yieldType = null)
+    {
+        $this->yieldType = $yieldType;
+
+        return $this;
+    }
+
+    /**
+     * Get yieldType
+     *
+     * @return \AppBundle\Entity\YieldType
+     */
+    public function getYieldType()
+    {
+        return $this->yieldType;
+    }
+
+    /**
+     * Get menus
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMenus()
+    {
+        $dagen = $this->dagen;
+        $menus = [];
+        foreach ($dagen as $dag) {
+            $menus[] = $dag->getMenu()->getNaam();
+        }
+        return $menus;
     }
 }

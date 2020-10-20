@@ -100,9 +100,9 @@
 				<h3 class="text-center" style="margin-top:0;">Ingrediënten</h3>
 				<p class="text-center">
 					{% set unit = servings == 1 ? recept.yieldType.unitSingular : recept.yieldType.unitPlural %}
-					<span class="yield-switcher" data-op="yield-minus" data-url="{{ path('showrecept', {'id':recept.id}) }}"><i class="fa fa-minus-circle fa-lg"></i></span>
+					<span class="yield-switcher-recipe" data-op="yield-minus" data-url="{{ path('showrecept', {'id':recept.id}) }}"><i class="fa fa-minus-circle fa-lg"></i></span>
 					<span>{{ 'Voor'|upper }}  </span><span id="yield" data-yield="{{ recept.yield }}">{{ recept.yield }}</span><span id="yield-unit">  {{ unit|upper }}</span>
-					<span class="yield-switcher" data-op="yield-plus" data-url="{{ path('showrecept', {'id':recept.id}) }}"><i class="fa fa-plus-circle fa-lg"></i></span>
+					<span class="yield-switcher-recipe" data-op="yield-plus" data-url="{{ path('showrecept', {'id':recept.id}) }}"><i class="fa fa-plus-circle fa-lg"></i></span>
 				</p>
 				<table id="ingredientlist">
 					<thead>
@@ -141,12 +141,12 @@
 $(document).ready(function(){
 	
 	// Scale ingredients
-	$('.yield-switcher').on('click', function(){
-		var url = $(this).data('url');
+	$('.yield-switcher-recipe').on('click', function(){
+		var url = $(this).attr('data-url');
 		var table = $('table#ingredientlist');
-		var unit = $('#yield-unit');
-		$yield = parseInt($('#yield').attr('data-yield'));
-		switch ($(this).data('op')) {
+		var unit = $(this).siblings('#yield-unit');
+		$yield = parseInt($(this).siblings('#yield').attr('data-yield'));
+		switch ($(this).attr('data-op')) {
 			case 'yield-minus':
 				if ($yield == 1) return;
 				$yield = $yield - 1;
@@ -155,8 +155,9 @@ $(document).ready(function(){
 				if ($yield == 100) return;
 				$yield = $yield + 1;
 		}
-		$('#yield').attr('data-yield', $yield);
-		$('#yield, .yield').html($yield);
+		$(this).siblings('#yield').attr('data-yield', $yield);
+		$(this).siblings('#yield').html($yield);
+		$(this).siblings('.yield').html($yield);
 		$.ajax({
 			type: 'GET',
 			url: url,
