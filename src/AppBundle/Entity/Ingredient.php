@@ -14,13 +14,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Ingredient
 {
-	/**
-     * Constructor
-     */
-    public function __construct()
-    {
-		$this->ingrbl = new ArrayCollection();
-    }
     
     /**
      * @var int
@@ -66,17 +59,6 @@ class Ingredient
      * @ORM\JoinColumn(name="afdeling_id", referencedColumnName="id")
      */    
     private $afdeling;
-
-// 	/**
-//      * @ORM\ManyToOne(targetEntity="Boodschappenlijst", inversedBy="ingredienten")
-//      * @ORM\JoinColumn(name="boodschappenlijst_id", referencedColumnName="id")
-//      */    
-//     private $boodschappenlijst;
-    
-    /**
-     * @ORM\OneToMany(targetEntity="IngrBL", mappedBy="ingredient", cascade={"all"})
-     */    
-    private $ingrbl;
 
     /**
      * @ORM\Column(type="boolean")
@@ -211,63 +193,6 @@ class Ingredient
     public function getAfdeling()
     {
         return $this->afdeling;
-    }
-
-    /**
-     * Set boodschappenlijst
-     *
-     * @param \AppBundle\Entity\Boodschappenlijst $boodschappenlijst
-     * @return Ingredient
-     */
-    public function setBoodschappenlijst(\AppBundle\Entity\Boodschappenlijst $boodschappenlijst = null)
-    {
-        $this->boodschappenlijst = $boodschappenlijst;
-
-        return $this;
-    }
-
-    /**
-     * Get boodschappenlijst
-     *
-     * @return \AppBundle\Entity\Boodschappenlijst 
-     */
-    public function getBoodschappenlijst()
-    {
-        return $this->boodschappenlijst;
-    }
-
-    /**
-     * Add ingrbl
-     *
-     * @param \AppBundle\Entity\IngrBL $ingrbl
-     *
-     * @return Ingredient
-     */
-    public function addIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
-    {
-        $this->ingrbl[] = $ingrbl;
-
-        return $this;
-    }
-
-    /**
-     * Remove ingrbl
-     *
-     * @param \AppBundle\Entity\IngrBL $ingrbl
-     */
-    public function removeIngrbl(\AppBundle\Entity\IngrBL $ingrbl)
-    {
-        $this->ingrbl->removeElement($ingrbl);
-    }
-
-    /**
-     * Get ingrbl
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getIngrbl()
-    {
-        return $this->ingrbl;
     }
 
     /**

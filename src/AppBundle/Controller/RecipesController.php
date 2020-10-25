@@ -13,7 +13,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Ingredient;
-use AppBundle\Entity\Boodschappenlijst;
 use RecipeParser\RecipeParser;
 
 class RecipesController extends Controller
@@ -24,8 +23,6 @@ class RecipesController extends Controller
     public function indexAction(Request $request)
     {
     	$em = $this->getDoctrine()->getManager();
-    	
-		// $session = $request->getSession();
 		
 		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			throw $this->createAccessDeniedException();
@@ -34,16 +31,6 @@ class RecipesController extends Controller
 		// Get user (long version)
 		// $user = $this->get('security.token_storage')->getToken()->getUser();
 		$user = $this->getUser();
-		$boodschappenlijst = $user->getBoodschappenlijst();
-	
-		// Create Boodschappenlijst if none exists
-		if (!$boodschappenlijst) {
-			$boodschappenlijst = new Boodschappenlijst();
-			$boodschappenlijst->setUser($user);
-			
-			$em->persist($boodschappenlijst);
-			$em->flush();
-		}
 
     	$allowedsorts = array(
     		'titel', 
@@ -151,7 +138,7 @@ class RecipesController extends Controller
     	
     	// Get unpaginated array of recipes	
     	$results = $qb->getQuery()->getResult();
-    	
+
     	// Paginate search results
     	$query = $qb->getQuery();
     	$paginator = $this->get('knp_paginator');

@@ -29,7 +29,7 @@
 
 				{% if app.user.hasRecepten %}
 				<div class="pull-right">
-					<a type="button" class="btn btn-default btn-sm" href="{{ path('exportcsv') }}"><i class="fa fa-download"></i>&nbsp;Exporteer als CSV</a>
+					<a type="button" class="btn btn-default btn-sm" href="{{ path('exportcsv', {'all': 'true'}) }}"><i class="fa fa-download"></i>&nbsp;Exporteer als CSV</a>
 				</div>
 				{% endif %}
 

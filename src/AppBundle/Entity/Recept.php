@@ -19,7 +19,6 @@ class Recept
     public function __construct() {
     	$this->ingredienten = new ArrayCollection();
         $this->tags = new ArrayCollection();
-        $this->receptenblordered = new ArrayCollection();
     }
 
 	/**
@@ -118,11 +117,6 @@ class Recept
      * @ORM\Column(type="decimal", scale=2, nullable=true)
      */    
     private $kostprijs;
-	
-	/**
-     * @ORM\OneToMany(targetEntity="ReceptBLOrdered", mappedBy="recept", cascade={"all"})
-     */
-	private $receptenblordered;
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="recepten")
@@ -143,16 +137,10 @@ class Recept
      */
     private $yieldType;
 
-
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
     private $rating;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="Dag", mappedBy="recepten")
-     */   
-    private $dagen;
 
     /**
      * @ORM\ManyToMany(targetEntity="Event", mappedBy="recepten")
@@ -400,29 +388,6 @@ class Recept
         return $this->keuken;
     }
 
-//     /**
-//      * Set ingredienten
-//      *
-//      * @param string $ingredienten
-//      * @return Recept
-//      */
-//     public function setIngredienten($ingredienten)
-//     {
-//         $this->ingredienten = $ingredienten;
-// 
-//         return $this;
-//     }
-// 
-//     /**
-//      * Get ingredienten
-//      *
-//      * @return string 
-//      */
-//     public function getIngredienten()
-//     {
-//         return $this->ingredienten;
-//     }
-
     /**
      * Set hoofdingredient
      *
@@ -515,39 +480,6 @@ class Recept
     }
 
     /**
-     * Add receptenblordered
-     *
-     * @param \AppBundle\Entity\ReceptBLOrdered $receptenblordered
-     * @return Recept
-     */
-    public function addReceptenblordered(\AppBundle\Entity\ReceptBLOrdered $receptenblordered)
-    {
-        $this->receptenblordered[] = $receptenblordered;
-
-        return $this;
-    }
-
-    /**
-     * Remove receptenblordered
-     *
-     * @param \AppBundle\Entity\ReceptBLOrdered $receptenblordered
-     */
-    public function removeReceptenblordered(\AppBundle\Entity\ReceptBLOrdered $receptenblordered)
-    {
-        $this->receptenblordered->removeElement($receptenblordered);
-    }
-
-    /**
-     * Get receptenblordered
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getReceptenblordered()
-    {
-        return $this->receptenblordered;
-    }
-
-    /**
      * Set user
      *
      * @param \AppBundle\Entity\User $user
@@ -616,40 +548,6 @@ class Recept
     public function getRating()
     {
         return $this->rating;
-    }
-
-    /**
-     * Add dagen
-     *
-     * @param \AppBundle\Entity\Dag $dagen
-     *
-     * @return Recept
-     */
-    public function addDagen(\AppBundle\Entity\Dag $dagen)
-    {
-        $this->dagen[] = $dagen;
-
-        return $this;
-    }
-
-    /**
-     * Remove dagen
-     *
-     * @param \AppBundle\Entity\Dag $dagen
-     */
-    public function removeDagen(\AppBundle\Entity\Dag $dagen)
-    {
-        $this->dagen->removeElement($dagen);
-    }
-
-    /**
-     * Get dagen
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getDagen()
-    {
-        return $this->dagen;
     }
 
     /**

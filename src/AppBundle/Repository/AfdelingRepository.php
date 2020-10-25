@@ -12,16 +12,5 @@ use Doctrine\ORM\EntityRepository;
  */
 class AfdelingRepository extends EntityRepository
 {
-	public function findIngredientenByAfdeling($boodschappenlijst)
-	{    	
-    	return $this->getEntityManager()->createQueryBuilder()
-    		->select('a','ibl')
-    		->from('AppBundle:Afdeling','a')
-    		->join('a.ingrbl', 'ibl')
-    		->where('ibl.boodschappenlijst = :boodschappenlijst')
-			->setParameter('boodschappenlijst', $boodschappenlijst)
-    		->orderBy('a.name')
-    		->getQuery()
-    		->getResult();
-    }
+
 }

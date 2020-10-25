@@ -15,9 +15,6 @@ use AppBundle\Entity\User;
  */
 class Menu
 {
-	public function __construct() {
-		$this->dagen = new ArrayCollection();
-	}
 	
     /**
      * @var int
@@ -35,11 +32,6 @@ class Menu
      * @Assert\NotBlank()
      */
     private $naam;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Dag", mappedBy="menu", cascade={"persist","remove"})
-     */
-	private $dagen;
     
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="menus")
@@ -108,43 +100,6 @@ class Menu
     public function getUser()
     {
         return $this->user;
-    }
-
-    /**
-     * Add dagen
-     *
-     * @param \AppBundle\Entity\Dag $dagen
-     *
-     * @return Menu
-     */
-    public function addDagen(\AppBundle\Entity\Dag $dagen)
-    {
-        // set Menu on each Dag instance
-        $dagen->setMenu($this);
-
-        $this->dagen[] = $dagen;
-
-        return $this;
-    }
-
-    /**
-     * Remove dagen
-     *
-     * @param \AppBundle\Entity\Dag $dagen
-     */
-    public function removeDagen(\AppBundle\Entity\Dag $dagen)
-    {
-        $this->dagen->removeElement($dagen);
-    }
-
-    /**
-     * Get dagen
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getDagen()
-    {
-        return $this->dagen;
     }
 
     /**

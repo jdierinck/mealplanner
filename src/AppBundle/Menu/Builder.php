@@ -16,7 +16,6 @@ class Builder implements ContainerAwareInterface
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
 
         $menu->addChild('<i class="fa fa-cutlery" aria-hidden="true"></i>&nbsp;Kookboek', array('route' => 'recipes'));
-        // $menu->addChild('<span class="glyphicon glyphicon-list-alt"></span>&nbsp;Menu\'s', array('route' => 'menus'));
         $menu->addChild('<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;Planning', array('route' => 'mealplanner'));
         $menu->addChild('<i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;Boodschappenlijst', array('route' => 'shoppingList'));
 

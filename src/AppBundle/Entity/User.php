@@ -216,11 +216,6 @@ class User implements UserInterface, \Serializable
     {
         return count($this->recepten) !== 0;
     }
-	
-	/**
-	 * @ORM\OneToOne(targetEntity="Boodschappenlijst", mappedBy="user")
-	 */
-	private $boodschappenlijst;
 
     /**
      * @ORM\OneToOne(targetEntity="Mealplan", mappedBy="user")
@@ -438,29 +433,6 @@ class User implements UserInterface, \Serializable
     }
 
     /**
-     * Set boodschappenlijst
-     *
-     * @param \AppBundle\Entity\Boodschappenlijst $boodschappenlijst
-     * @return User
-     */
-    public function setBoodschappenlijst(\AppBundle\Entity\Boodschappenlijst $boodschappenlijst = null)
-    {
-        $this->boodschappenlijst = $boodschappenlijst;
-
-        return $this;
-    }
-
-    /**
-     * Get boodschappenlijst
-     *
-     * @return \AppBundle\Entity\Boodschappenlijst 
-     */
-    public function getBoodschappenlijst()
-    {
-        return $this->boodschappenlijst;
-    }
-
-    /**
      * Add menus
      *
      * @param \AppBundle\Entity\Menu $menus
@@ -658,7 +630,6 @@ class User implements UserInterface, \Serializable
     {
         return $this->afdelingenordered;
     }
-
 
     /**
      * Set account
