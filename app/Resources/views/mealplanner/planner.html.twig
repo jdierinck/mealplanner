@@ -24,6 +24,7 @@
 								<form>
 									<div class="form-group">
 										<input id="searchRecipes" type="search" name="q" class="form-control" placeholder="Titel of ingrediënt..." value="{{ app.request.query.get('q') }}">
+										<input type="hidden" name="isodate"  value="{{ app.request.query.get('isodate') }}">
 									</div>
 								</form>
 								{% for recipe in recipes %}
