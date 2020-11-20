@@ -140,7 +140,9 @@ class ImportController extends Controller
 		// $url = 'https://www.tasteofhome.com/recipes/spaghetti-meatballs-and-grana-padano-cheese/';
 		// $url = 'https://www.thedailymeal.com/best-recipes/grilled-chicken-peach-skewers';
 		// $url = 'https://www.thekitchn.com/recipe-greek-style-tuna-salad-243282';// access denied
-
+		// $url = 'https://zekergezond.be/detail/5e3bf998-2db2-489e-9d49-4e61f4b0126f/gemarineerde-temp%C3%A9-met-spitskool';
+		$url = 'https://zekergezond.be/detail/37545421-8943-4199-8af7-d1293c0f82c0/gevulde-paprika\'s';
+		// $url = 'https://zekergezond.be/detail/29100caf-543d-45cb-a521-d16d9f13a397/marokkaanse-tajine-van-kikkererwten';
 
 		try {
 			$recipe = RecipeParser::parse($url);

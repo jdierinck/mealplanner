@@ -110,4 +110,14 @@ class Text {
 	    }
 	}
 
+    /**
+     * Check if JSON can be fixed by removing single quotes
+     */
+    public static function fixJSON($json) {
+        $json = preg_replace('/\'(?!s)/','"', $json); // replace single quotes with double quotes except those followed by an s (plurals)
+        if (json_decode($json) !== NULL) {
+            return $json;
+        }
+    }
+
 }

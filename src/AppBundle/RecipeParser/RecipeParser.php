@@ -19,8 +19,13 @@ class RecipeParser {
 		// Extract JSON-LD first
 		$crawler->filterXPath('//script[@type="application/ld+json"]')
 	        ->each(function($node) use (&$metadata) {
-	        	// dump($node->text());
 				$text = Text::cleanupHtml($node->text());
+	        	// dump($text);
+				if (json_decode($text) === NULL && json_last_error() == JSON_ERROR_SYNTAX) {
+					// try to fix malformed json
+					$text = Text::fixJSON($text);
+					// dump($text);
+				}
 				switch (gettype(json_decode($text, false))) {
 					case 'object':
 						$json = json_decode($text, true);
