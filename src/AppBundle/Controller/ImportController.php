@@ -33,7 +33,7 @@ class ImportController extends Controller
 		$data = array();
 		$form = $this->createFormBuilder($data)
 			->add('url', TextType::class, array(
-				'constraints' => new Url(),
+				// 'constraints' => new Url(),
 			))
 			// ->add('submit', SubmitType::class, array(
 			// 		'label' => 'Importeer recept'
