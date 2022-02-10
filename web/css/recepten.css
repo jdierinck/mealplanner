@@ -88,17 +88,17 @@ a.desc:after {
     left: 0;*/
 }
 
-#listview .rating div.star-full, 
+#listview .rating div.star-full,
 #listview .rating div.star-empty {
     font-size: 5px;
 }
 
-#listview .rating div.star-empty:before, 
+#listview .rating div.star-empty:before,
 #listview .rating div.star-full:before {
     padding-right:0;
 }
 
-#gridview .rating div.star-empty, 
+#gridview .rating div.star-empty,
 #gridview .rating div.star-full {
     font-size: 10px;
 }
@@ -135,3 +135,22 @@ span.yield-switcher-recipe {
     margin: 0px 10px 0px 10px;
 }
 
+@media (min-width: 992px) {
+    /* Allow Bereidingswijze to shift upwards when ingredients list is long on large displays */
+    #recept-body .col-md-5 {
+        float: right;
+    }
+
+    h3#prep-title {
+        text-align: left;
+    }
+}
+
+@media print {
+    #recept-body #printrecept,
+    #recept-body #editrecipe_modal,
+    #recept-body #deleterecipe_modal,
+    #recept-body .yield-switcher-recipe {
+        display:none;
+    }
+}

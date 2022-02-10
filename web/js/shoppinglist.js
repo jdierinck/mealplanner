@@ -22,7 +22,7 @@ $(document).ready(function(){
 	if (localStorage.getItem('merge') === null) {
 		localStorage.setItem('merge', true);
 	}
-	if (localStorage.getItem('merge') === 'true') { 
+	if (localStorage.getItem('merge') === 'true') {
 		mergeIngredients();
 	} else {
 		$('a#togglemerge').find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
@@ -140,10 +140,10 @@ $(document).ready(function(){
     $('#myModal').on('show.bs.modal', function(e){
     	var link = $(e.relatedTarget);
     	$('#myModalContent').load(link.attr('href'), function(){
-    		// Hide edit and delete buttons when finished loading
+    		// Hide edit, delete and print buttons when finished loading
 	    	if (link.hasClass('recept-lijst')) {
 	    		var modal = $(this);
-	    		modal.find('a#editrecipe_modal, a#deleterecipe_modal').addClass('hidden');
+	    		modal.find('a#editrecipe_modal, a#deleterecipe_modal, a#printrecept').addClass('hidden');
 		    }
 	    });
     });
@@ -174,7 +174,7 @@ $(document).ready(function(){
 	        });
     });
 
-  	$('#printlijst').click(function(){
+  $('#printlijst').click(function(){
 		var element = document.getElementById('lijst-inhoud');
 		printElement(element);
 		window.print();
@@ -242,7 +242,7 @@ $(document).ready(function(){
 			// for merged ingredients
 			if (list.hasClass('new-ul')) {
 				if (self.parents('ul.new-ul').children().length == 2) { // if only 2 <li> left remove wrappers
-					self.parents('ul.new-ul').prev('.merge-ingr').remove(); 
+					self.parents('ul.new-ul').prev('.merge-ingr').remove();
 					self.parent('li').unwrap();
 				}
 			}
@@ -250,7 +250,7 @@ $(document).ready(function(){
 			span.trigger('update:quantity'); // not working, why?
 			if (list.children().length === 0) {
 				list.prev('h4').addClass('hidden dept-empty'); // hide heading as well
-			}			
+			}
 		}
 		);
 	});
@@ -293,7 +293,7 @@ function mergeIngredients() {
 			}
 		}
 
-	});	
+	});
 }
 
 function unMerge() {

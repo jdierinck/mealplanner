@@ -13,7 +13,7 @@ $(document).ready(function(){
 	$('.btn-group button').click(function(){
 		$(this).addClass('active').siblings().removeClass('active');
 	});
-	
+
 	$('#list').click(function(){
 		localStorage.setItem('view','list');
 		$('#gridview').hide();
@@ -24,25 +24,25 @@ $(document).ready(function(){
  		$('#gridview').show();
  		$('#listview').hide();
  	});
-	
+
 	var view = localStorage.getItem('view');
 	if(view){
 		$('#list').addClass('active').siblings().removeClass('active');
 		$('#gridview').hide();
 		$('#listview').show();
 	}
-	
+
 	// initialize tooltips
 	$('[data-toggle="tooltip"]').tooltip();
 	//Initialize popovers
 	$('[data-toggle="popover"]').popover();
-    
+
     // Load content into modal
 	// $('body').on('click','.showrecipe', function(e){
 	// 	$('#myOtherModal').modal();
 	// 	$('#myOtherModalContent').load($(this).data('url'));
 	// 	var id = $(this).data('id');
-	// 	console.log(id);		
+	// 	console.log(id);
 	// });
 
 	$('#myOtherModal').on('show.bs.modal', function(e){
@@ -92,7 +92,7 @@ $(document).ready(function(){
 		console.log($(this));
 		$('form[name="filters"]').submit();
 	});
-	
+
 	// $('form[name="filters"]').on('keyup submit change', function(e){
 	// 	e.preventDefault();
 	// 	var data = $(this).serialize();
@@ -115,7 +115,7 @@ $(document).ready(function(){
 	// 				$('#listview').show();
 	// 			}
 	// 		}
-	// 	});	
+	// 	});
 	// });
 
 	// Fix for Select2 input element not accepting any input
@@ -140,9 +140,9 @@ $(document).ready(function(){
 // 		var value = input.val();
 // 		data = 'zoek' + '=' + value;
 // 		data = getFilterData(input, data);
-// 		sendAjaxForm(data);		
+// 		sendAjaxForm(data);
 // 	});
-	
+
 // 	function getFilterData(element, data){
 // // 		var selects = $(element).parent().siblings('div').children('select, input');
 // 		var selects = $(element).closest('form').find('select, input').not($(element));
@@ -152,9 +152,9 @@ $(document).ready(function(){
 // 				data += '&' + $(selects[i]).attr('id') + '=' + $(selects[i]).val();
 // 			}
 // 		}
-// 		return data;	
+// 		return data;
 // 	}
-	
+
 	function sendAjaxForm(data){
 		$.ajax({
 			type: 'GET',
@@ -171,7 +171,7 @@ $(document).ready(function(){
 					$('#listview').show();
 				}
 			}
-		});	
+		});
 	}
 
 });
@@ -179,9 +179,9 @@ $(document).ready(function(){
 // function initAjaxForm()
 // {
 //     $('body').on('submit', "form[name='recept']", function (e) {
-// 
+//
 //         e.preventDefault();
-// 
+//
 //         $.ajax({
 //             type: $(this).attr('method'),
 //             url: $(this).attr('action'),
@@ -199,13 +199,13 @@ $(document).ready(function(){
 //                 if (jqXHR.responseJSON.hasOwnProperty('form')) {
 //                     $('#myModalContent').html(jqXHR.responseJSON.form);
 //                 }
-// 
+//
 //                 $('.form_error').html(jqXHR.responseJSON.message);
-// 
+//
 //             } else {
 //                 alert(errorThrown);
 //             }
-// 
+//
 //         });
 //     });
-// }  
+// }
