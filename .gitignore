@@ -12,3 +12,4 @@
 /composer.phar
 /web/media/cache/*
 /web/images/recepten/*
+*.sql.gz
