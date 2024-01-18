@@ -45,7 +45,7 @@ class Recept
     private $bereidingstijd;
     
     /**
-     * @ORM\OneToMany(targetEntity="Ingredient", mappedBy="recept", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Ingredient", mappedBy="recept", cascade={"persist", "remove"})
      * @Assert\Valid
      */
      private $ingredienten;
@@ -143,7 +143,7 @@ class Recept
     private $rating;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Event", mappedBy="recepten")
+     * @ORM\ManyToMany(targetEntity="Event", mappedBy="recepten", cascade={"remove"})
      */   
     private $events;
     

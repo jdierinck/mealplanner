@@ -28,7 +28,7 @@ class Mealplan
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="Event", mappedBy="mealplan")
+     * @ORM\OneToMany(targetEntity="Event", mappedBy="mealplan", cascade={"remove"})
      */
     private $events;
 

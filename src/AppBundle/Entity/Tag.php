@@ -34,7 +34,7 @@ class Tag
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Recept", mappedBy="tags")
+     * @ORM\ManyToMany(targetEntity="Recept", mappedBy="tags", cascade={"remove"})
      */
 	private $recepten;
 

@@ -208,7 +208,7 @@ class User implements UserInterface, \Serializable
     }
 
     /**
-     * @ORM\OneToMany(targetEntity="Recept", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="Recept", mappedBy="user", cascade={"remove"})
      */
 	private $recepten;
 
@@ -218,12 +218,12 @@ class User implements UserInterface, \Serializable
     }
 
     /**
-     * @ORM\OneToOne(targetEntity="Mealplan", mappedBy="user")
+     * @ORM\OneToOne(targetEntity="Mealplan", mappedBy="user", cascade={"remove"})
      */
     private $mealplan;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="Menu", mappedBy="user")
+	 * @ORM\OneToMany(targetEntity="Menu", mappedBy="user", cascade={"remove"})
 	 */
 	private $menus;
 
