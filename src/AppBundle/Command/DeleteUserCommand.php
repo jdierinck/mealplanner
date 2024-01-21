@@ -49,11 +49,11 @@ class DeleteUserCommand extends ContainerAwareCommand
                 $cache->delete($cacheKey);
             }
 
-            // $em->remove($user);
-            // $em->flush();
+            $em->remove($user);
+            $em->flush();
         }
 
-        catch (Exception $e) {
+        catch (\Exception $e) {
             $output->writeln($e->getMessage());
         }
 
