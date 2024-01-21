@@ -10,6 +10,10 @@ class RecipeParser {
 
 		$client = new Client();
 		$client->followRedirects();
+		// Set a user-agent that mimics a real browser to avoid getting blocked.
+		$client->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3');
+		// Set the referrer header to make requests seem more legitimate.
+		$client->setHeader('Referer', 'https://www.mealplanner.cooking');
      	$guzzleClient = new \GuzzleHttp\Client(array('curl' => array(CURLOPT_SSL_VERIFYHOST => false, CURLOPT_SSL_VERIFYPEER => false), 'cookies' => true, 'allow_redirects' => true));
      	$client->setClient($guzzleClient);
 		$crawler = $client->request('GET', $url);

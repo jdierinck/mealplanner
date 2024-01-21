@@ -91,22 +91,22 @@ class ImportController extends Controller
 	{
 		// $url = 'https://www.24kitchen.nl/recepten/poke-bowl-met-zalm';
 		// $url = 'http://www.budgetkoken.be/pastagerechten/pasta-met-broccoli-en-champignons.php'; // no data
-		// $url = 'https://www.colruyt.be/nl/lekker-koken/tartiflette-met-abdijkaas-en-spekjes'; // not found, blokkeert bots
+		// $url = 'https://www.colruyt.be/nl/lekker-koken/tartiflette-met-abdijkaas-en-spekjes';
 		// $url = 'https://dagelijksekost.een.be/gerechten/cannelloni-met-gerookte-zalm-asperges-en-spinazie';
-		// $url = 'https://www.foody.nl/recepten/salade-met-groene-asperges-burrata-en-nectarines-44973.html'; //md
-		// $url = 'https://www.foodandfriends.nl/recepten/whisky-can-chicken.html'; // md, no instructions
-		// $url = 'https://www.foodandfriends.nl/recepten/chili-aubergine-dip.html'; // no instructions
+		// $url = 'https://www.foody.nl/recepten/salade-met-groene-asperges-burrata-en-nectarines-44973.html'; // no ingredients
+		// $url = 'https://www.foodandfriends.nl/recepten/whisky-can-chicken.html'; // exception ("Data too long for column 'ingredient' at row 1")
+		// $url = 'https://www.foodandfriends.nl/recepten/chili-aubergine-dip.html'; // idem
 		// $url = 'https://www.kookjij.nl/recepten/varkensrollade-teriyaki-met-oosterse-noodles-slowcooker'; // md
 		// $url = 'https://njam.tv/recepten/gehaktballen-met-tomatensaus';
 		// $url = 'https://www.okokorecepten.nl/recept/chefs/gordon-ramsay/gordon-ramsay-groene-asperges-sinaasappelsaus';
 		// $url = 'https://www.smulweb.nl/recepten/1057668/Couscoussalade';
 		// $url = 'https://koken.vtm.be/loic-zot-van-koken/recept/gyozas-met-ponzu-saus-en-chili-olie'; // not working???
-		// $url = 'https://koken.vtm.be/recept/ovenschotel-met-prei-aardappelpuree-en-kabeljauw';
-		// $url = 'https://www.ah.nl/allerhande/recept/R-R444872/tortelloni-met-spinazie-uit-de-oven';
-		// $url = 'https://www.lekkervanbijons.be/recepten/ovenschotel-met-vis-preipuree-kaassaus-en-gekookte-eieren';
+		// $url = 'https://koken.vtm.be/recept/ovenschotel-met-prei-aardappelpuree-en-kabeljauw'; // no data
+		// $url = 'https://www.ah.nl/allerhande/recept/R-R444872/tortelloni-met-spinazie-uit-de-oven'; // no data, access denied
+		// $url = 'https://www.lekkervanbijons.be/recepten/ovenschotel-met-vis-preipuree-kaassaus-en-gekookte-eieren'; // error: trim() expects parameter 1 to be string, array given (HowToStep is array instead of text)
 		// $url = 'https://www.libelle-lekker.be/bekijk-recept/13947/ovenschotel-met-vis';
-		// $url = 'https://www.leukerecepten.nl/recepten/ovenschotel-met-vis-en-puree/'; // no ingredients
-		// $url ='https://kookidee.nl/recepten/hoofdgerecht/kabeljauw-en-groenteschotel-uit-de-oven-met-aardappel-wedges/';
+		// $url = 'https://www.leukerecepten.nl/recepten/ovenschotel-met-vis-en-puree/';
+		$url ='https://kookidee.nl/recepten/hoofdgerecht/kabeljauw-en-groenteschotel-uit-de-oven-met-aardappel-wedges/';
 
 		// $url = 'https://www.101cookbooks.com/rice-noodle-stir-fry-recipe/';
 		// $url = 'https://12tomatoes.com/buttered-steak-and-mushroom-bites/';
@@ -141,7 +141,7 @@ class ImportController extends Controller
 		// $url = 'https://www.thedailymeal.com/best-recipes/grilled-chicken-peach-skewers';
 		// $url = 'https://www.thekitchn.com/recipe-greek-style-tuna-salad-243282';// access denied
 		// $url = 'https://zekergezond.be/detail/5e3bf998-2db2-489e-9d49-4e61f4b0126f/gemarineerde-temp%C3%A9-met-spitskool';
-		$url = 'https://zekergezond.be/detail/37545421-8943-4199-8af7-d1293c0f82c0/gevulde-paprika\'s';
+		// $url = 'https://zekergezond.be/detail/37545421-8943-4199-8af7-d1293c0f82c0/gevulde-paprika\'s';
 		// $url = 'https://zekergezond.be/detail/29100caf-543d-45cb-a521-d16d9f13a397/marokkaanse-tajine-van-kikkererwten';
 
 		try {
